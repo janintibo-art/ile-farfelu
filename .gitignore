@@ -1,0 +1,6 @@
+.godot/
+build/
+android/
+addons/godotopenxrvendors/
+*.import
+export_credentials.cfg

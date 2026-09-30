@@ -1,0 +1,381 @@
+extends CharacterBody3D
+## Le joueur. En VR : casque + deux mains. Sans casque (PC) : clavier/souris.
+## Deux vues : 1re personne (tu ES le perso) et 3e personne (tu vois ton
+## chibi et tu le diriges). Échange de corps avec les autres persos.
+
+const Chibi := preload("res://scripts/chibi.gd")
+const Characters := preload("res://scripts/characters.gd")
+const Hand := preload("res://scripts/hand.gd")
+const Fx := preload("res://scripts/fx.gd")
+const Island := preload("res://scripts/island.gd")
+
+const SPEED := 3.0
+const JUMP := 4.2
+const GRAVITY := 9.8
+const DESKTOP_EYE := 1.2
+
+var vr := false
+var world: Node3D
+var origin: XROrigin3D
+var camera: XRCamera3D
+var left
+var right
+var avatar
+var char_id := 0
+var third_person := false
+var npcs: Array = []
+
+var _vy := 0.0
+var _in_water := false
+var _snap_ready := true
+var _prev := {}
+var _held_desktop: RigidBody3D
+var _spawn := Vector3.ZERO
+var _hud: Label
+
+
+func setup(p_world: Node3D, p_vr: bool) -> void:
+	world = p_world
+	vr = p_vr
+	_spawn = global_position
+	collision_layer = 8
+	collision_mask = 1 | 4
+	floor_snap_length = 0.35
+	floor_max_angle = deg_to_rad(50.0)
+	var cs := CollisionShape3D.new()
+	var cap := CapsuleShape3D.new()
+	cap.radius = 0.25
+	cap.height = 1.2
+	cs.shape = cap
+	cs.position.y = 0.6
+	add_child(cs)
+
+	avatar = Chibi.new()
+	add_child(avatar)
+
+	origin = XROrigin3D.new()
+	origin.name = "XROrigin"
+	world.add_child(origin)
+	origin.global_transform = global_transform
+	camera = XRCamera3D.new()
+	camera.near = 0.05
+	camera.far = 500.0
+	origin.add_child(camera)
+	left = Hand.new()
+	left.name = "LeftHand"
+	origin.add_child(left)
+	left.setup(self, true)
+	right = Hand.new()
+	right.name = "RightHand"
+	origin.add_child(right)
+	right.setup(self, false)
+
+	if not vr:
+		camera.position = Vector3(0, DESKTOP_EYE, 0)
+		camera.current = true
+		_make_hud()
+
+	set_character(0)
+	_place_origin(true, 0.0)
+
+
+func set_character(id: int) -> void:
+	char_id = id
+	var def: Dictionary = Characters.LIST[id]
+	avatar.setup(def)
+	left.set_colors(def["skin"], def["shirt"])
+	right.set_colors(def["skin"], def["shirt"])
+	_update_view()
+
+
+func toggle_view() -> void:
+	third_person = not third_person
+	_update_view()
+	_place_origin(true, 0.0)
+	Fx.text(world, _front(1.6), "Vue 3e personne" if third_person else "Vue 1re personne", Color(0.7, 0.9, 1.0), 0.45, 0.9)
+
+
+func _update_view() -> void:
+	avatar.visible = third_person
+
+
+## Échange de corps avec un habitant. teleport = on prend aussi sa place.
+func swap_with(npc, teleport: bool) -> void:
+	var my_id := char_id
+	var their_id: int = npc.char_id
+	var my_pos := global_position
+	var their_pos: Vector3 = npc.global_position
+	Fx.puff(world, my_pos + Vector3(0, 0.7, 0))
+	Fx.puff(world, their_pos + Vector3(0, 0.7, 0))
+	if teleport:
+		npc.global_position = my_pos
+		global_position = their_pos
+		_vy = 0.0
+	npc.set_char(my_id)
+	set_character(their_id)
+	_place_origin(true, 0.0)
+	Fx.text(world, their_pos + Vector3(0, 1.7, 0) if teleport else my_pos + Vector3(0, 1.7, 0), "POUF !", Color(1.0, 0.85, 0.25), 1.2)
+	npc.chibi.say(Characters.SWAP_REACTIONS[randi() % Characters.SWAP_REACTIONS.size()], 3.0)
+	npc.chibi.pop()
+	avatar.pop()
+	var name_txt: String = Characters.LIST[their_id]["name"]
+	Fx.text(world, _front(1.8) + Vector3(0, 0.3, 0), "Tu es " + name_txt + " !", Color(1, 1, 1), 0.6, 1.4)
+
+
+func cycle_character() -> void:
+	var next := (char_id + 1) % Characters.LIST.size()
+	for n in npcs:
+		if n.char_id == next:
+			swap_with(n, false)
+			return
+
+
+func emote() -> void:
+	var lines: Array = Characters.LIST[char_id]["lines"]
+	var l: String = lines[randi() % lines.size()]
+	if third_person:
+		avatar.say(l)
+	else:
+		Fx.text(world, _front(1.4) + Vector3(0, 0.1, 0), l, Color(1, 1, 1), 0.35, 2.5)
+
+
+func _front(dist: float) -> Vector3:
+	var f := -camera.global_basis.z
+	f.y = 0.0
+	if f.length() < 0.01:
+		f = Vector3.FORWARD
+	return camera.global_position + f.normalized() * dist
+
+
+# ---------------------------------------------------------------------------
+
+func _physics_process(delta: float) -> void:
+	if origin == null:
+		return
+	var input := _move_input()
+	var fwd := -camera.global_basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length() > 0.01 else Vector3.FORWARD
+	var side := camera.global_basis.x
+	side.y = 0.0
+	side = side.normalized() if side.length() > 0.01 else Vector3.RIGHT
+	var move := (side * input.x + fwd * input.y) * SPEED * (0.55 if _in_water else 1.0)
+
+	if is_on_floor():
+		_vy = maxf(_vy, -0.5)
+		if _jump_pressed():
+			_vy = JUMP
+			if third_person:
+				avatar.pop()
+	else:
+		_vy -= GRAVITY * delta
+
+	# En 1re personne, les pas réels dans la pièce déplacent aussi le corps
+	var phys := Vector3.ZERO
+	if vr and not third_person:
+		phys = camera.global_position - global_position
+		phys.y = 0.0
+		if phys.length() > 1.5:
+			phys = Vector3.ZERO
+	velocity = Vector3(move.x + phys.x / delta, _vy, move.z + phys.z / delta)
+	move_and_slide()
+	_vy = velocity.y
+
+	# Animation du chibi
+	var speed_ratio := Vector2(move.x, move.z).length() / SPEED
+	avatar.walk = lerpf(avatar.walk, clampf(speed_ratio, 0.0, 1.0), clampf(delta * 8.0, 0.0, 1.0))
+	if move.length() > 0.1:
+		avatar.rotation.y = lerp_angle(avatar.rotation.y, atan2(-move.x, -move.z), clampf(delta * 10.0, 0.0, 1.0))
+
+	# Eau
+	var wet := global_position.y < -0.15
+	if wet and not _in_water:
+		Fx.text(world, global_position + Vector3(0, 1.2, 0), "PLOUF !", Color(0.5, 0.85, 1.0), 1.0)
+		Fx.puff(world, global_position + Vector3(0, 0.2, 0), Color(0.75, 0.92, 1.0))
+	_in_water = wet
+	avatar.panic = wet
+
+	# On ne part pas à la nage jusqu'au continent
+	var flat := Vector2(global_position.x, global_position.z)
+	if flat.length() > 74.0:
+		flat = flat.normalized() * 74.0
+		global_position.x = flat.x
+		global_position.z = flat.y
+	if global_position.y < -15.0:
+		global_position = _spawn
+		_vy = 0.0
+
+	_place_origin(false, delta)
+	_turning()
+	_buttons()
+	if _held_desktop:
+		var f := -camera.global_basis.z
+		_held_desktop.global_position = camera.global_position + f * 0.9 - camera.global_basis.y * 0.25
+
+
+func _place_origin(instant: bool, delta: float) -> void:
+	if third_person:
+		var back := origin.global_basis.z
+		back.y = 0.0
+		back = back.normalized() if back.length() > 0.01 else Vector3.BACK
+		var cam_off := camera.global_position - origin.global_position
+		cam_off.y = 0.0
+		var target := global_position + back * 2.8 + Vector3(0, 0.9, 0) - cam_off
+		if instant:
+			origin.global_position = target
+		else:
+			origin.global_position = origin.global_position.lerp(target, clampf(delta * 6.0, 0.0, 1.0))
+	else:
+		var off := global_position - camera.global_position
+		off.y = 0.0
+		origin.global_position += off
+		origin.global_position.y = global_position.y
+		if not vr:
+			origin.global_position.y = global_position.y
+
+
+func _rotate_origin(angle: float) -> void:
+	var pivot := global_position if third_person else camera.global_position
+	var t := origin.global_transform
+	t.origin -= pivot
+	t = Transform3D(Basis(Vector3.UP, angle), Vector3.ZERO) * t
+	t.origin += pivot
+	origin.global_transform = t
+
+
+func _turning() -> void:
+	if not vr:
+		return
+	var x: float = right.get_vector2("primary").x
+	if _snap_ready and absf(x) > 0.7:
+		_snap_ready = false
+		_rotate_origin(-signf(x) * deg_to_rad(45.0))
+	elif absf(x) < 0.3:
+		_snap_ready = true
+
+
+# --- Entrées ----------------------------------------------------------------
+
+func _move_input() -> Vector2:
+	var v := Vector2.ZERO
+	if vr:
+		var s: Vector2 = left.get_vector2("primary")
+		if s.length() > 0.15:
+			v = s
+	else:
+		if _key(KEY_W) or _key(KEY_Z) or _key(KEY_UP):
+			v.y += 1.0
+		if _key(KEY_S) or _key(KEY_DOWN):
+			v.y -= 1.0
+		if _key(KEY_A) or _key(KEY_Q) or _key(KEY_LEFT):
+			v.x -= 1.0
+		if _key(KEY_D) or _key(KEY_RIGHT):
+			v.x += 1.0
+	return v.limit_length(1.0)
+
+
+func _key(k: Key) -> bool:
+	return Input.is_physical_key_pressed(k) or Input.is_key_pressed(k)
+
+
+func _edge(id: String, now: bool) -> bool:
+	var was: bool = _prev.get(id, false)
+	_prev[id] = now
+	return now and not was
+
+
+func _jump_pressed() -> bool:
+	if vr:
+		return _edge("jump", right.is_button_pressed("ax_button"))
+	return _edge("jump", _key(KEY_SPACE))
+
+
+func _buttons() -> void:
+	if not vr:
+		return
+	if _edge("view", right.is_button_pressed("by_button")):
+		toggle_view()
+	if _edge("cycle", left.is_button_pressed("ax_button")):
+		cycle_character()
+	if _edge("emote", left.is_button_pressed("by_button")):
+		emote()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if vr:
+		return
+	if event is InputEventMouseButton and event.pressed:
+		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			return
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_desktop_grab()
+	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		_rotate_origin(-event.relative.x * 0.003)
+		camera.rotation.x = clampf(camera.rotation.x - event.relative.y * 0.003, -1.3, 1.3)
+	elif event is InputEventKey and event.pressed and not event.echo:
+		match event.physical_keycode:
+			KEY_ESCAPE:
+				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			KEY_V:
+				toggle_view()
+			KEY_C, KEY_TAB:
+				cycle_character()
+			KEY_E:
+				_desktop_swap()
+			KEY_F:
+				emote()
+			KEY_H:
+				if _hud:
+					_hud.visible = not _hud.visible
+
+
+func _desktop_grab() -> void:
+	if _held_desktop:
+		var rb := _held_desktop
+		_held_desktop = null
+		rb.freeze = false
+		rb.linear_velocity = -camera.global_basis.z * 9.0 + Vector3.UP * 2.0
+		return
+	var best: RigidBody3D = null
+	var best_d := 2.8
+	var f := -camera.global_basis.z
+	for n in get_tree().get_nodes_in_group("grab"):
+		var rb := n as RigidBody3D
+		var to := rb.global_position - camera.global_position
+		if to.length() < best_d and to.normalized().dot(f) > 0.6:
+			best_d = to.length()
+			best = rb
+	if best:
+		_held_desktop = best
+		best.freeze = true
+		if best.has_method("on_grab"):
+			best.on_grab()
+
+
+func _desktop_swap() -> void:
+	var from := camera.global_position
+	var q := PhysicsRayQueryParameters3D.create(from, from - camera.global_basis.z * 14.0, 1 | 4)
+	q.exclude = [get_rid()]
+	var hit := get_world_3d().direct_space_state.intersect_ray(q)
+	if not hit.is_empty() and hit["collider"].has_method("set_char"):
+		swap_with(hit["collider"], true)
+
+
+func _make_hud() -> void:
+	var layer := CanvasLayer.new()
+	world.add_child(layer)
+	_hud = Label.new()
+	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · H : cacher l'aide · Échap : libérer la souris"
+	_hud.position = Vector2(16, 12)
+	_hud.add_theme_color_override("font_color", Color(1, 1, 1))
+	_hud.add_theme_color_override("font_outline_color", Color(0.13, 0.08, 0.17))
+	_hud.add_theme_constant_override("outline_size", 6)
+	_hud.add_theme_font_size_override("font_size", 18)
+	layer.add_child(_hud)
+	var cross := Label.new()
+	cross.text = "+"
+	cross.add_theme_font_size_override("font_size", 28)
+	cross.set_anchors_preset(Control.PRESET_CENTER)
+	cross.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	layer.add_child(cross)
