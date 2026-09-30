@@ -58,7 +58,9 @@ static func build(world: Node3D, player: Node3D) -> Array:
 		if h < 0.35 or h > 4.5:
 			continue
 		var p2 := Vector2(x, z)
-		if p2.distance_to(Island.HOUSE_POS) < 10.0 or p2.distance_to(Island.SPAWN) < 5.0:
+		if p2.distance_to(Island.HOUSE_POS) < 10.0 or p2.distance_to(Island.SPAWN) < 5.0 or p2.distance_to(Island.SHOP_POS) < 9.0:
+			continue
+		if Island._seg_dist(p2, Island.PATH_FORK, Island.shop_front()) < 2.5:
 			continue
 		if absf(x) < 3.0 and z > Island.HOUSE_POS.y and z < Island.SPAWN.y + 2.0:
 			continue
@@ -88,7 +90,7 @@ static func build(world: Node3D, player: Node3D) -> Array:
 		var x := rng.randf_range(-58.0, 58.0)
 		var z := rng.randf_range(-58.0, 58.0)
 		var h := Island.height(x, z)
-		if h < -0.6 or Vector2(x, z).distance_to(Island.HOUSE_POS) < 9.0 or Vector2(x, z).distance_to(Island.SPAWN) < 4.0:
+		if h < -0.6 or Vector2(x, z).distance_to(Island.HOUSE_POS) < 9.0 or Vector2(x, z).distance_to(Island.SPAWN) < 4.0 or Vector2(x, z).distance_to(Island.SHOP_POS) < 8.0:
 			continue
 		var sc := Vector3(rng.randf_range(0.6, 1.8), rng.randf_range(0.4, 1.1), rng.randf_range(0.6, 1.8))
 		var grey := Color(0.66, 0.62, 0.6).darkened(rng.randf_range(0.0, 0.2))
@@ -110,7 +112,7 @@ static func build(world: Node3D, player: Node3D) -> Array:
 		var x := rng.randf_range(-45.0, 45.0)
 		var z := rng.randf_range(-45.0, 45.0)
 		var h := Island.height(x, z)
-		if h < 1.3 or Vector2(x, z).distance_to(Island.HOUSE_POS) < 7.0:
+		if h < 1.3 or Vector2(x, z).distance_to(Island.HOUSE_POS) < 7.0 or Vector2(x, z).distance_to(Island.SHOP_POS) < 6.0:
 			continue
 		if absf(x) < 2.0 and z > Island.HOUSE_POS.y and z < Island.SPAWN.y + 1.0:
 			continue
@@ -160,7 +162,7 @@ static func _welcome_sign(b: Builder, world: Node3D) -> void:
 	world.add_child(sub)
 
 	var help := Label3D.new()
-	help.text = "Grip : attraper / lancer\nViser un perso + gâchette : ÉCHANGE DE CORPS\nX : changer de perso   B : vue 1re / 3e personne\nA : sauter   Y : réplique   Joystick droit : tourner"
+	help.text = "Grip : attraper / lancer\nViser un perso + gâchette : ÉCHANGE DE CORPS\nX : changer de perso   B : vue 1re / 3e personne\nA : sauter   Y : réplique   Joystick droit : tourner\nRamasse les coquillages de la plage : la Boutique Kawaii est à droite !"
 	help.font_size = 36
 	help.outline_size = 10
 	help.outline_modulate = INK

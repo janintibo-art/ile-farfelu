@@ -5,6 +5,8 @@ extends Node3D
 
 const Toon := preload("res://scripts/toon.gd")
 const Builder := preload("res://scripts/builder.gd")
+const Hats := preload("res://scripts/hats.gd")
+const Save := preload("res://scripts/save.gd")
 
 const HEAD_C := Vector3(0.0, 0.29, 0.0)   # centre de la tête, relatif au cou
 const OUTLINE := 0.011
@@ -23,6 +25,8 @@ var leg_r: Node3D
 var sweat: Node3D
 var ring: MeshInstance3D
 var bubble: Label3D
+var hat_node: Node3D
+var big_head := false
 
 var _phase := 0.0
 var _t := 0.0
@@ -35,6 +39,7 @@ func setup(d: Dictionary) -> void:
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()
+	hat_node = null
 	_build()
 
 
@@ -44,6 +49,30 @@ func say(txt: String, duration := 3.5) -> void:
 	bubble.text = txt
 	bubble.visible = true
 	_bubble_left = duration
+
+
+func set_bubble_style(pixel: float, width: float, height: float) -> void:
+	bubble.pixel_size = pixel
+	bubble.width = width
+	bubble.position.y = height
+
+
+## Reconstruit le chapeau (lu dans la sauvegarde, lié au nom du perso).
+func refresh_hat() -> void:
+	if hat_node:
+		head.remove_child(hat_node)
+		hat_node.queue_free()
+		hat_node = null
+	var id: String = Save.hats.get(def.get("name", ""), "")
+	if id == "":
+		return
+	hat_node = Node3D.new()
+	hat_node.name = "Hat"
+	head.add_child(hat_node)
+	var hb := Builder.new()
+	var top_y := 0.36 if def["hair_style"] == "spiky" else 0.33
+	Hats.add(hb, id, HEAD_C + Vector3(0, top_y, 0.02))
+	hb.build(hat_node, Toon.vertex_color(OUTLINE), "HatMesh")
 
 
 func set_targeted(on: bool) -> void:
@@ -79,6 +108,11 @@ func _build() -> void:
 			tb.capsule(0.035, 0.28, Vector3(0, 0.46, 0.2), def["hair"], Basis(Vector3.RIGHT, 0.9))
 			tb.capsule(0.035, 0.22, Vector3(0, 0.62, 0.3), def["hair"], Basis(Vector3.RIGHT, -0.3))
 			tb.sphere(0.045, Vector3(0, 0.74, 0.3), def["accent"])
+		"ponytail":
+			tb.cylinder(0.15, 0.26, 0.22, Vector3(0, 0.44, 0), def["shirt"].darkened(0.1))
+			tb.box(Vector3(0.22, 0.3, 0.02), Vector3(0, 0.5, -0.158), Color.WHITE, false)
+			tb.box(Vector3(0.1, 0.06, 0.012), Vector3(0, 0.46, -0.17), def["accent"], false)
+			tb.box(Vector3(0.3, 0.025, 0.2), Vector3(0, 0.66, -0.06), Color.WHITE, false)
 		"messy":
 			tb.box(Vector3(0.2, 0.09, 0.03), Vector3(0, 0.5, -0.155), def["shirt"].darkened(0.15), false)
 			tb.sphere(0.13, Vector3(0, 0.73, 0.12), def["shirt"].darkened(0.1), Vector3(1.2, 0.7, 0.8))
@@ -117,6 +151,8 @@ func _build() -> void:
 		eb.sphere(1.0, c + Vector3(sx * 0.024, -0.04, -0.3), Color.WHITE, Vector3(0.013, 0.015, 0.01), tilt, 8)
 		eb.box(Vector3(0.16, 0.022, 0.03), c + Vector3(0, 0.098, -0.268), Color(0.13, 0.08, 0.17), false, Basis(Vector3.FORWARD, sx * 0.12) * tilt)
 	eb.build(eyes, Toon.vertex_color(), "EyesMesh")
+
+	refresh_hat()
 
 	# Goutte de sueur (panique dans l'eau)
 	sweat = Node3D.new()
@@ -231,6 +267,18 @@ func _hair(b: Builder) -> void:
 				b.prism(Vector3(0.17, 0.2, 0.07), c + Vector3(sx * 0.14, 0.36, 0.0), col, ear)
 				b.prism(Vector3(0.09, 0.11, 0.02), c + Vector3(sx * 0.14, 0.345, -0.035), Color(1.0, 0.75, 0.82), ear)
 			b.sphere(0.05, c + Vector3(0.12, 0.3, -0.14), def["accent"])
+		"ponytail":
+			b.sphere(0.07, c + Vector3(0, 0.12, 0.33), def["accent"])
+			for k in 5:
+				var t := float(k)
+				b.sphere(0.1 - t * 0.012, c + Vector3(sin(t * 0.9) * 0.03, 0.08 - t * 0.1, 0.4 + t * 0.03), col, Vector3.ONE, Basis(), 10)
+			for sx in [-1.0, 1.0]:
+				b.capsule(0.05, 0.28, c + Vector3(sx * 0.27, -0.06, -0.03), col, Basis(Vector3.FORWARD, sx * 0.1))
+			# Fleur dans les cheveux
+			for k in 5:
+				var a := k * TAU / 5.0
+				b.sphere(0.028, c + Vector3(-0.2 + cos(a) * 0.035, 0.25 + sin(a) * 0.035, -0.16), Color(1.0, 0.55, 0.7), Vector3.ONE, Basis(), 6)
+			b.sphere(0.022, c + Vector3(-0.2, 0.25, -0.175), Color(1.0, 0.9, 0.3), Vector3.ONE, Basis(), 6)
 		"messy":
 			var bumps := [
 				Vector3(0.18, 0.25, 0.1), Vector3(-0.2, 0.22, 0.12), Vector3(0.05, 0.33, 0.05),
@@ -260,6 +308,8 @@ func _process(delta: float) -> void:
 	body_root.scale.y = 1.0 + sin(_t * 2.3) * 0.018 * (1.0 - walk)
 	head.rotation.z = sin(_t * 1.3) * 0.07 * (1.0 - walk)
 	head.rotation.x = sin(_t * 0.9) * 0.04
+	var hs := 1.9 if big_head else 1.0
+	head.scale = head.scale.lerp(Vector3.ONE * hs, clampf(delta * 5.0, 0.0, 1.0))
 
 	# Clignement
 	_blink -= delta

@@ -20,6 +20,17 @@ persos chibi (Kenji, Mochi, Taro) entre lesquels on échange de corps.
 | A | sauter |
 | Y | réplique du perso |
 
+## Boutique Kawaii
+
+Ramasse les coquillages sur les plages (ils repoussent au bout de 2 min),
+puis va voir Yuki à la boutique : chapeaux, nourriture à effets (grosse tête,
+turbo, hélium) et objets. Vise un choix du menu avec la main + gâchette.
+La nourriture se mange en la portant à la bouche.
+
+Yuki a une petite IA locale (`scripts/vendor_brain.gd`) : humeur, affection,
+mémoire sauvegardée, marchandage, ragots, et elle remarque les échanges de
+corps. Si on lui lance un objet dessus, ses prix augmentent.
+
 ## Compilation
 
 Tout se fait sur GitHub Actions (`.github/workflows/build.yml`) : Godot,

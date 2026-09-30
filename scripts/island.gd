@@ -10,6 +10,9 @@ const HOUSE_POS := Vector2(0.0, -12.0)     # (x, z) de la maison
 const HOUSE_H := 2.6                       # hauteur du terrain aplani sous la maison
 const SPAWN := Vector2(0.0, 12.0)          # point de départ
 const HILL := Vector2(-26.0, 4.0)          # la colline
+const SHOP_POS := Vector2(20.0, 1.0)       # la Boutique Kawaii
+const SHOP_H := 2.5
+const PATH_FORK := Vector2(0.0, 6.0)       # le chemin de la boutique part d'ici
 
 const SIZE := 160.0
 const RES := 160
@@ -37,7 +40,24 @@ static func height(x: float, z: float) -> float:
 	h += n.get_noise_2d(x * 2.0, z * 2.0) * 0.8 * inland
 	h += 7.0 * exp(-p.distance_squared_to(HILL) / 160.0)
 	var w := 1.0 - smoothstep(9.0, 15.0, p.distance_to(HOUSE_POS))
-	return lerpf(h, HOUSE_H, w)
+	h = lerpf(h, HOUSE_H, w)
+	var ws := 1.0 - smoothstep(6.5, 11.0, p.distance_to(SHOP_POS))
+	return lerpf(h, SHOP_H, ws)
+
+
+## Direction vers laquelle la boutique regarde (vers le chemin principal).
+static func shop_dir() -> Vector2:
+	return (PATH_FORK - SHOP_POS).normalized()
+
+
+static func shop_front() -> Vector2:
+	return SHOP_POS + shop_dir() * 4.0
+
+
+static func _seg_dist(p: Vector2, a: Vector2, b: Vector2) -> float:
+	var ab := b - a
+	var t := clampf((p - a).dot(ab) / ab.length_squared(), 0.0, 1.0)
+	return p.distance_to(a + ab * t)
 
 
 static func ground(x: float, z: float) -> Vector3:
@@ -58,6 +78,8 @@ static func _color(h: float, x: float, z: float) -> Color:
 	c = c.lerp(rock, smoothstep(6.0, 8.0, h))
 	# Chemin de terre entre le départ et la porte
 	if absf(x) < 1.6 and z > HOUSE_POS.y + 3.5 and z < SPAWN.y + 1.0:
+		c = path
+	elif _seg_dist(Vector2(x, z), PATH_FORK, shop_front()) < 1.3:
 		c = path
 	return c
 

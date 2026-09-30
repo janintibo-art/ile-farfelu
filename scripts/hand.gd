@@ -12,6 +12,7 @@ var beam: MeshInstance3D
 var held: RigidBody3D
 var hold_offset := Transform3D.IDENTITY
 var target
+var counter: Label3D
 
 var _grip := false
 var _trig := false
@@ -37,6 +38,23 @@ func setup(p_player: Node3D, left: bool) -> void:
 	beam.material_override = Toon.unlit(Color(1.0, 0.9, 0.3))
 	beam.visible = false
 	add_child(beam)
+	if left:
+		# Compteur de coquillages sur le poignet gauche
+		counter = Label3D.new()
+		counter.font_size = 32
+		counter.pixel_size = 0.0012
+		counter.outline_size = 8
+		counter.outline_modulate = Color(0.13, 0.08, 0.17)
+		counter.modulate = Color(1.0, 0.82, 0.86)
+		counter.position = Vector3(0, 0.045, 0.14)
+		counter.rotation.x = -1.1
+		add_child(counter)
+
+
+func set_counter(txt: String) -> void:
+	if counter:
+		counter.text = txt
+		counter.visible = mitten.visible
 
 
 func set_colors(skin: Color, sleeve: Color) -> void:
@@ -73,6 +91,12 @@ func _process(delta: float) -> void:
 		_release()
 	if held:
 		held.global_transform = global_transform * hold_offset
+		# Manger : on porte la nourriture à la bouche
+		if held.get("is_food") and held.global_position.distance_to(player.camera.global_position) < 0.25:
+			var food := held
+			drop()
+			trigger_haptic_pulse("haptic", 0.0, 0.6, 0.15, 0.0)
+			player.eat(food)
 
 	_update_aim()
 
@@ -127,32 +151,49 @@ func _release() -> void:
 	rb.angular_velocity = Vector3(randf_range(-4, 4), randf_range(-4, 4), randf_range(-4, 4))
 
 
+func _set_hover(o, on: bool) -> void:
+	if o == null or not is_instance_valid(o):
+		return
+	if o.has_method("set_hover"):
+		o.set_hover(on)
+	elif o.get("chibi") != null:
+		o.chibi.set_targeted(on)
+
+
+## Rayon de visée : vers un perso (échange de corps) ou un bouton du magasin.
 func _update_aim() -> void:
-	var npc = null
+	var obj = null
 	var hit_pos := Vector3.ZERO
 	if held == null:
 		var from := global_position
 		var to := from - global_basis.z * 12.0
-		var q := PhysicsRayQueryParameters3D.create(from, to, 1 | 4)
+		var q := PhysicsRayQueryParameters3D.create(from, to, 1 | 4 | 16)
 		q.exclude = [player.get_rid()]
 		var hit := get_world_3d().direct_space_state.intersect_ray(q)
-		if not hit.is_empty() and hit["collider"].has_method("set_char"):
-			npc = hit["collider"]
-			hit_pos = hit["position"]
-	if npc != target:
-		if target and is_instance_valid(target):
-			target.chibi.set_targeted(false)
-		target = npc
-		if npc:
-			npc.chibi.set_targeted(true)
+		if not hit.is_empty():
+			var c = hit["collider"]
+			if c.has_method("press") or c.has_method("set_char"):
+				obj = c
+				hit_pos = hit["position"]
+	if target != null and not is_instance_valid(target):
+		target = null
+	if obj != target:
+		_set_hover(target, false)
+		target = obj
+		if obj:
+			_set_hover(obj, true)
 			trigger_haptic_pulse("haptic", 0.0, 0.2, 0.04, 0.0)
-	beam.visible = npc != null
-	if npc:
+	beam.visible = obj != null
+	if obj:
 		var dist := global_position.distance_to(hit_pos)
 		beam.transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0) * Basis.from_scale(Vector3(1, dist, 1)), Vector3(0, 0, -dist * 0.5))
 
 	var t := get_float("trigger") > 0.7
-	if t and not _trig and npc:
-		player.swap_with(npc, true)
-		trigger_haptic_pulse("haptic", 0.0, 0.8, 0.2, 0.0)
+	if t and not _trig and obj:
+		if obj.has_method("press"):
+			obj.press()
+			trigger_haptic_pulse("haptic", 0.0, 0.4, 0.06, 0.0)
+		else:
+			player.swap_with(obj, true)
+			trigger_haptic_pulse("haptic", 0.0, 0.8, 0.2, 0.0)
 	_trig = t

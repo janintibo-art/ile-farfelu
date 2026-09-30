@@ -8,6 +8,8 @@ const Characters := preload("res://scripts/characters.gd")
 const Hand := preload("res://scripts/hand.gd")
 const Fx := preload("res://scripts/fx.gd")
 const Island := preload("res://scripts/island.gd")
+const Save := preload("res://scripts/save.gd")
+const Items := preload("res://scripts/shop_items.gd")
 
 const SPEED := 3.0
 const JUMP := 4.2
@@ -24,6 +26,12 @@ var avatar
 var char_id := 0
 var third_person := false
 var npcs: Array = []
+var shop
+
+# Effets de nourriture (secondes restantes)
+var effects := {}
+var _counter_t := 0.0
+var _desk_target
 
 var _vy := 0.0
 var _in_water := false
@@ -32,6 +40,7 @@ var _prev := {}
 var _held_desktop: RigidBody3D
 var _spawn := Vector3.ZERO
 var _hud: Label
+var _hud_counter: Label
 
 
 func setup(p_world: Node3D, p_vr: bool) -> void:
@@ -159,16 +168,19 @@ func _physics_process(delta: float) -> void:
 	var side := camera.global_basis.x
 	side.y = 0.0
 	side = side.normalized() if side.length() > 0.01 else Vector3.RIGHT
-	var move := (side * input.x + fwd * input.y) * SPEED * (0.55 if _in_water else 1.0)
+	var speed_mult := 1.9 if effects.has("speed") else 1.0
+	var move := (side * input.x + fwd * input.y) * SPEED * speed_mult * (0.55 if _in_water else 1.0)
+	var grav := GRAVITY * (0.22 if effects.has("helium") else 1.0)
+	var jump := JUMP * (1.5 if effects.has("helium") else 1.0)
 
 	if is_on_floor():
 		_vy = maxf(_vy, -0.5)
 		if _jump_pressed():
-			_vy = JUMP
+			_vy = jump
 			if third_person:
 				avatar.pop()
 	else:
-		_vy -= GRAVITY * delta
+		_vy -= grav * delta
 
 	# En 1re personne, les pas réels dans la pièce déplacent aussi le corps
 	var phys := Vector3.ZERO
@@ -183,6 +195,7 @@ func _physics_process(delta: float) -> void:
 
 	# Animation du chibi
 	var speed_ratio := Vector2(move.x, move.z).length() / SPEED
+	_tick_effects(delta)
 	avatar.walk = lerpf(avatar.walk, clampf(speed_ratio, 0.0, 1.0), clampf(delta * 8.0, 0.0, 1.0))
 	if move.length() > 0.1:
 		avatar.rotation.y = lerp_angle(avatar.rotation.y, atan2(-move.x, -move.z), clampf(delta * 10.0, 0.0, 1.0))
@@ -193,7 +206,7 @@ func _physics_process(delta: float) -> void:
 		Fx.text(world, global_position + Vector3(0, 1.2, 0), "PLOUF !", Color(0.5, 0.85, 1.0), 1.0)
 		Fx.puff(world, global_position + Vector3(0, 0.2, 0), Color(0.75, 0.92, 1.0))
 	_in_water = wet
-	avatar.panic = wet
+	avatar.panic = wet or effects.has("speed")
 
 	# On ne part pas à la nage jusqu'au continent
 	var flat := Vector2(global_position.x, global_position.z)
@@ -211,6 +224,12 @@ func _physics_process(delta: float) -> void:
 	if _held_desktop:
 		var f := -camera.global_basis.z
 		_held_desktop.global_position = camera.global_position + f * 0.9 - camera.global_basis.y * 0.25
+	if not vr:
+		_desktop_hover()
+	_counter_t -= delta
+	if _counter_t <= 0.0:
+		_counter_t = 0.3
+		_update_counter()
 
 
 func _place_origin(instant: bool, delta: float) -> void:
@@ -309,7 +328,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			return
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			_desktop_grab()
+			if _desk_target and is_instance_valid(_desk_target):
+				_desk_target.press()
+			else:
+				_desktop_grab()
 	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_rotate_origin(-event.relative.x * 0.003)
 		camera.rotation.x = clampf(camera.rotation.x - event.relative.y * 0.003, -1.3, 1.3)
@@ -328,6 +350,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_H:
 				if _hud:
 					_hud.visible = not _hud.visible
+			KEY_R:
+				if _held_desktop and _held_desktop.get("is_food"):
+					var rb := _held_desktop
+					_held_desktop = null
+					eat(rb)
+			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6:
+				if shop:
+					shop.choose(event.physical_keycode - KEY_1)
 
 
 func _desktop_grab() -> void:
@@ -355,27 +385,127 @@ func _desktop_grab() -> void:
 
 func _desktop_swap() -> void:
 	var from := camera.global_position
-	var q := PhysicsRayQueryParameters3D.create(from, from - camera.global_basis.z * 14.0, 1 | 4)
+	var q := PhysicsRayQueryParameters3D.create(from, from - camera.global_basis.z * 14.0, 1 | 4 | 16)
 	q.exclude = [get_rid()]
 	var hit := get_world_3d().direct_space_state.intersect_ray(q)
-	if not hit.is_empty() and hit["collider"].has_method("set_char"):
-		swap_with(hit["collider"], true)
+	if hit.is_empty():
+		return
+	var c = hit["collider"]
+	if c.has_method("press"):
+		c.press()
+	elif c.has_method("set_char"):
+		swap_with(c, true)
 
 
 func _make_hud() -> void:
 	var layer := CanvasLayer.new()
 	world.add_child(layer)
 	_hud = Label.new()
-	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · H : cacher l'aide · Échap : libérer la souris"
+	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · R : manger ce qu'on tient · 1 à 6 : choisir au magasin\nH : cacher l'aide · Échap : libérer la souris"
 	_hud.position = Vector2(16, 12)
 	_hud.add_theme_color_override("font_color", Color(1, 1, 1))
 	_hud.add_theme_color_override("font_outline_color", Color(0.13, 0.08, 0.17))
 	_hud.add_theme_constant_override("outline_size", 6)
 	_hud.add_theme_font_size_override("font_size", 18)
 	layer.add_child(_hud)
+	_hud_counter = Label.new()
+	_hud_counter.position = Vector2(16, 175)
+	_hud_counter.add_theme_color_override("font_color", Color(1.0, 0.8, 0.85))
+	_hud_counter.add_theme_color_override("font_outline_color", Color(0.13, 0.08, 0.17))
+	_hud_counter.add_theme_constant_override("outline_size", 6)
+	_hud_counter.add_theme_font_size_override("font_size", 22)
+	layer.add_child(_hud_counter)
 	var cross := Label.new()
 	cross.text = "+"
 	cross.add_theme_font_size_override("font_size", 28)
 	cross.set_anchors_preset(Control.PRESET_CENTER)
 	cross.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	layer.add_child(cross)
+
+
+# --- Boutique, objets tenus, nourriture ---------------------------------------
+
+func held_item() -> RigidBody3D:
+	if right and right.held:
+		return right.held
+	if left and left.held:
+		return left.held
+	return _held_desktop
+
+
+func held_kind() -> String:
+	var rb := held_item()
+	if rb == null:
+		return ""
+	return str(rb.get("kind"))
+
+
+func release_item(rb: RigidBody3D) -> void:
+	if right.held == rb:
+		right.drop()
+	if left.held == rb:
+		left.drop()
+	if _held_desktop == rb:
+		_held_desktop = null
+	rb.freeze = false
+
+
+func on_shell() -> void:
+	if vr:
+		left.trigger_haptic_pulse("haptic", 0.0, 0.3, 0.05, 0.0)
+
+
+func eat(rb: RigidBody3D) -> void:
+	var kind := str(rb.get("kind"))
+	var effect := Items.food_effect(kind)
+	Fx.text(world, _front(1.2) + Vector3(0, 0.2, 0), "MIAM !", Color(1.0, 0.8, 0.3), 0.8)
+	rb.queue_free()
+	if effect != "":
+		apply_effect(effect)
+
+
+func apply_effect(effect: String) -> void:
+	effects[effect] = 30.0
+	match effect:
+		"big_head":
+			avatar.big_head = true
+			Fx.text(world, _front(1.6) + Vector3(0, 0.4, 0), "GROSSE TÊTE !", Color(1.0, 0.6, 0.9), 0.9, 1.5)
+		"speed":
+			Fx.text(world, _front(1.6) + Vector3(0, 0.4, 0), "CHAUUUD !", Color(1.0, 0.4, 0.2), 1.0, 1.5)
+		"helium":
+			Fx.text(world, _front(1.6) + Vector3(0, 0.4, 0), "Voix de souris ! Saute !", Color(0.7, 0.9, 1.0), 0.8, 1.5)
+
+
+func _tick_effects(delta: float) -> void:
+	for k in effects.keys():
+		effects[k] -= delta
+		if effects[k] <= 0.0:
+			effects.erase(k)
+			if k == "big_head":
+				avatar.big_head = false
+			Fx.text(world, _front(1.6), "Effet terminé", Color(1, 1, 1), 0.4, 1.0)
+
+
+func _update_counter() -> void:
+	var txt := "Coquillages : %d" % Save.shells
+	for k in effects:
+		txt += "\n%s : %ds" % [{"big_head": "Grosse tête", "speed": "Turbo", "helium": "Hélium"}.get(k, k), int(effects[k])]
+	if vr:
+		left.set_counter(txt)
+	elif _hud_counter:
+		_hud_counter.text = txt
+
+
+func _desktop_hover() -> void:
+	var from := camera.global_position
+	var q := PhysicsRayQueryParameters3D.create(from, from - camera.global_basis.z * 6.0, 1 | 16)
+	var hit := get_world_3d().direct_space_state.intersect_ray(q)
+	var t = null
+	if not hit.is_empty() and hit["collider"].has_method("press"):
+		t = hit["collider"]
+	if t != _desk_target:
+		if _desk_target and is_instance_valid(_desk_target):
+			_desk_target.set_hover(false)
+		_desk_target = t
+		if t:
+			t.set_hover(true)

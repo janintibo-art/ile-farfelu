@@ -9,6 +9,9 @@ const Props := preload("res://scripts/props.gd")
 const Player := preload("res://scripts/player.gd")
 const Npc := preload("res://scripts/npc.gd")
 const Fx := preload("res://scripts/fx.gd")
+const Save := preload("res://scripts/save.gd")
+const Shop := preload("res://scripts/shop.gd")
+const Shells := preload("res://scripts/shells.gd")
 
 var vr := false
 var xr_interface: XRInterface
@@ -17,6 +20,7 @@ var player
 
 func _ready() -> void:
 	randomize()
+	Save.load_game()
 	vr = _start_xr()
 	_environment()
 
@@ -48,6 +52,17 @@ func _ready() -> void:
 		npc.global_position = Island.ground(spots[i].x, spots[i].y) + Vector3(0, 0.2, 0)
 		npc.setup(player, i + 1)
 		player.npcs.append(npc)
+
+	var shop := Shop.new()
+	shop.name = "Shop"
+	add_child(shop)
+	shop.build(self, player)
+	player.shop = shop
+
+	var shells := Shells.new()
+	shells.name = "Shells"
+	add_child(shells)
+	shells.build(player)
 
 	# Petit message de bienvenue devant soi
 	await get_tree().create_timer(1.0).timeout
@@ -109,3 +124,8 @@ func _environment() -> void:
 	sun.shadow_enabled = not OS.has_feature("android")
 	sun.directional_shadow_max_distance = 40.0
 	add_child(sun)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED:
+		Save.save_game()

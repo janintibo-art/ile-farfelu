@@ -55,6 +55,20 @@ const LIST := [
 	},
 ]
 
+## La vendeuse (pas jouable : elle tient la boutique !)
+const VENDOR := {
+	"name": "Yuki",
+	"skin": Color(1.0, 0.88, 0.78),
+	"hair": Color(0.35, 0.85, 0.75),
+	"hair_style": "ponytail",
+	"eye": Color(0.9, 0.55, 0.15),
+	"shirt": Color(1.0, 0.55, 0.65),
+	"pants": Color(1.0, 0.88, 0.8),
+	"shoes": Color(0.55, 0.35, 0.8),
+	"accent": Color(1.0, 0.35, 0.5),
+	"lines": [],
+}
+
 const SWAP_REACTIONS := [
 	"Hé ! Rends-moi mon corps !",
 	"Pourquoi j'ai envie de ronronner ?!",

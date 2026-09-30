@@ -8,6 +8,7 @@ var kind := ""
 var home := Vector3.ZERO
 var radius := 0.12
 var grab_text := ""          # onomatopée quand on l'attrape (le poulet fait COUIC)
+var is_food := false
 var _reset := false
 var _cooldown := 0.0
 
@@ -21,6 +22,12 @@ func _ready() -> void:
 	continuous_cd = true
 	freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 	body_entered.connect(_on_body_entered)
+
+
+## Renvoie l'objet à sa place de départ (quand on le vend à Yuki).
+func send_home() -> void:
+	freeze = false
+	_reset = true
 
 
 func on_grab() -> void:
