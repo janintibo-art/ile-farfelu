@@ -31,6 +31,19 @@ Yuki a une petite IA locale (`scripts/vendor_brain.gd`) : humeur, affection,
 mémoire sauvegardée, marchandage, ragots, et elle remarque les échanges de
 corps. Si on lui lance un objet dessus, ses prix augmentent.
 
+## Donjon des Boulettes
+
+À gauche du départ, Riku le punk garde l'entrée. Parle-lui (menu de choix),
+réussis son "test de punk" et il te donne l'Épée Rock'n'Roll. Riku a sa
+propre IA locale (`scripts/punk_brain.gd`) : respect, humeur, mémoire de tes
+exploits au donjon.
+
+Au casque : grip dans le vide = l'épée sort, et on frappe en faisant un vrai
+geste (plus c'est rapide, plus ça fait mal). Sur PC : G puis clic.
+Monstres : slimes, champignons grognons, chauves-souris et le Roi Gloubi
+(il se divise). 5 coffres + un coffre doré qui s'ouvre après le boss et
+donne l'Épée de feu. 5 cœurs : à 0, K.O. et retour devant Riku.
+
 ## Compilation
 
 Tout se fait sur GitHub Actions (`.github/workflows/build.yml`) : Godot,

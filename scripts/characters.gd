@@ -69,6 +69,20 @@ const VENDOR := {
 	"lines": [],
 }
 
+## Le punk qui garde l'entrée du donjon
+const PUNK := {
+	"name": "Riku",
+	"skin": Color(0.98, 0.84, 0.72),
+	"hair": Color(0.95, 0.2, 0.7),
+	"hair_style": "mohawk",
+	"eye": Color(0.2, 0.85, 0.85),
+	"shirt": Color(0.16, 0.14, 0.2),
+	"pants": Color(0.55, 0.12, 0.2),
+	"shoes": Color(0.1, 0.1, 0.12),
+	"accent": Color(0.95, 0.85, 0.3),
+	"lines": [],
+}
+
 const SWAP_REACTIONS := [
 	"Hé ! Rends-moi mon corps !",
 	"Pourquoi j'ai envie de ronronner ?!",

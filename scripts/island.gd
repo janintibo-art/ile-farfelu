@@ -13,6 +13,8 @@ const HILL := Vector2(-26.0, 4.0)          # la colline
 const SHOP_POS := Vector2(20.0, 1.0)       # la Boutique Kawaii
 const SHOP_H := 2.5
 const PATH_FORK := Vector2(0.0, 6.0)       # le chemin de la boutique part d'ici
+const GATE_POS := Vector2(-17.0, 19.0)     # l'entrée du Donjon des Boulettes
+const GATE_H := 3.0
 
 const SIZE := 160.0
 const RES := 160
@@ -42,7 +44,18 @@ static func height(x: float, z: float) -> float:
 	var w := 1.0 - smoothstep(9.0, 15.0, p.distance_to(HOUSE_POS))
 	h = lerpf(h, HOUSE_H, w)
 	var ws := 1.0 - smoothstep(6.5, 11.0, p.distance_to(SHOP_POS))
-	return lerpf(h, SHOP_H, ws)
+	h = lerpf(h, SHOP_H, ws)
+	var wg := 1.0 - smoothstep(5.5, 10.0, p.distance_to(GATE_POS))
+	return lerpf(h, GATE_H, wg)
+
+
+## Direction vers laquelle l'entrée du donjon regarde (vers le départ).
+static func gate_dir() -> Vector2:
+	return (SPAWN - GATE_POS).normalized()
+
+
+static func gate_front() -> Vector2:
+	return GATE_POS + gate_dir() * 3.5
 
 
 ## Direction vers laquelle la boutique regarde (vers le chemin principal).
@@ -80,6 +93,8 @@ static func _color(h: float, x: float, z: float) -> Color:
 	if absf(x) < 1.6 and z > HOUSE_POS.y + 3.5 and z < SPAWN.y + 1.0:
 		c = path
 	elif _seg_dist(Vector2(x, z), PATH_FORK, shop_front()) < 1.3:
+		c = path
+	elif _seg_dist(Vector2(x, z), SPAWN + Vector2(-1.5, 0.0), gate_front()) < 1.3:
 		c = path
 	return c
 

@@ -4,6 +4,8 @@ extends XRController3D
 
 const Toon := preload("res://scripts/toon.gd")
 const Builder := preload("res://scripts/builder.gd")
+const Sword := preload("res://scripts/sword.gd")
+const Save := preload("res://scripts/save.gd")
 
 var player
 var is_left := false
@@ -13,6 +15,10 @@ var held: RigidBody3D
 var hold_offset := Transform3D.IDENTITY
 var target
 var counter: Label3D
+var sword_node: Node3D
+var sword_out := false
+var _tip_last := Vector3.ZERO
+var _hit_cd := {}
 
 var _grip := false
 var _trig := false
@@ -86,9 +92,14 @@ func _process(delta: float) -> void:
 	if not _grip and g > 0.7:
 		_grip = true
 		_grab()
+		if held == null and player.has_sword():
+			_draw_sword(true)
 	elif _grip and g < 0.35:
 		_grip = false
 		_release()
+		_draw_sword(false)
+	if sword_out:
+		_sword_hits(delta)
 	if held:
 		held.global_transform = global_transform * hold_offset
 		# Manger : on porte la nourriture à la bouche
@@ -197,3 +208,58 @@ func _update_aim() -> void:
 			player.swap_with(obj, true)
 			trigger_haptic_pulse("haptic", 0.0, 0.8, 0.2, 0.0)
 	_trig = t
+
+
+# --- Épée ------------------------------------------------------------------------
+
+func refresh_sword() -> void:
+	if sword_node:
+		sword_node.queue_free()
+		sword_node = null
+	if Save.sword <= 0:
+		return
+	sword_node = Node3D.new()
+	sword_node.name = "Sword"
+	add_child(sword_node)
+	var b := Builder.new()
+	Sword.add(b, Save.sword)
+	b.build(sword_node, Toon.vertex_color(0.006), "SwordMesh")
+	# Lame vers l'avant, un peu relevée (pose "aim" : -Z = devant)
+	sword_node.transform = Transform3D(Basis(Vector3.RIGHT, deg_to_rad(-60.0)), Vector3(0, -0.02, 0.05))
+	sword_node.visible = sword_out
+
+
+func _draw_sword(on: bool) -> void:
+	if on and sword_node == null:
+		refresh_sword()
+	sword_out = on and sword_node != null
+	if sword_node:
+		sword_node.visible = sword_out
+	if sword_out:
+		_tip_last = sword_node.to_global(Vector3(0, 0.9, 0))
+		trigger_haptic_pulse("haptic", 0.0, 0.3, 0.05, 0.0)
+
+
+## Un coup compte si la lame bouge assez vite et passe près d'un monstre.
+func _sword_hits(delta: float) -> void:
+	var base := sword_node.to_global(Vector3(0, 0.12, 0))
+	var tip := sword_node.to_global(Vector3(0, 0.95, 0))
+	var speed := tip.distance_to(_tip_last) / maxf(delta, 0.001)
+	_tip_last = tip
+	var now := Time.get_ticks_msec()
+	if speed < 1.6:
+		return
+	for m in get_tree().get_nodes_in_group("monster"):
+		if m.dead:
+			continue
+		var id: int = m.get_instance_id()
+		if now - int(_hit_cd.get(id, 0)) < 350:
+			continue
+		var c: Vector3 = m.center()
+		var seg := tip - base
+		var t := clampf((c - base).dot(seg) / seg.length_squared(), 0.0, 1.0)
+		if c.distance_to(base + seg * t) < float(m.radius) + 0.12:
+			_hit_cd[id] = now
+			var dmg: int = Sword.DAMAGE[Save.sword] + (1 if speed > 5.0 else 0)
+			m.hit(dmg, player.global_position)
+			trigger_haptic_pulse("haptic", 0.0, 1.0, 0.12, 0.0)

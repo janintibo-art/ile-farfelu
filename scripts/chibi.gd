@@ -27,6 +27,7 @@ var ring: MeshInstance3D
 var bubble: Label3D
 var hat_node: Node3D
 var big_head := false
+var arm_r_offset := 0.0   # pour faire des gestes (guitare, check...)
 
 var _phase := 0.0
 var _t := 0.0
@@ -108,6 +109,14 @@ func _build() -> void:
 			tb.capsule(0.035, 0.28, Vector3(0, 0.46, 0.2), def["hair"], Basis(Vector3.RIGHT, 0.9))
 			tb.capsule(0.035, 0.22, Vector3(0, 0.62, 0.3), def["hair"], Basis(Vector3.RIGHT, -0.3))
 			tb.sphere(0.045, Vector3(0, 0.74, 0.3), def["accent"])
+		"mohawk":
+			for sx in [-1.0, 1.0]:
+				for k in 3:
+					tb.spike(0.025, 0.07, Vector3(sx * (0.12 + k * 0.03), 0.72 - k * 0.02, 0.02), Vector3(sx * 0.6, 1.0, 0.0), def["accent"])
+			for k in 5:
+				tb.torus(0.012, 0.02, Vector3(-0.1 + k * 0.045, 0.45 + absf(k - 2) * 0.012, -0.15), def["accent"], Basis(Vector3.RIGHT, PI / 2.0) * Basis(Vector3.FORWARD, k * 0.9))
+			tb.box(Vector3(0.1, 0.1, 0.02), Vector3(0.06, 0.6, -0.155), Color(0.95, 0.2, 0.7), false, Basis(Vector3.FORWARD, 0.3))
+			tb.cylinder(0.175, 0.175, 0.05, Vector3(0, 0.42, 0), Color(0.1, 0.1, 0.1))
 		"ponytail":
 			tb.cylinder(0.15, 0.26, 0.22, Vector3(0, 0.44, 0), def["shirt"].darkened(0.1))
 			tb.box(Vector3(0.22, 0.3, 0.02), Vector3(0, 0.5, -0.158), Color.WHITE, false)
@@ -242,6 +251,18 @@ func _face(b: Builder) -> void:
 func _hair(b: Builder) -> void:
 	var c := HEAD_C
 	var col: Color = def["hair"]
+	if def["hair_style"] == "mohawk":
+		# Côtés rasés, grande crête au milieu
+		b.sphere(0.305, c + Vector3(0, 0.03, 0.03), def["skin"].darkened(0.12), Vector3(1.04, 1.0, 1.0), Basis(), 16)
+		for k in 7:
+			var a := -0.9 + k * 0.33
+			var dir := Vector3(0, cos(a), sin(a))
+			b.spike(0.065, 0.3 + (0.08 if k in [2, 3, 4] else 0.0), c + dir * 0.3, dir + Vector3(0, 0.4, 0.2), col)
+		# Lunettes de soleil relevées sur le front
+		for sx in [-1.0, 1.0]:
+			b.box(Vector3(0.12, 0.06, 0.02), c + Vector3(sx * 0.08, 0.19, -0.25), Color(0.08, 0.08, 0.1), false, Basis(Vector3.RIGHT, -0.6))
+		b.torus(0.02, 0.03, c + Vector3(-0.31, -0.02, 0.0), def["accent"], Basis(Vector3.FORWARD, PI / 2.0))
+		return
 	# Calotte qui couvre le haut et l'arrière du crâne
 	b.sphere(0.315, c + Vector3(0, 0.06, 0.05), col, Vector3(1.06, 1.0, 1.0), Basis(), 16)
 	# Mèches sur le front
@@ -303,7 +324,7 @@ func _process(delta: float) -> void:
 	leg_l.rotation.x = s * 0.75 * walk
 	leg_r.rotation.x = -s * 0.75 * walk
 	arm_l.rotation.x = -s * 0.9 * walk
-	arm_r.rotation.x = s * 0.9 * walk
+	arm_r.rotation.x = s * 0.9 * walk + arm_r_offset
 	body_root.position.y = absf(s) * 0.06 * walk
 	body_root.scale.y = 1.0 + sin(_t * 2.3) * 0.018 * (1.0 - walk)
 	head.rotation.z = sin(_t * 1.3) * 0.07 * (1.0 - walk)

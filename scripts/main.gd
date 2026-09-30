@@ -12,10 +12,14 @@ const Fx := preload("res://scripts/fx.gd")
 const Save := preload("res://scripts/save.gd")
 const Shop := preload("res://scripts/shop.gd")
 const Shells := preload("res://scripts/shells.gd")
+const Gate := preload("res://scripts/gate.gd")
+const Dungeon := preload("res://scripts/dungeon.gd")
 
 var vr := false
 var xr_interface: XRInterface
 var player
+var env: Environment
+var sun: DirectionalLight3D
 
 
 func _ready() -> void:
@@ -64,6 +68,19 @@ func _ready() -> void:
 	add_child(shells)
 	shells.build(player)
 
+	var gate := Gate.new()
+	gate.name = "DungeonGate"
+	add_child(gate)
+	gate.build(self, player)
+	var dungeon := Dungeon.new()
+	dungeon.name = "Dungeon"
+	add_child(dungeon)
+	dungeon.build(self, player)
+	player.gate = gate
+	player.dungeon = dungeon
+	player.main = self
+	player.refresh_sword()
+
 	# Petit message de bienvenue devant soi
 	await get_tree().create_timer(1.0).timeout
 	Fx.text(self, player.global_position + Vector3(0, 1.8, -2.5), "Bienvenue sur l'Île Farfelue !", Color(1.0, 0.85, 0.25), 0.8, 4.0)
@@ -92,7 +109,7 @@ func _on_session_begun() -> void:
 
 
 func _environment() -> void:
-	var env := Environment.new()
+	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
 	var sm := ProceduralSkyMaterial.new()
@@ -116,7 +133,7 @@ func _environment() -> void:
 	we.environment = env
 	add_child(we)
 
-	var sun := DirectionalLight3D.new()
+	sun = DirectionalLight3D.new()
 	sun.name = "Sun"
 	sun.rotation_degrees = Vector3(-50.0, -35.0, 0.0)
 	sun.light_color = Color(1.0, 0.96, 0.88)
@@ -129,3 +146,21 @@ func _environment() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED:
 		Save.save_game()
+
+
+## Ambiance sombre et violette dans le donjon, soleil éteint.
+func set_dungeon_mood(on: bool) -> void:
+	sun.visible = not on
+	if on:
+		env.background_mode = Environment.BG_COLOR
+		env.background_color = Color(0.08, 0.05, 0.12)
+		env.ambient_light_color = Color(0.75, 0.68, 1.0)
+		env.ambient_light_energy = 0.95
+		env.fog_light_color = Color(0.16, 0.1, 0.24)
+		env.fog_density = 0.018
+	else:
+		env.background_mode = Environment.BG_SKY
+		env.ambient_light_color = Color(0.82, 0.84, 1.0)
+		env.ambient_light_energy = 0.7
+		env.fog_light_color = Color(0.75, 0.88, 1.0)
+		env.fog_density = 0.0035

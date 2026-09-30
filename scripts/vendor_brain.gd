@@ -274,6 +274,7 @@ func _gossip(ctx: Dictionary) -> String:
 		"Il paraît qu'il y a des coquillages dorés quelque part. Enfin, c'est Taro qui le dit.",
 		"Quelqu'un a mangé tous les onigiris de la maison. Tout le monde accuse Mochi.",
 		"La porte de la maison grince tellement que les mouettes ont déménagé.",
+		"Riku, le punk, garde un donjon plein de slimes. Il vient m'acheter des oreilles de lapin en cachette.",
 	]
 	for n in ctx.get("npcs", []):
 		lines.append("J'ai vu %s traîner %s. Mission secrète, sans doute." % [n["name"], n["where"]])

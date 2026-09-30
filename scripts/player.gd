@@ -10,6 +10,9 @@ const Fx := preload("res://scripts/fx.gd")
 const Island := preload("res://scripts/island.gd")
 const Save := preload("res://scripts/save.gd")
 const Items := preload("res://scripts/shop_items.gd")
+const Sword := preload("res://scripts/sword.gd")
+const Builder := preload("res://scripts/builder.gd")
+const Toon := preload("res://scripts/toon.gd")
 
 const SPEED := 3.0
 const JUMP := 4.2
@@ -27,6 +30,19 @@ var char_id := 0
 var third_person := false
 var npcs: Array = []
 var shop
+var gate
+var dungeon
+var main
+
+# Donjon et combat
+const MAX_HEARTS := 5
+var hearts := MAX_HEARTS
+var in_dungeon := false
+var _invuln := 0.0
+var _knock := Vector3.ZERO
+var _desk_sword: Node3D
+var _desk_sword_out := false
+var _swinging := false
 
 # Effets de nourriture (secondes restantes)
 var effects := {}
@@ -48,7 +64,7 @@ func setup(p_world: Node3D, p_vr: bool) -> void:
 	vr = p_vr
 	_spawn = global_position
 	collision_layer = 8
-	collision_mask = 1 | 4
+	collision_mask = 1 | 4 | 32
 	floor_snap_length = 0.35
 	floor_max_angle = deg_to_rad(50.0)
 	var cs := CollisionShape3D.new()
@@ -189,7 +205,9 @@ func _physics_process(delta: float) -> void:
 		phys.y = 0.0
 		if phys.length() > 1.5:
 			phys = Vector3.ZERO
-	velocity = Vector3(move.x + phys.x / delta, _vy, move.z + phys.z / delta)
+	_invuln = maxf(_invuln - delta, 0.0)
+	velocity = Vector3(move.x + phys.x / delta + _knock.x, _vy, move.z + phys.z / delta + _knock.z)
+	_knock = _knock.lerp(Vector3.ZERO, clampf(delta * 6.0, 0.0, 1.0))
 	move_and_slide()
 	_vy = velocity.y
 
@@ -330,6 +348,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if _desk_target and is_instance_valid(_desk_target):
 				_desk_target.press()
+			elif _desk_sword_out:
+				_desk_swing()
 			else:
 				_desktop_grab()
 	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -356,8 +376,12 @@ func _unhandled_input(event: InputEvent) -> void:
 					_held_desktop = null
 					eat(rb)
 			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6:
-				if shop:
+				if shop and shop.state != "closed":
 					shop.choose(event.physical_keycode - KEY_1)
+				elif gate and gate.state != "closed":
+					gate.choose(event.physical_keycode - KEY_1)
+			KEY_G:
+				_toggle_desk_sword()
 
 
 func _desktop_grab() -> void:
@@ -401,7 +425,7 @@ func _make_hud() -> void:
 	var layer := CanvasLayer.new()
 	world.add_child(layer)
 	_hud = Label.new()
-	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · R : manger ce qu'on tient · 1 à 6 : choisir au magasin\nH : cacher l'aide · Échap : libérer la souris"
+	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · R : manger ce qu'on tient · 1 à 6 : choisir dans un menu\nG : sortir / ranger l'épée (clic pour frapper) · H : cacher l'aide · Échap : libérer la souris"
 	_hud.position = Vector2(16, 12)
 	_hud.add_theme_color_override("font_color", Color(1, 1, 1))
 	_hud.add_theme_color_override("font_outline_color", Color(0.13, 0.08, 0.17))
@@ -488,6 +512,8 @@ func _tick_effects(delta: float) -> void:
 
 func _update_counter() -> void:
 	var txt := "Coquillages : %d" % Save.shells
+	if in_dungeon or hearts < MAX_HEARTS:
+		txt += "\nVie : %d / %d" % [hearts, MAX_HEARTS]
 	for k in effects:
 		txt += "\n%s : %ds" % [{"big_head": "Grosse tête", "speed": "Turbo", "helium": "Hélium"}.get(k, k), int(effects[k])]
 	if vr:
@@ -509,3 +535,124 @@ func _desktop_hover() -> void:
 		_desk_target = t
 		if t:
 			t.set_hover(true)
+
+
+# --- Donjon, épée, combat -------------------------------------------------------
+
+func has_sword() -> bool:
+	return Save.sword > 0
+
+
+## Reconstruit l'épée (dans les mains VR et pour le mode PC).
+func refresh_sword() -> void:
+	left.refresh_sword()
+	right.refresh_sword()
+	if _desk_sword:
+		_desk_sword.queue_free()
+		_desk_sword = null
+	if not vr and has_sword():
+		_desk_sword = Node3D.new()
+		camera.add_child(_desk_sword)
+		var b := Builder.new()
+		Sword.add(b, Save.sword)
+		b.build(_desk_sword, Toon.vertex_color(0.006), "Sword")
+		_desk_sword.position = Vector3(0.32, -0.32, -0.55)
+		_desk_sword.rotation = Vector3(-0.5, 0.0, -0.35)
+		_desk_sword.visible = _desk_sword_out
+
+
+func _toggle_desk_sword() -> void:
+	if not has_sword():
+		Fx.text(world, _front(1.4), "Pas d'épée ! Va voir Riku.", Color(1, 0.7, 0.7), 0.5, 1.2)
+		return
+	_desk_sword_out = not _desk_sword_out
+	if _desk_sword == null:
+		refresh_sword()
+	_desk_sword.visible = _desk_sword_out
+
+
+func _desk_swing() -> void:
+	if _swinging or _desk_sword == null:
+		return
+	_swinging = true
+	var tw := create_tween()
+	tw.tween_property(_desk_sword, "rotation", Vector3(-1.4, 0.4, 0.9), 0.12)
+	tw.tween_callback(_desk_hit)
+	tw.tween_property(_desk_sword, "rotation", Vector3(-0.5, 0.0, -0.35), 0.18)
+	tw.tween_callback(func(): _swinging = false)
+
+
+func _desk_hit() -> void:
+	var f := -camera.global_basis.z
+	for m in get_tree().get_nodes_in_group("monster"):
+		var to: Vector3 = m.center() - camera.global_position
+		var reach: float = 2.3 + m.radius
+		if to.length() < reach and to.normalized().dot(f) > 0.45:
+			m.hit(Sword.DAMAGE[Save.sword], global_position)
+
+
+func hurt(dmg: int, from: Vector3) -> void:
+	if _invuln > 0.0 or not in_dungeon:
+		return
+	_invuln = 1.0
+	hearts -= dmg
+	var away := global_position - from
+	away.y = 0.0
+	_knock = away.normalized() * 6.0
+	_vy = 2.5
+	Fx.text(world, _front(1.0) + Vector3(0, 0.1, 0), "AÏE ! -%d" % dmg, Color(1.0, 0.35, 0.35), 0.8, 0.8)
+	if vr:
+		left.trigger_haptic_pulse("haptic", 0.0, 1.0, 0.25, 0.0)
+		right.trigger_haptic_pulse("haptic", 0.0, 1.0, 0.25, 0.0)
+	avatar.pop()
+	if hearts <= 0:
+		Save.dungeon["deaths"] = int(Save.dungeon["deaths"]) + 1
+		Save.save_game()
+		exit_dungeon(true)
+
+
+func enter_dungeon() -> void:
+	if dungeon == null:
+		return
+	in_dungeon = true
+	hearts = MAX_HEARTS
+	Fx.puff(world, global_position + Vector3(0, 1.0, 0), Color(0.6, 1.0, 0.7))
+	global_position = dungeon.start_position()
+	_vy = 0.0
+	_face_yaw(0.0)
+	_place_origin(true, 0.0)
+	dungeon.on_enter()
+	if main:
+		main.set_dungeon_mood(true)
+	Fx.text(world, _front(2.2) + Vector3(0, 0.5, 0), "DONJON DES BOULETTES", Color(0.6, 1.0, 0.6), 1.2, 2.5)
+
+
+func exit_dungeon(ko: bool) -> void:
+	in_dungeon = false
+	hearts = MAX_HEARTS
+	effects.erase("speed")
+	if gate:
+		global_position = gate.exit_position()
+		_face_yaw(gate.global_rotation.y + PI)
+	_vy = 0.0
+	_place_origin(true, 0.0)
+	if main:
+		main.set_dungeon_mood(false)
+	if ko:
+		Fx.text(world, _front(2.0) + Vector3(0, 0.6, 0), "K.O. !", Color(1.0, 0.4, 0.4), 1.6, 2.0)
+		if gate:
+			gate.on_player_ko()
+	else:
+		Fx.text(world, _front(2.0) + Vector3(0, 0.6, 0), "Retour à l'air libre !", Color(1.0, 0.9, 0.5), 0.8, 1.5)
+	Save.save_game()
+
+
+## Tourne la vue pour regarder dans la direction yaw (0 = vers -Z).
+func _face_yaw(yaw: float) -> void:
+	var f := -camera.global_basis.z
+	f.y = 0.0
+	if f.length() < 0.01:
+		return
+	var cur := atan2(-f.x, -f.z)
+	_rotate_origin(yaw - cur)
+	avatar.rotation.y = yaw
