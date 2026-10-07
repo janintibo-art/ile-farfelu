@@ -10,6 +10,11 @@ run/main_scene="res://boot.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[debug]
+
+file_logging/enable_file_logging=true
+file_logging/enable_file_logging.mobile=true
+
 [display]
 
 window/size/viewport_width=1280

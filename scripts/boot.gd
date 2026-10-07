@@ -65,8 +65,9 @@ func _ready() -> void:
 	if bad.is_empty():
 		label.text = head + "%d scripts OK\nDémarrage du jeu…" % n
 	else:
-		label.text = head + "SCRIPTS EN ERREUR :\n" + "\n".join(bad)
-	await get_tree().create_timer(2.0 if bad.is_empty() else 12.0).timeout
+		label.font_size = 34
+		label.text = head + "SCRIPTS EN ERREUR : " + ", ".join(bad) + "\n" + _log_errors()
+	await get_tree().create_timer(2.0 if bad.is_empty() else 60.0).timeout
 	var ps = load("res://main.tscn")
 	if ps == null:
 		label.text = head + "main.tscn ne se charge pas"
@@ -84,6 +85,25 @@ func _ready() -> void:
 	await get_tree().process_frame
 	if label and is_instance_valid(label):
 		label.queue_free()
+
+
+## Lit le journal du moteur et garde les lignes d'erreur de script (affichées dans le casque).
+func _log_errors() -> String:
+	var lines: Array = []
+	for p in ["user://logs/godot.log"]:
+		if not FileAccess.file_exists(p):
+			lines.append("(pas de journal)")
+			continue
+		var f := FileAccess.open(p, FileAccess.READ)
+		if f == null:
+			continue
+		while not f.eof_reached():
+			var l := f.get_line().strip_edges()
+			if l.contains("rror") and (l.contains(".gd") or l.contains("Parse") or l.contains("SCRIPT")):
+				lines.append(l.substr(0, 150))
+	if lines.size() > 8:
+		lines = lines.slice(0, 8)
+	return "\n".join(lines)
 
 
 func _scripts() -> Array:

@@ -151,3 +151,6 @@ sur le casque sans la désinstaller.
 
 ## v14
 - Écran de diagnostic au démarrage (boot.tscn) : affiche l'état de la VR et la liste des scripts qui ne se chargent pas, avant de lancer le jeu.
+
+## v15
+- Le diagnostic affiche aussi les messages d erreur du moteur (journal de la session) dans le casque.
