@@ -282,7 +282,7 @@ func _environment() -> void:
 	sun.light_color = Color(1.0, 0.96, 0.88)
 	sun.light_energy = 0.55
 	# Quest 3 : ombres temps réel, nettes et douces
-	sun.shadow_enabled = true
+	sun.shadow_enabled = not OS.has_feature("android")
 	sun.shadow_opacity = 0.85
 	sun.shadow_blur = 1.5
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL

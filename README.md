@@ -145,3 +145,6 @@ sur le casque sans la désinstaller.
 
 ## v12
 - Le manifeste Quest redéclare la compatibilité Quest 2 (désactivée en v5 : l'appli ne démarrait pas en VR sur Quest 2).
+
+## v13
+- Réglages graphiques revenus à ceux de la v1 (qui démarrait sur Quest 3) : MSAA 2x, foveation 3, pas d'ombres temps réel sur Android.
