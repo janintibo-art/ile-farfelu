@@ -246,3 +246,57 @@ const BONK_REACTIONS := [
 	"Ma tête n'est pas un panier !",
 	"Je vais le dire au canard !",
 ]
+
+
+## Virevolte (chapitre 2)
+const ODILE := {
+	"name": "Odile Aubépine",
+	"skin": Color(1.0, 0.84, 0.72),
+	"hair": Color(0.85, 0.9, 0.85),
+	"hair_style": "buns",
+	"eye": Color(0.3, 0.5, 0.3),
+	"shirt": Color(0.4, 0.7, 0.45),
+	"pants": Color(0.35, 0.3, 0.28),
+	"shoes": Color(0.4, 0.3, 0.22),
+	"accent": Color(0.6, 0.9, 0.6),
+	"lines": [],
+}
+
+const GASPARD := {
+	"name": "Gaspard Ronceval",
+	"skin": Color(0.9, 0.7, 0.55),
+	"hair": Color(0.55, 0.2, 0.15),
+	"hair_style": "mayor",
+	"eye": Color(0.4, 0.25, 0.2),
+	"shirt": Color(0.8, 0.3, 0.3),
+	"pants": Color(0.3, 0.25, 0.3),
+	"shoes": Color(0.3, 0.2, 0.18),
+	"accent": Color(0.95, 0.5, 0.45),
+	"lines": [],
+}
+
+const ANSELME := {
+	"name": "Maître Anselme",
+	"skin": Color(0.95, 0.8, 0.68),
+	"hair": Color(0.3, 0.25, 0.4),
+	"hair_style": "merchant",
+	"eye": Color(0.35, 0.25, 0.5),
+	"shirt": Color(0.5, 0.35, 0.65),
+	"pants": Color(0.25, 0.22, 0.3),
+	"shoes": Color(0.2, 0.18, 0.22),
+	"accent": Color(0.75, 0.6, 0.95),
+	"lines": [],
+}
+
+const MIRETTE := {
+	"name": "Mirette",
+	"skin": Color(1.0, 0.86, 0.74),
+	"hair": Color(0.2, 0.4, 0.3),
+	"hair_style": "kid",
+	"eye": Color(0.25, 0.45, 0.35),
+	"shirt": Color(0.95, 0.85, 0.4),
+	"pants": Color(0.35, 0.45, 0.6),
+	"shoes": Color(0.5, 0.35, 0.25),
+	"accent": Color(0.95, 0.9, 0.5),
+	"lines": [],
+}

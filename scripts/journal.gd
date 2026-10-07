@@ -42,6 +42,21 @@ static func lines(tab: String) -> Array:
 				out.append("Toutes les pistes mènent à l'horloge de la mairie.")
 			if _f("mardi"):
 				out.append("RÉSOLU : l'horloge repart. Mardi est revenu.")
+			if _f("v2_started"):
+				out.append("")
+				out.append("VIREVOLTE : un pont, deux familles, deux actes.")
+				if _f("doc_a"):
+					out.append("Acte Aubépine (1203) : écriture penchée, encre violette.")
+				if _f("doc_b"):
+					out.append("Acte Ronceval (1204) : même écriture, même encre.")
+				if _f("same_hand"):
+					out.append("   ...les deux actes sont de la MÊME MAIN.")
+				if _f("plaque"):
+					out.append("Plaque sous le pont : « Bâti par tous, pour tous. »")
+				if _f("greffe_blank"):
+					out.append("Greffe : actes du pont vierges, déjà tamponnés.")
+				if _f("pont_ok"):
+					out.append("RÉSOLU : le pont est à tout le monde.")
 		"people":
 			var any := false
 			var rows := [
@@ -52,6 +67,10 @@ static func lines(tab: String) -> Array:
 				["marguerite_met", "Marguerite : peint la maison en bleu."],
 				["petro_met", "Pétronille : parle en énigmes, sert du thé."],
 				["eleonore_met", "Éléonore Chardon : horlogère, cachée."],
+				["odile_met", "Odile Aubépine : le pont est à elle (acte 1203)."],
+				["gaspard_met", "Gaspard Ronceval : le pont est à lui (acte 1204)."],
+				["mirette_met", "Mirette : a un lézard qui fut un dragon."],
+				["anselme_met", "Maître Anselme : notaire des deux familles."],
 			]
 			for r in rows:
 				if _f(r[0]) or (r[0] == "malo_met" and _f("inn_met")):
@@ -72,6 +91,8 @@ static func lines(tab: String) -> Array:
 				["key_asked", "La clé inconnue : Barnabé la veut. Pourquoi ?"],
 				["photo2", "Chambre 7 : photo du héros devant le château."],
 				["ch1_done", "CHAPITRE 1 TERMINÉ."],
+				["v2_started", "Virevolte : démêler l'affaire du pont."],
+				["pont_ok", "Le pont de Virevolte : réconcilié. Maison de Travers à suivre."],
 			]
 			for q in qs:
 				if _f(q[0]):

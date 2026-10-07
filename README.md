@@ -167,3 +167,10 @@ sur le casque sans la désinstaller.
 ## v19
 - Rotation VR douce par défaut (clic du stick droit pour revenir aux à-coups de 45°).
 - Le tablier du pont est solide dès le début : plus de chute dans le ruisseau.
+
+## v20 — Chapitre 2, partie 1 : Virevolte
+- Éléonore (« Partons pour Virevolte ») emmène le joueur dans la forêt de Virevolte (zone y=500, retour par le panneau au sud).
+- Deux familles, un pont, deux actes : Odile Aubépine, Gaspard Ronceval, Mirette, Maître Anselme (notaire).
+- Indices : les deux actes (même écriture, même encre violette), la plaque sous le pont, le tiroir du greffe.
+- Le pont change de couleur et de nom selon le côté d'où on le regarde ; les panneaux de la forêt changent d'avis quand on s'approche.
+- Fin : « Réunir les deux familles » → le pont est à tous (+20 coquillages). La Maison de Travers (donjon) est visible au nord, fermée : à suivre.

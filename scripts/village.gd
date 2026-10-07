@@ -30,6 +30,7 @@ const Clock := preload("res://scripts/clock.gd")
 const Maquette := preload("res://scripts/maquette.gd")
 const Phare := preload("res://scripts/phare.gd")
 const VY := preload("res://scripts/village_y.gd")
+const VZ := preload("res://scripts/village_z.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -57,6 +58,7 @@ var clock
 var maquette
 var phare
 var y
+var z
 var _nina_wp := 0
 var _nina_wait := 0.0
 var _nina_speed := 1.0
@@ -77,6 +79,9 @@ func build(p_world: Node3D, p_player) -> void:
 	x = VX.new()
 	x.v = self
 	x.build()
+	z = VZ.new()
+	z.v = self
+	z.build()
 	clock = Clock.new()
 	clock.setup(self, nodes["mairie"])
 	maquette = Maquette.new()
@@ -544,6 +549,7 @@ func _physics_process(delta: float) -> void:
 	_update_zone(pp)
 	_update_nina(delta)
 	x.update()
+	z.update()
 	clock.update()
 	var cam: Vector3 = player.camera.global_position
 	for sp in speakers:
@@ -644,6 +650,14 @@ func _title_of(id: String) -> String:
 			return "MADAME PÉTRONILLE"
 		"eleonore":
 			return "ÉLÉONORE CHARDON"
+		"odile":
+			return "ODILE AUBÉPINE"
+		"gaspard":
+			return "GASPARD RONCEVAL"
+		"anselme":
+			return "MAÎTRE ANSELME"
+		"mirette":
+			return "MIRETTE"
 	return "THÉODORE PATATRAS"
 
 
@@ -691,6 +705,8 @@ func _apply(sp: Dictionary, r: Dictionary) -> void:
 		Fx.text(world, sp["node"].global_position + Vector3(0, 2.1, 0), "→ Sac : " + Inv.item_name(str(r["give"])), Color(1.0, 0.95, 0.7), 0.7, 2.0)
 	var ev: String = str(r.get("event", ""))
 	var node = sp["node"]
+	if ev.begins_with("z_"):
+		z.event(ev, node)
 	match ev:
 		"malo_glass":
 			_drop_glass(node)

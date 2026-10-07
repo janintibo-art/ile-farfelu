@@ -419,7 +419,7 @@ func _mayor_respond(intent: String) -> Dictionary:
 # Les autres habitants : Basile, Gérard, Marguerite, Pétronille, Éléonore
 # ---------------------------------------------------------------------------
 
-const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore"]
+const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette"]
 
 
 func _x_greet(who: String, name: String) -> Dictionary:
@@ -433,11 +433,27 @@ func _x_greet(who: String, name: String) -> Dictionary:
 			return {"text": _say(["Chut. Ils mordent à l'aube, les poissons. Et à midi aussi. Mais ils mordent mal.", "Salut %s. Le poisson d'hier m'en veut encore." % name, "Pas un bruit... bon, un petit bruit."]), "flag": {"gerard_met": true}}
 		"marguerite":
 			return {"text": _say(["Bonjour ! Vous trouvez pas que cette maison est trop bleue ? Moi non plus.", "%s ! Tenez-vous bien, la peinture sèche quand elle veut." % name]), "flag": {"marguerite_met": true}}
+		"odile":
+			if s().get("pont_ok", false):
+				return {"text": _say(["Un pont pour tout le monde. Gaspard m'a serré la main. J'ai vérifié après : j'ai encore tous mes doigts.", "Je n'ai plus de procès. Je ne sais plus quoi faire de mes dimanches."]), "flag": {"odile_met": true}}
+			return {"text": _say(["Halte ! Ce pont est à la famille Aubépine depuis 1203. J'ai l'acte. Il est signé, et même tamponné.", "Encore vous ? Si vous venez pour le pont, il est à nous. Si vous venez pour autre chose, il est à nous aussi.", "Bonjour %s. Le pont est à nous. Je précise, au cas où vous auriez un doute." % name]), "flag": {"odile_met": true}}
+		"gaspard":
+			if s().get("pont_ok", false):
+				return {"text": _say(["Odile m'a offert une brioche. Elle est empoisonnée, forcément. Je la mange quand même.", "Quarante-trois ans de procès, et on se tutoie. La vie est étrange."]), "flag": {"gaspard_met": true}}
+			return {"text": _say(["Passez votre chemin ! Ce pont est aux Ronceval depuis 1204. J'ai l'acte, et il est très authentique.", "Ah, un témoin ! Dites bien aux Aubépine que le pont est à nous.", "%s ! Vous tombez bien : le pont est à nous. Vous pouvez le répéter, ça aide." % name]), "flag": {"gaspard_met": true}}
+		"mirette":
+			return {"text": _say(["Chut. Les grands se disputent fort pour que ça devienne vrai. Moi je pense que le pont s'en fiche.", "Tu cherches la vérité ? Elle est sous le pont. Elle est un peu humide."]), "flag": {"mirette_met": true}}
+		"anselme":
+			if s().get("pont_ok", false):
+				return {"text": _say(["Un pont à tout le monde. Quelle époque. Heureusement, il y a toujours le puits.", "Je suis très content pour tout le monde. Voyez comme mon sourire est calme."]), "flag": {"anselme_met": true}}
+			return {"text": _say(["Maître Anselme Plume-d'Oie, notaire. J'établis tous les actes de Virevolte. Les deux familles sont mes clientes. Les deux ont raison. C'est mon métier.", "Bonjour %s. Un acte ? Un testament ? Un mensonge notarié ? Je fais tout, avec beaucoup de tact." % name]), "flag": {"anselme_met": true}}
 		"petronille":
 			if not tue:
 				return {"text": "Entre, mon petit. Ne marche pas sur hier, il est fragile.", "flag": {"petro_met": true}}
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
+			if s().get("at_v", false):
+				return {"text": _say(["Virevolte. Ici, ne croyez pas ce qu'on vous dit trois fois : c'est comme ça que ça devient vrai.", "Deux familles, un pont, deux actes. Quand deux vérités se contredisent, cherchez le menteur qui y gagne.", "Je n'ai jamais aimé les forêts polies. Elles ont toujours quelque chose à cacher."]), "flag": {"eleonore_met": true}}
 			if s().get("phare_done", false):
 				return {"text": _say(["Je suis à l'auberge, provisoirement. Malo me fait payer la chambre 7 au tarif « mardi ». Je ne comprends pas, mais je paie.", "Alors, %s ? La Première Page ne se lit pas encore. Mais le symbole, lui, je le reconnais. On en reparlera." % name]), "flag": {"eleonore_met": true}}
 			if not s().get("eleonore_story", false):
@@ -471,6 +487,24 @@ func _x_options(who: String) -> Array:
 			if tue:
 				out.append(["mardi", "Et mardi, vous peigniez ?"])
 			out.append(["blue", "Pourquoi cette couleur ?"])
+		"odile":
+			if not s().get("doc_a", false):
+				out.append(["doc", "Montrez-moi votre acte."])
+			out.append(["ronceval", "Et les Ronceval ?"])
+			out.append(["forest", "Cette forêt est étrange."])
+		"gaspard":
+			if not s().get("doc_b", false):
+				out.append(["doc", "Montrez-moi votre acte."])
+			out.append(["aubepine", "Et les Aubépine ?"])
+			out.append(["forest", "Cette forêt est étrange."])
+		"mirette":
+			out.append(["bridge", "Que sais-tu du pont ?"])
+			out.append(["lies", "Les mensonges deviennent vrais ?"])
+		"anselme":
+			if s().get("doc_a", false) and s().get("doc_b", false):
+				out.append(["both", "Vous avez écrit les deux actes ?"])
+			out.append(["conflict", "Que pensez-vous du conflit ?"])
+			out.append(["forest", "Cette forêt ment, non ?"])
 		"petronille":
 			if tue:
 				out.append(["mardi", "Le mardi n'a pas disparu ?"])
@@ -478,6 +512,15 @@ func _x_options(who: String) -> Array:
 					out.append(["wheel", "Vous avez quelque chose qui tourne ?"])
 			out.append(["tea", "Du thé ?"])
 		_:
+			if s().get("at_v", false):
+				if s().get("doc_a", false) and s().get("doc_b", false) and not s().get("same_hand", false):
+					out.append(["compare", "Regardez les deux actes."])
+				if s().get("same_hand", false) and not s().get("pont_ok", false):
+					out.append(["next", "Que fait-on maintenant ?"])
+				out.append(["liar", "Cette forêt ment vraiment ?"])
+				return out
+			if s().get("ch1_done", false):
+				out.append(["go", "Partons pour Virevolte."])
 			if not s().get("eleonore_story", false):
 				out.append(["story", "Qui êtes-vous, vraiment ?"])
 			else:
@@ -518,6 +561,36 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": "Tiens, cette chose verte qui tourne. Elle était dans mon sucrier. Elle sert à quelque chose. À quoi, on te le dira... plus tard. Peut-être hier.", "give": "roue_c", "flag": {"c_petro": true}, "event": "got_piece"}
 		"petronille:tea":
 			return {"text": _say(["Il est parfait. Il n'a ni goût ni chaleur. C'est ma spécialité.", "Un thé, c'est du temps qu'on boit."])}
+		"odile:doc":
+			return {"text": "« Le pont appartient aux Aubépine, qui l'ont bâti en 1203, ainsi que la rivière en dessous. » Regardez cette belle écriture penchée. Et cette encre violette : de la bonne famille.", "flag": {"doc_a": true}, "event": "z_doc_a"}
+		"odile:ronceval":
+			return {"text": _say(["Les Ronceval ? Des menteurs. Charmants, mais menteurs. Gaspard m'a dit bonjour hier, avec l'air sincère. Ça cachait quelque chose.", "Gaspard dit que le pont est à lui. Il le dit si souvent que je commence à le croire. C'est dangereux."])}
+		"odile:forest":
+			return {"text": "Ici, un mensonge répété trois fois devient vrai. Mon grand-père a dit qu'il avait une barbe. Il en a une depuis. On lui reproche de ne pas l'avoir eue avant."}
+		"gaspard:doc":
+			return {"text": "« Le pont appartient aux Ronceval, qui l'ont bâti en 1204, ainsi que le ciel au-dessus. » Un an plus récent, donc mieux conservé. L'écriture ? Penchée. L'encre ? Violette. Rien de suspect.", "flag": {"doc_b": true}, "event": "z_doc_b"}
+		"gaspard:aubepine":
+			return {"text": _say(["Les Aubépine ? Ils disent que le pont est à eux depuis 1203. Ridicule : en 1203, il n'y avait pas de pont. Il y avait... une idée de pont.", "Odile est charmante. Elle me rappelle pourquoi je ne me marierai jamais."])}
+		"gaspard:forest":
+			return {"text": "Ne dites jamais « il va pleuvoir » trois fois de suite. L'an dernier, Odile l'a fait. Il a plu des poissons. On les a mangés, par politesse."}
+		"mirette:bridge":
+			return {"text": "Il y a une plaque dessous. Personne ne la lit : elle est trop polie. Va regarder sous le pont. Moi je n'ose pas, les adultes ont dit que ça portait malheur de dire la vérité à voix haute.", "flag": {"mirette_hint": true}, "event": "z_mirette"}
+		"mirette:lies":
+			return {"text": "Oui ! Hier j'ai dit trois fois « j'ai un dragon ». Maintenant j'ai un lézard. C'est un début. Il me regarde de travers."}
+		"anselme:both":
+			return {"text": "Rédigé ? Moi ? Je n'écris pas, je consigne. L'encre n'est pas de moi, elle est de la tradition. Ma main est juste... très fidèle à la tradition.", "flag": {"anselme_asked": true}, "event": "z_anselme"}
+		"anselme:conflict":
+			return {"text": "Un bon conflit fait vivre un village. Et un notaire. Je ne prends pas parti : je prends les deux."}
+		"anselme:forest":
+			return {"text": "La forêt ne ment pas, elle répète. Si on dit une chose avec assez d'élégance, elle la rend vraie. Je suis en faveur de l'élégance."}
+		"eleonore:go":
+			return {"text": "Virevolte, la forêt qui ment poliment. Allons-y. Si un arbre vous dit qu'il est à gauche, il est à droite. Et ne promettez rien trois fois.", "flag": {"v2_started": true}, "event": "z_go"}
+		"eleonore:compare":
+			return {"text": "Montrez... Même écriture penchée. Même encre violette. Deux familles qui se détestent, avec le même scribe. Quelqu'un fabrique leurs certitudes.", "flag": {"same_hand": true}, "event": "z_same_hand"}
+		"eleonore:next":
+			return {"text": "Les actes ont la même main. Et la plaque dit « Bâti par tous ». Réunissez les deux familles sur le pont : la vérité, dite devant tout le monde, vaut bien trois mensonges."}
+		"eleonore:liar":
+			return {"text": "Elle ne ment pas. Elle exauce. C'est pire : quelqu'un lui souffle quoi répéter. Je veux savoir qui."}
 		"eleonore:story":
 			add_mood("eleonore", 0.3)
 			return {"text": "Éléonore Chardon, horlogère. Mardi, j'ai réparé l'horloge de la mairie. Puis des mains sont sorties du cadran et m'ont dit « Pas touche ». Alors je me suis cachée. Tenez : l'axe central. Sans lui, la roue du mardi tourne dans le vide.", "give": "axe", "flag": {"eleonore_story": true, "got_axe": true}, "event": "got_axe"}
@@ -530,6 +603,14 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 
 func _x_idle(who: String) -> String:
 	match who:
+		"odile":
+			return _say(["Le pont est à nous. Je le dis pour qu'il le sache.", "Si je le répète trois fois, ça devient vrai. Le pont est à nous. Le pont est à nous. Le pont..."])
+		"gaspard":
+			return _say(["Ce pont est à nous. J'ai l'acte. Je l'ai relu. Il dit pareil.", "Un jour, ce pont sera à nous. Il l'est déjà, mais un jour aussi."])
+		"mirette":
+			return _say(["Chut, les arbres écoutent.", "Je compte les mensonges. J'en suis à beaucoup."])
+		"anselme":
+			return _say(["Un acte bien tamponné, c'est la moitié d'une vérité.", "Je vous le dis en toute franchise. C'est-à-dire sans frais."])
 		"basile":
 			return _say(["Une baguette, c'est un pain qui a de l'ambition.", "Si vous entendez du pain qui chante, c'est normal."])
 		"gerard":
