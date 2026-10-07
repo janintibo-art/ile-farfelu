@@ -28,6 +28,8 @@ const VB := preload("res://scripts/village_build.gd")
 const VX := preload("res://scripts/village_x.gd")
 const Clock := preload("res://scripts/clock.gd")
 const Maquette := preload("res://scripts/maquette.gd")
+const Phare := preload("res://scripts/phare.gd")
+const VY := preload("res://scripts/village_y.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -53,6 +55,8 @@ var zone := ""
 var x
 var clock
 var maquette
+var phare
+var y
 var _nina_wp := 0
 var _nina_wait := 0.0
 var _nina_speed := 1.0
@@ -80,7 +84,14 @@ func build(p_world: Node3D, p_player) -> void:
 	add_child(maquette)
 	maquette.setup(self, player)
 	clock.maquette = maquette
+	phare = Phare.new()
+	phare.name = "Phare"
+	add_child(phare)
+	phare.setup(self, player)
 	_make_speakers()
+	y = VY.new()
+	y.v = self
+	y.build()
 	refresh_calendar()
 
 
@@ -452,6 +463,10 @@ func _make_speakers() -> void:
 		sp["menu"] = m
 
 
+func after_phare() -> void:
+	y.after_phare()
+
+
 func refresh_calendar() -> void:
 	if calendar_btn == null:
 		return
@@ -705,6 +720,20 @@ func _apply(sp: Dictionary, r: Dictionary) -> void:
 		"got_axe":
 			Fx.puff(world, node.global_position + Vector3(0, 1.0, 0), Color(1.0, 0.9, 0.4))
 			_pico("L'axe de l'horloge ! Direction la mairie, avec la roue.")
+		"shells15":
+			Save.shells += 15
+			Fx.text(world, node.global_position + Vector3(0, 2.3, 0), "+15 coquillages", Color(1.0, 0.9, 0.5), 0.9, 2.0)
+			_pico("Un conflit résolu sans capturer personne. Je crois que c'est la meilleure fin de pêche.")
+		"plank_give":
+			Save.add_item("planche", -1)
+			Save.shells += 10
+			Fx.text(world, node.global_position + Vector3(0, 2.3, 0), "+10 coquillages", Color(1.0, 0.9, 0.5), 0.9, 2.0)
+			_pico("Tu as donné la planche. Elle était très importante, pourtant. Enfin, je crois que c'est ce que j'avais dit.")
+		"plank_keep":
+			Fx.text(world, node.global_position + Vector3(0, 2.3, 0), "Pico garde la planche", Color(0.9, 0.95, 1.0), 0.8, 2.0)
+			_pico("Je la garde ! Elle est très importante. Je ne sais plus pourquoi. Je sais seulement qu'elle servira plus tard.")
+		"key_back":
+			_pico("Il a eu peur de sa propre offre. Une clé que Barnabé veut mais ne peut pas prendre. Je la garde au chaud.")
 		"nina_leave":
 			_nina_away = true
 			_nina_wait = 0.0

@@ -259,6 +259,12 @@ func _barnabe_options() -> Array:
 	out.append(["goods", "Voir la marchandise"])
 	out.append(["useful", "C'est vraiment utile, tout ça ?"])
 	out.append(["lockless", "Une clé sans serrure ?!"])
+	if Save.count("cle") > 0:
+		if s().get("key_asked", false):
+			out.append(["key_sell", "D'accord, je vous la vends (200)"])
+			out.append(["key_no", "Non, je la garde."])
+		else:
+			out.append(["key", "J'ai une petite clé en cuivre... Ça vous dit ?"])
 	if s().get("tuesday", false):
 		out.append(["tuesday", "Vous avez travaillé mardi ?"])
 	return out
@@ -266,6 +272,12 @@ func _barnabe_options() -> Array:
 
 func _barnabe_respond(intent: String) -> Dictionary:
 	match intent:
+		"key":
+			return {"text": "Une petite clé en cuivre ?! Je... vous en donne deux cents coquillages. Tout de suite. Ne posez pas de questions.", "flag": {"key_asked": true}}
+		"key_sell":
+			return {"text": "Marché con... Non. Non, attendez. Gardez-la. Je ne peux pas. Gardez-la bien, surtout. Et ne la montrez à personne.", "flag": {"key_refused": true}, "event": "key_back"}
+		"key_no":
+			return {"text": "Bien. Très bien. C'est mieux comme ça. Je dis ça, je dis rien. Je ne dis jamais rien. C'est mon problème."}
 		"useful":
 			add_mood("barnabe", 0.05)
 			return {"text": _say(["Probablement. C'est écrit sur la porte. Je n'ai pas dit « certainement ».", "Rien n'est inutile. Ça dépend juste de quand on en a besoin. Et on n'a jamais besoin de la même chose deux fois.", "Utile, c'est un point de vue. Le mien est commercial."])}
@@ -414,6 +426,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 	var tue: bool = s().get("tuesday", false)
 	match who:
 		"basile":
+			if s().get("phare_done", false):
+				return {"text": _say(["Alors j'ai fait vingt-sept pains sans aucune raison ? ... Comme tous les mardis, dit mon assistant. Ah oui. Quel assistant ?", "Bonjour %s ! Vingt-sept pains, mardi. Je m'en souviens, maintenant. J'ai aussi retrouvé mon assistant. Il était dans le four." % name]), "flag": {"basile_met": true}}
 			return {"text": _say(["Bonjour %s ! Pain du jour, pain d'hier, pain de demain. Je ne garantis pas l'ordre." % name, "Chaud, le pain ! Enfin, il l'était. Il le sera. Il l'a été." , "Ah, un client ! Ou un courant d'air affamé."]), "flag": {"basile_met": true}}
 		"gerard":
 			return {"text": _say(["Chut. Ils mordent à l'aube, les poissons. Et à midi aussi. Mais ils mordent mal.", "Salut %s. Le poisson d'hier m'en veut encore." % name, "Pas un bruit... bon, un petit bruit."]), "flag": {"gerard_met": true}}
@@ -424,6 +438,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 				return {"text": "Entre, mon petit. Ne marche pas sur hier, il est fragile.", "flag": {"petro_met": true}}
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
+			if s().get("phare_done", false):
+				return {"text": _say(["Je suis à l'auberge, provisoirement. Malo me fait payer la chambre 7 au tarif « mardi ». Je ne comprends pas, mais je paie.", "Alors, %s ? La Première Page ne se lit pas encore. Mais le symbole, lui, je le reconnais. On en reparlera." % name]), "flag": {"eleonore_met": true}}
 			if not s().get("eleonore_story", false):
 				return {"text": "Vous m'avez trouvée. Ça devait arriver. Par chance, j'avais un plan. Par malchance, il est resté dans mon sac. Asseyez-vous.", "flag": {"eleonore_met": true}}
 			return {"text": _say(["Alors, cette roue ? L'horloge n'attend pas. Enfin, elle attend depuis mardi.", "Courage. Les Mains du Dehors rangent mal : il suffit de remettre dans l'ordre."]), "flag": {"eleonore_met": true}}
@@ -443,6 +459,14 @@ func _x_options(who: String) -> Array:
 			if tue:
 				out.append(["mardi", "Vous avez pêché mardi ?"])
 			out.append(["fish", "Ça mord ?"])
+			if s().get("fish_seen", false) and not s().get("fish_solved", false):
+				out.append(["fish2", "Votre cabane est sur son nid, Gérard."])
+			if Save.count("planche") > 0 and not s().get("plank_decided", false):
+				if s().get("plank_offer", false):
+					out.append(["plank_give", "Prenez-la, la planche."])
+					out.append(["plank_keep", "Finalement, je la garde."])
+				else:
+					out.append(["plank", "J'ai une planche. Ça vous intéresse ?"])
 		"marguerite":
 			if tue:
 				out.append(["mardi", "Et mardi, vous peigniez ?"])
@@ -472,6 +496,15 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": _say(["Le pain croustillant se mérite. Le pain mou se pardonne.", "Mangez-le chaud. Ou froid. Ou jamais, c'est un pain de décoration."])}
 		"gerard:mardi":
 			return {"text": "Mardi, j'ai pêché une planche. Neuve. Sous la jetée, elle me regardait. Soulevez-la : j'ai pas osé."}
+		"gerard:fish2":
+			add_mood("gerard", 0.3)
+			return {"text": "Sur son nid ?! Mais c'est pour ça qu'il me poursuit ! Je déplace ma cabane sur le quai, demain. Tenez, pour le conseil : quinze coquillages. Le poisson ne sera pas capturé. Moi non plus.", "flag": {"fish_solved": true}, "event": "shells15"}
+		"gerard:plank":
+			return {"text": "Une planche ?! Droite, sans nœud, presque honnête ! Je vous en donne dix coquillages. Mon menuisier en a besoin. Enfin, j'en ai un. Il s'appelle... peu importe.", "flag": {"plank_offer": true}}
+		"gerard:plank_give":
+			return {"text": "Vous êtes un ange. Un ange sans planche, maintenant, mais un ange.", "flag": {"plank_decided": true, "plank_given": true}, "event": "plank_give"}
+		"gerard:plank_keep":
+			return {"text": "Ah. Bon. Tant pis. C'est un grand renoncement. Mais je comprends.", "flag": {"plank_decided": true, "plank_kept": true}, "event": "plank_keep"}
 		"gerard:fish":
 			return {"text": _say(["Ça mord. Pas le poisson. Les moustiques.", "Le poisson rancunier, il revient toujours. Je le reconnais à son regard."])}
 		"marguerite:mardi":

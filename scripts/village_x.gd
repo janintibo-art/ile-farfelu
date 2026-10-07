@@ -336,6 +336,7 @@ func _lighthouse() -> void:
 		Save.add_item("papier_bleu", -1)
 		clue("c_light", "L'HEURE DU PHARE", "Le papier : un horaire. « 21 h — la lumière a changé de côté ». Tampon : MARDI.", "Un horaire de phare. Quelqu'un a regardé la lumière tourner dans le mauvais sens, un mardi.")
 		, func(): return tuesday() and Save.count("papier_bleu") > 0 and not Save.story.get("c_light", false), 1.6)
+	hotspot(lh, p + Vector3(0, 0.0, 0), "Entrer dans le phare", func(): v.phare.enter(), func(): return Save.story.get("mardi", false) and Save.story.get("c_light", false) and not v.phare.busy, 1.6)
 	hotspot(lh, p + Vector3(0, -0.3, 0), "Examiner le cadenas", func():
 		Fx.text(v.world, _fwd_pos(1.6), "Une fente. Pour un papier. Bleu, de préférence.", Color(1.0, 0.9, 0.7), 0.6, 3.0)
 		, func(): return tuesday() and Save.count("papier_bleu") == 0 and not Save.story.get("c_light", false), 1.6)

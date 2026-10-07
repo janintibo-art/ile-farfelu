@@ -4,8 +4,8 @@ extends RefCounted
 
 const Save := preload("res://scripts/save.gd")
 
-const TABS := ["clues", "people", "objects"]
-const TAB_NAMES := {"clues": "INDICES", "people": "PERSONNES", "objects": "OBJETS"}
+const TABS := ["clues", "people", "objects", "quests"]
+const TAB_NAMES := {"clues": "INDICES", "people": "PERSONNES", "objects": "OBJETS", "quests": "QUÊTES"}
 
 
 static func _f(k: String) -> bool:
@@ -59,6 +59,28 @@ static func lines(tab: String) -> Array:
 					any = true
 			if not any:
 				out.append("(Personne pour l'instant.)")
+		"quests":
+			var any3 := false
+			var qs := [
+				["phare_done", "Le Phare de l'Envers : terminé. Page 1 obtenue."],
+				["door_open", "La porte sans maison : ouverte (sur rien)."],
+				["door_seen", "La porte sans maison : trouver sa maison."],
+				["fish_solved", "Le poisson rancunier : conflit résolu."],
+				["fish_seen", "Le poisson rancunier : parler à Gérard."],
+				["plank_given", "La planche : donnée à Gérard."],
+				["plank_kept", "La planche : Pico la garde."],
+				["key_asked", "La clé inconnue : Barnabé la veut. Pourquoi ?"],
+				["photo2", "Chambre 7 : photo du héros devant le château."],
+				["ch1_done", "CHAPITRE 1 TERMINÉ."],
+			]
+			for q in qs:
+				if _f(q[0]):
+					if (q[0] == "door_seen" and _f("door_open")) or (q[0] == "fish_seen" and _f("fish_solved")):
+						continue
+					out.append(q[1])
+					any3 = true
+			if not any3:
+				out.append("(Aucune quête secondaire pour l'instant.)")
 		_:
 			var any2 := false
 			var objs := [

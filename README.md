@@ -108,6 +108,23 @@ sur l'horloge, « Remonter l'horloge » mène aux Mains du Dehors : quatre orbes
 droite, le soleil et la lune servent d'indice. Réussir rend le mardi au village.
 Le carnet d'enquête (sac > « Ouvrir le carnet ») se remplit tout seul.
 
+## Le Phare de l'Envers et la fin du chapitre 1 (v8)
+
+Une fois le mardi rendu au village et le papier bleu glissé sous la porte du
+phare, « Entrer dans le phare » ouvre le premier donjon, sans ennemis, six
+salles à la suite (la progression est sauvegardée) :
+1. l'escalier impossible (retourner le tableau au soleil plus orange, tirer le levier) ;
+2. les quatre fenêtres (une seule montre le village d'aujourd'hui) ;
+3. la pièce penchée (guider la boule avec les planches jusqu'à la plaque verte) ;
+4. la maquette (tourner trois sections jusqu'à aligner la bande jaune) ;
+5. la chambre du gardien (la photo et le journal) ;
+6. le sommet (la page : « RETOUR : NON PRÉVU »), puis « Sortir du phare ».
+Éléonore commente. Ensuite : Éléonore s'installe à l'auberge, ma chambre (4) et
+la chambre 7 s'ouvrent (deuxième photo sous le lit), « Dormir » termine le
+chapitre 1. Quêtes secondaires : la porte sans maison (poignée de Barnabé),
+le poisson rancunier et la planche (Gérard), la clé inconnue (Barnabé).
+Le carnet a un onglet QUÊTES.
+
 ## Compilation
 
 Tout se fait sur GitHub Actions (`.github/workflows/build.yml`) : Godot,
