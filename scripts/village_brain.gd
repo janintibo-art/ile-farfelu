@@ -78,6 +78,8 @@ func _met(who: String, name: String) -> bool:
 
 func greet(who: String, name: String) -> Dictionary:
 	_count_talk(who)
+	if who in EXTRA:
+		return _x_greet(who, name)
 	match who:
 		"malo":
 			return _malo_greet(name)
@@ -90,6 +92,8 @@ func greet(who: String, name: String) -> Dictionary:
 
 
 func options(who: String) -> Array:
+	if who in EXTRA:
+		return _x_options(who)
 	match who:
 		"malo":
 			return _malo_options()
@@ -102,6 +106,8 @@ func options(who: String) -> Array:
 
 
 func respond(who: String, intent: String) -> Dictionary:
+	if who in EXTRA:
+		return _x_respond(who, intent)
 	match who:
 		"malo":
 			return _malo_respond(intent)
@@ -114,6 +120,8 @@ func respond(who: String, intent: String) -> Dictionary:
 
 
 func idle(who: String) -> String:
+	if who in EXTRA:
+		return _x_idle(who)
 	match who:
 		"malo":
 			return _say([
@@ -147,6 +155,8 @@ func idle(who: String) -> String:
 
 func bonked(who: String) -> String:
 	add_mood(who, -0.15)
+	if who in EXTRA:
+		return _x_bonked(who)
 	match who:
 		"malo":
 			return _say(["Les projectiles, c'est à la porte. Il y a un vestiaire pour ça.", "Ça, c'est pour le verre que j'ai cassé tout à l'heure ?", "Aïe. Je note. Dans le livre de comptes."])
@@ -186,6 +196,8 @@ func _malo_options() -> Array:
 		out.append(["photo", "Vous reconnaissez quelqu'un là-dessus ?"])
 	if s().get("tuesday", false):
 		out.append(["seven", "Et la chambre 7 ?"])
+	if s().get("ledger_seen", false) and not s().get("eleonore_known", false):
+		out.append(["who7", "Le livre de comptes dit « E. Chardon » pour la 7."])
 	out.append(["nothing", "Rien, je regardais."])
 	return out
 
@@ -218,6 +230,9 @@ func _malo_respond(intent: String) -> Dictionary:
 				add_mood("malo", -0.1)
 				return {"text": _say(["Cette... photo ? Elle est floue. Très floue. Je ne vois personne. Je vais nettoyer un verre.", "Je ne reconnais rien. À part mon auberge, évidemment. Elle est très reconnaissable, mon auberge."])}
 			return {"text": "Quelle photo ?"}
+		"who7":
+			add_mood("malo", 0.1)
+			return {"text": "...Vous avez lu le livre. Bon. Éléonore Chardon, horlogère. Elle a loué la 7 mardi, puis elle s'est cachée dans la maison abandonnée, côté est du village. Ne dites pas que c'est moi. Dites que c'est le livre.", "flag": {"eleonore_known": true, "c_inn": true}, "event": "eleonore_known"}
 		"seven":
 			add_mood("malo", -0.2)
 			return {"text": _say(["Chambre 7 ? Il n'y a pas de chambre 7. Il y en a... huit. Mais pas de 7. C'est compliqué.", "La 7 est en travaux. En permanence. Je n'en dirai pas plus aujourd'hui."]), "flag": {"asked7": true}}
@@ -334,6 +349,8 @@ func _nina_respond(intent: String) -> Dictionary:
 # ---------------------------------------------------------------------------
 
 func _mayor_greet(name: String) -> Dictionary:
+	if s().get("mardi", false) and not s().get("mayor_mardi", false):
+		return {"text": "Mardi ?! Il est REVENU ! Il y a eu un marché, des pains, tout ! ... Et j'ai retrouvé mon registre. Il était dans mon chapeau. Je n'ai pas de chapeau.", "flag": {"mayor_mardi": true}}
 	if not s().get("mayor_met", false):
 		return {"text": "Ah ! Un nouvel arrivant ! Parfait ! Enfin, parfait... Avez-vous vu mon registre ? Non ? Bien sûr que non.", "flag": {"mayor_met": true}}
 	if s().get("calendar_seen", false) and not s().get("tuesday", false):
@@ -384,3 +401,112 @@ func _mayor_respond(intent: String) -> Dictionary:
 			])}
 		_:
 			return {"text": "Hm ?"}
+
+
+# ---------------------------------------------------------------------------
+# Les autres habitants : Basile, Gérard, Marguerite, Pétronille, Éléonore
+# ---------------------------------------------------------------------------
+
+const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore"]
+
+
+func _x_greet(who: String, name: String) -> Dictionary:
+	var tue: bool = s().get("tuesday", false)
+	match who:
+		"basile":
+			return {"text": _say(["Bonjour %s ! Pain du jour, pain d'hier, pain de demain. Je ne garantis pas l'ordre." % name, "Chaud, le pain ! Enfin, il l'était. Il le sera. Il l'a été." , "Ah, un client ! Ou un courant d'air affamé."]), "flag": {"basile_met": true}}
+		"gerard":
+			return {"text": _say(["Chut. Ils mordent à l'aube, les poissons. Et à midi aussi. Mais ils mordent mal.", "Salut %s. Le poisson d'hier m'en veut encore." % name, "Pas un bruit... bon, un petit bruit."]), "flag": {"gerard_met": true}}
+		"marguerite":
+			return {"text": _say(["Bonjour ! Vous trouvez pas que cette maison est trop bleue ? Moi non plus.", "%s ! Tenez-vous bien, la peinture sèche quand elle veut." % name]), "flag": {"marguerite_met": true}}
+		"petronille":
+			if not tue:
+				return {"text": "Entre, mon petit. Ne marche pas sur hier, il est fragile.", "flag": {"petro_met": true}}
+			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
+		_:
+			if not s().get("eleonore_story", false):
+				return {"text": "Vous m'avez trouvée. Ça devait arriver. Par chance, j'avais un plan. Par malchance, il est resté dans mon sac. Asseyez-vous.", "flag": {"eleonore_met": true}}
+			return {"text": _say(["Alors, cette roue ? L'horloge n'attend pas. Enfin, elle attend depuis mardi.", "Courage. Les Mains du Dehors rangent mal : il suffit de remettre dans l'ordre."]), "flag": {"eleonore_met": true}}
+
+
+func _x_options(who: String) -> Array:
+	var out: Array = []
+	var tue: bool = s().get("tuesday", false)
+	match who:
+		"basile":
+			if tue:
+				out.append(["mardi", "Que faisiez-vous mardi ?"])
+			if s().get("c_baker", false) and not s().get("got_a", false):
+				out.append(["round", "Vous avez perdu un truc rond ?"])
+			out.append(["bread", "Un conseil de pain ?"])
+		"gerard":
+			if tue:
+				out.append(["mardi", "Vous avez pêché mardi ?"])
+			out.append(["fish", "Ça mord ?"])
+		"marguerite":
+			if tue:
+				out.append(["mardi", "Et mardi, vous peigniez ?"])
+			out.append(["blue", "Pourquoi cette couleur ?"])
+		"petronille":
+			if tue:
+				out.append(["mardi", "Le mardi n'a pas disparu ?"])
+				if not s().get("c_petro", false):
+					out.append(["wheel", "Vous avez quelque chose qui tourne ?"])
+			out.append(["tea", "Du thé ?"])
+		_:
+			if not s().get("eleonore_story", false):
+				out.append(["story", "Qui êtes-vous, vraiment ?"])
+			else:
+				out.append(["hands", "Les Mains du Dehors, c'est quoi ?"])
+				out.append(["sun", "Un conseil pour la maquette ?"])
+	return out
+
+
+func _x_respond(who: String, intent: String) -> Dictionary:
+	match who + ":" + intent:
+		"basile:mardi":
+			return {"text": "Mardi ? J'ai pétri. Je me souviens des mains. Les miennes. Enfin, il y en avait d'autres. Mon registre est dans l'arrière-boutique : il dit vingt-sept fournées. Je n'ose plus le relire."}
+		"basile:round":
+			return {"text": "Un truc rond, tiède, avec des dents ? Il est parmi les pains. Cherchez-le. Je l'ai pris pour une miche ambitieuse."}
+		"basile:bread":
+			return {"text": _say(["Le pain croustillant se mérite. Le pain mou se pardonne.", "Mangez-le chaud. Ou froid. Ou jamais, c'est un pain de décoration."])}
+		"gerard:mardi":
+			return {"text": "Mardi, j'ai pêché une planche. Neuve. Sous la jetée, elle me regardait. Soulevez-la : j'ai pas osé."}
+		"gerard:fish":
+			return {"text": _say(["Ça mord. Pas le poisson. Les moustiques.", "Le poisson rancunier, il revient toujours. Je le reconnais à son regard."])}
+		"marguerite:mardi":
+			return {"text": "Mardi, je peignais en bleu. Ensuite il y a eu cette traînée bleue qui file jusqu'au phare. Je n'ai rien fait ! Mon pinceau est contre le mur, regardez la peinture."}
+		"marguerite:blue":
+			return {"text": _say(["Le bleu, c'est la couleur de ce qu'on n'a pas encore décidé.", "Elle devait être jaune. Elle a choisi toute seule."])}
+		"petronille:mardi":
+			return {"text": _say(["Le mardi ? On l'a rangé. Le plus dur, c'est de se souvenir où.", "Quand on perd un jour, mon petit, on ne le cherche pas. On cherche ce qu'il a emporté."])}
+		"petronille:wheel":
+			add_mood("petronille", 0.2)
+			return {"text": "Tiens, cette chose verte qui tourne. Elle était dans mon sucrier. Elle sert à quelque chose. À quoi, on te le dira... plus tard. Peut-être hier.", "give": "roue_c", "flag": {"c_petro": true}, "event": "got_piece"}
+		"petronille:tea":
+			return {"text": _say(["Il est parfait. Il n'a ni goût ni chaleur. C'est ma spécialité.", "Un thé, c'est du temps qu'on boit."])}
+		"eleonore:story":
+			add_mood("eleonore", 0.3)
+			return {"text": "Éléonore Chardon, horlogère. Mardi, j'ai réparé l'horloge de la mairie. Puis des mains sont sorties du cadran et m'ont dit « Pas touche ». Alors je me suis cachée. Tenez : l'axe central. Sans lui, la roue du mardi tourne dans le vide.", "give": "axe", "flag": {"eleonore_story": true, "got_axe": true}, "event": "got_axe"}
+		"eleonore:hands":
+			return {"text": "Les Mains du Dehors rangent les histoires pour qu'on ne s'en serve pas. Sur l'horloge, elles vous montreront ce qu'elles ont rangé. Ce sont des souvenirs, pas des vérités."}
+		"eleonore:sun":
+			return {"text": "Dans la maquette, quatre souvenirs de la même journée. Regardez le soleil ou la lune : il ne ment pas, lui. Du matin vers la nuit, de gauche à droite."}
+	return {"text": "Hm ?"}
+
+
+func _x_idle(who: String) -> String:
+	match who:
+		"basile":
+			return _say(["Une baguette, c'est un pain qui a de l'ambition.", "Si vous entendez du pain qui chante, c'est normal."])
+		"gerard":
+			return _say(["Le silence, c'est le meilleur appât.", "Je ne dors pas : je surveille le poisson."])
+		"marguerite":
+			return _say(["Encore un coup de pinceau et c'est fini. Ou pas.", "La peinture, ça sèche. Parfois dans le mauvais ordre."])
+		"petronille":
+			return _say(["Le temps passe. Il passe devant, puis derrière.", "Un petit biscuit ? Il est de lundi."])
+	return _say(["Tic. Tac. Tac. Tic. Ce n'est pas la bonne cadence.", "Je réparerais bien le monde, mais je n'ai pas les outils."])
+
+
+func _x_bonked(who: String) -> String:
+	return _say(["Ouille ! Je le note dans mon carnet à reproches.", "Hé ! C'était pas prévu un mardi !", "BONK ! Voilà un bruit qu'on n'oublie pas."])

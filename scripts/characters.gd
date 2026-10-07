@@ -166,6 +166,72 @@ const THEODORE := {
 	"lines": [],
 }
 
+## Les gens de la rue des Traverses et du port
+const BASILE := {
+	"name": "Basile",
+	"skin": Color(1.0, 0.84, 0.72),
+	"hair": Color(0.95, 0.9, 0.8),
+	"hair_style": "innkeeper",
+	"eye": Color(0.35, 0.3, 0.2),
+	"shirt": Color(0.98, 0.96, 0.92),
+	"pants": Color(0.55, 0.45, 0.4),
+	"shoes": Color(0.45, 0.32, 0.25),
+	"accent": Color(0.95, 0.85, 0.6),
+	"lines": [],
+}
+
+const GERARD := {
+	"name": "Gérard",
+	"skin": Color(0.88, 0.66, 0.5),
+	"hair": Color(0.55, 0.55, 0.6),
+	"hair_style": "fisher",
+	"eye": Color(0.25, 0.4, 0.55),
+	"shirt": Color(0.3, 0.45, 0.7),
+	"pants": Color(0.35, 0.35, 0.28),
+	"shoes": Color(0.2, 0.2, 0.22),
+	"accent": Color(0.85, 0.55, 0.25),
+	"lines": [],
+}
+
+const MARGUERITE := {
+	"name": "Marguerite",
+	"skin": Color(1.0, 0.82, 0.7),
+	"hair": Color(0.45, 0.3, 0.2),
+	"hair_style": "buns",
+	"eye": Color(0.3, 0.5, 0.35),
+	"shirt": Color(0.95, 0.8, 0.85),
+	"pants": Color(0.6, 0.75, 0.95),
+	"shoes": Color(0.55, 0.4, 0.3),
+	"accent": Color(0.5, 0.75, 1.0),
+	"lines": [],
+}
+
+const PETRONILLE := {
+	"name": "Pétronille",
+	"skin": Color(0.98, 0.82, 0.72),
+	"hair": Color(0.85, 0.85, 0.9),
+	"hair_style": "ponytail",
+	"eye": Color(0.5, 0.35, 0.65),
+	"shirt": Color(0.6, 0.4, 0.7),
+	"pants": Color(0.45, 0.3, 0.55),
+	"shoes": Color(0.9, 0.7, 0.4),
+	"accent": Color(0.85, 0.6, 0.3),
+	"lines": [],
+}
+
+const ELEONORE := {
+	"name": "Éléonore",
+	"skin": Color(1.0, 0.86, 0.74),
+	"hair": Color(0.45, 0.15, 0.25),
+	"hair_style": "messy",
+	"eye": Color(0.2, 0.55, 0.6),
+	"shirt": Color(0.25, 0.5, 0.55),
+	"pants": Color(0.3, 0.25, 0.3),
+	"shoes": Color(0.55, 0.35, 0.25),
+	"accent": Color(0.9, 0.8, 0.5),
+	"lines": [],
+}
+
 const SWAP_REACTIONS := [
 	"Hé ! Rends-moi mon corps !",
 	"Pourquoi j'ai envie de ronronner ?!",

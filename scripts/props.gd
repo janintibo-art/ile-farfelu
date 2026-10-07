@@ -12,6 +12,60 @@ const FOODS := ["glace", "ramen", "bonbon"]
 const FISH_KINDS := ["sardine", "arcenciel", "dore", "botte", "algue", "slip"]
 
 
+
+const PIECE_R := 0.17
+const PIECE_COLS := {"roue_a": Color(0.95, 0.66, 0.3), "roue_b": Color(0.4, 0.62, 0.96), "roue_c": Color(0.4, 0.8, 0.5)}
+
+
+## Un secteur de roue (un tiers de la roue du mardi). Centré sur son propre milieu.
+static func sector_mesh(a0: float, a1: float, col: Color) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_color(col)
+	var ro := PIECE_R
+	var ri := 0.045
+	var th := 0.03
+	var mid := (a0 + a1) * 0.5
+	var c := Vector3(cos(mid), 0.0, sin(mid)) * piece_center_r()
+	var n := 8
+	for k in n:
+		var t0 := lerpf(a0, a1, float(k) / float(n))
+		var t1 := lerpf(a0, a1, float(k + 1) / float(n))
+		var o0 := Vector3(cos(t0) * ro, 0, sin(t0) * ro) - c
+		var o1 := Vector3(cos(t1) * ro, 0, sin(t1) * ro) - c
+		var i0 := Vector3(cos(t0) * ri, 0, sin(t0) * ri) - c
+		var i1 := Vector3(cos(t1) * ri, 0, sin(t1) * ri) - c
+		var up := Vector3(0, th * 0.5, 0)
+		_quad(st, i0 + up, o0 + up, o1 + up, i1 + up)
+		_quad(st, i0 - up, o0 - up, o1 - up, i1 - up)
+		_quad(st, o0 - up, o0 + up, o1 + up, o1 - up)
+	var e0 := a0
+	var e1 := a1
+	for t in [e0, e1]:
+		var o := Vector3(cos(t) * ro, 0, sin(t) * ro) - c
+		var i := Vector3(cos(t) * ri, 0, sin(t) * ri) - c
+		var up := Vector3(0, th * 0.5, 0)
+		_quad(st, i - up, o - up, o + up, i + up)
+	st.generate_normals()
+	return st.commit()
+
+
+static func piece_center_r() -> float:
+	return PIECE_R * 0.62
+
+
+## Décalage (x, z) du centre d'un morceau par rapport au centre de la roue.
+static func piece_offset(kind: String) -> Vector3:
+	var k := ["roue_a", "roue_b", "roue_c"].find(kind)
+	var mid := (float(k) * TAU / 3.0 + (float(k) + 1.0) * TAU / 3.0) * 0.5
+	return Vector3(cos(mid), 0.0, sin(mid)) * piece_center_r()
+
+
+static func _quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3) -> void:
+	for v in [a, b, c, a, c, d, a, c, b, a, d, c]:
+		st.add_vertex(v)
+
+
 static func spawn_all(world: Node3D, house: Node3D, palms: Array) -> void:
 	var s := Island.SPAWN
 	make(world, "ball", Island.ground(s.x + 2.5, s.y - 2.0) + Vector3(0, 0.5, 0))
@@ -179,11 +233,79 @@ static func paint(b: Builder, kind: String, xf := Transform3D()) -> void:
 			b.box(Vector3(0.012, 0.012, 0.09), o + bs * Vector3(0, 0, 0.025), iron, false, bs)
 			b.box(Vector3(0.012, 0.03, 0.014), o + bs * Vector3(0, -0.02, 0.06), iron, false, bs)
 			b.box(Vector3(0.012, 0.02, 0.014), o + bs * Vector3(0, -0.014, 0.04), iron, false, bs)
+		"roue_a", "roue_b", "roue_c":
+			var k := ["roue_a", "roue_b", "roue_c"].find(kind)
+			var col: Color = PIECE_COLS[kind]
+			b.add_mesh(sector_mesh(float(k) * TAU / 3.0, float(k + 1) * TAU / 3.0, col), xf)
+			var cc := piece_offset(kind)
+			for t in 5:
+				var ang := lerpf(float(k) * TAU / 3.0 + 0.2, float(k + 1) * TAU / 3.0 - 0.2, float(t) / 4.0)
+				var p := Vector3(cos(ang) * (PIECE_R + 0.012), 0.0, sin(ang) * (PIECE_R + 0.012)) - cc
+				b.box(Vector3(0.03, 0.03, 0.03), o + bs * p, col.darkened(0.2), false, bs * Basis(Vector3.UP, -ang))
+		"roue_mardi":
+			var tc := Color(0.35, 0.4, 0.6)
+			b.cylinder(PIECE_R, PIECE_R, 0.03, o, tc, bs, 20)
+			for t in 12:
+				var ang := t * TAU / 12.0
+				b.box(Vector3(0.04, 0.03, 0.035), o + bs * Vector3(cos(ang) * (PIECE_R + 0.015), 0.0, sin(ang) * (PIECE_R + 0.015)), tc.darkened(0.15), false, bs * Basis(Vector3.UP, -ang))
+			b.cylinder(0.05, 0.05, 0.04, o, Color(0.9, 0.8, 0.45), bs, 10)
+		"axe":
+			var gold := Color(0.95, 0.78, 0.3)
+			b.cylinder(0.07, 0.07, 0.05, o, gold, bs, 12)
+			for t in 4:
+				b.box(Vector3(0.035, 0.05, 0.1), o + bs * (Basis(Vector3.UP, t * PI * 0.5) * Vector3(0, 0, 0.075)), gold.darkened(0.1), false, bs * Basis(Vector3.UP, t * PI * 0.5))
+			b.sphere(0.03, o + bs * Vector3(0, 0.04, 0), Color(0.95, 0.4, 0.4), Vector3.ONE, bs, 8)
+		"papier_bleu":
+			var pb := Color(0.35, 0.55, 1.0)
+			b.box(Vector3(0.1, 0.004, 0.07), o, pb, false, bs)
+			b.box(Vector3(0.05, 0.004, 0.04), o + bs * Vector3(0.05, 0, -0.04), pb.lightened(0.1), false, bs * Basis(Vector3.UP, 0.5))
+			b.box(Vector3(0.09, 0.0045, 0.004), o + bs * Vector3(0, 0, 0.01), Color(0.9, 0.95, 1.0), false, bs)
+		"pinceau":
+			b.cylinder(0.012, 0.012, 0.22, o + bs * Vector3(0, 0, 0.04), Color(0.8, 0.6, 0.35), bs * Basis(Vector3.RIGHT, PI * 0.5), 8)
+			b.cylinder(0.02, 0.02, 0.06, o + bs * Vector3(0, 0, -0.1), Color(0.75, 0.75, 0.8), bs * Basis(Vector3.RIGHT, PI * 0.5), 8)
+			b.cylinder(0.02, 0.012, 0.07, o + bs * Vector3(0, 0, -0.16), Color(0.4, 0.62, 1.0), bs * Basis(Vector3.RIGHT, PI * 0.5), 8)
+		"orbe_1", "orbe_2", "orbe_3", "orbe_4":
+			_orb(b, kind, o, bs)
 		"bonbon":
 			b.sphere(0.07, o, Color(1.0, 0.5, 0.8), Vector3.ONE, bs, 12)
 			b.torus(0.05, 0.072, o, Color.WHITE, bs * Basis(Vector3.FORWARD, 0.5))
 			for sx in [-1.0, 1.0]:
 				b.prism(Vector3(0.08, 0.06, 0.03), o + bs * Vector3(sx * 0.095, 0, 0), Color(1.0, 0.85, 0.3), bs * Basis(Vector3.FORWARD, sx * PI / 2.0))
+
+
+## Un souvenir dans une bulle : un petit décor, et le ciel (soleil ou lune) qui
+## dit à quel moment de la journée on se trouve.
+static func _orb(b: Builder, kind: String, o: Vector3, bs: Basis) -> void:
+	b.cylinder(0.06, 0.07, 0.025, o + bs * Vector3(0, -0.1, 0), Color(0.45, 0.35, 0.5), bs, 12)
+	b.cylinder(0.075, 0.075, 0.004, o + bs * Vector3(0, -0.085, 0), Color(0.55, 0.8, 0.5), bs, 12)
+	match kind:
+		"orbe_1":   # Aube : soleil bas à gauche, le boulanger et ses pains
+			b.sphere(0.022, o + bs * Vector3(-0.065, -0.045, 0.0), Color(1.0, 0.85, 0.3), Vector3.ONE, bs, 8)
+			b.capsule(0.015, 0.05, o + bs * Vector3(0.0, -0.055, 0.0), Color(0.98, 0.96, 0.92), bs)
+			b.sphere(0.014, o + bs * Vector3(0.0, -0.022, 0.0), Color(1.0, 0.85, 0.72), Vector3.ONE, bs, 6)
+			b.cylinder(0.012, 0.012, 0.014, o + bs * Vector3(0.0, -0.0, 0.0), Color.WHITE, bs, 6)
+			for t in 3:
+				b.box(Vector3(0.025, 0.012, 0.015), o + bs * Vector3(0.035 + t * 0.012, -0.075 + t * 0.012, 0.01), Color(0.85, 0.6, 0.3), false, bs)
+		"orbe_2":   # Milieu de journée : soleil haut, Malo ouvre la porte 7
+			b.sphere(0.022, o + bs * Vector3(0.0, 0.055, 0.0), Color(1.0, 0.95, 0.5), Vector3.ONE, bs, 8)
+			b.box(Vector3(0.04, 0.07, 0.01), o + bs * Vector3(0.03, -0.045, -0.02), Color(0.4, 0.28, 0.3), false, bs)
+			b.box(Vector3(0.012, 0.012, 0.004), o + bs * Vector3(0.03, -0.01, -0.0), Color(1.0, 1.0, 1.0), false, bs)
+			b.sphere(0.022, o + bs * Vector3(-0.025, -0.05, 0.015), Color(0.95, 0.6, 0.4), Vector3(1, 1.2, 1), bs, 8)
+			b.sphere(0.012, o + bs * Vector3(-0.025, -0.02, 0.015), Color(1.0, 0.85, 0.72), Vector3.ONE, bs, 6)
+		"orbe_3":   # Crépuscule : soleil rouge bas à droite, Éléonore court vers le phare
+			b.sphere(0.022, o + bs * Vector3(0.065, -0.045, 0.0), Color(1.0, 0.4, 0.25), Vector3.ONE, bs, 8)
+			b.cylinder(0.012, 0.016, 0.07, o + bs * Vector3(0.025, -0.045, -0.02), Color(0.95, 0.95, 0.95), bs, 8)
+			b.box(Vector3(0.03, 0.01, 0.02), o + bs * Vector3(0.025, -0.012, -0.02), Color(0.9, 0.3, 0.3), false, bs)
+			b.capsule(0.012, 0.04, o + bs * Vector3(-0.03, -0.055, 0.01), Color(0.25, 0.5, 0.55), bs * Basis(Vector3.FORWARD, -0.4))
+			b.sphere(0.012, o + bs * Vector3(-0.022, -0.03, 0.01), Color(0.45, 0.15, 0.25), Vector3.ONE, bs, 6)
+		_:           # Nuit : lune, étoiles, un bateau réparé, la lueur du phare
+			b.sphere(0.02, o + bs * Vector3(-0.02, 0.055, 0.0), Color(0.97, 0.97, 1.0), Vector3.ONE, bs, 8)
+			for t in 3:
+				b.sphere(0.006, o + bs * Vector3(0.03 + t * 0.012, 0.03 + t * 0.02, 0.0), Color(1.0, 1.0, 0.8), Vector3.ONE, bs, 4)
+			b.box(Vector3(0.06, 0.018, 0.026), o + bs * Vector3(-0.015, -0.062, 0.0), Color(0.5, 0.35, 0.25), false, bs)
+			b.box(Vector3(0.02, 0.006, 0.026), o + bs * Vector3(0.005, -0.05, 0.0), Color(0.85, 0.7, 0.45), false, bs)
+			b.box(Vector3(0.006, 0.05, 0.006), o + bs * Vector3(-0.02, -0.03, 0.0), Color(0.4, 0.3, 0.2), false, bs)
+			b.box(Vector3(0.012, 0.09, 0.012), o + bs * Vector3(0.06, -0.02, -0.03), Color(0.85, 0.9, 1.0), false, bs * Basis(Vector3.FORWARD, 0.6))
 
 
 static func make(world: Node3D, kind: String, pos: Vector3) -> RigidBody3D:
@@ -262,6 +384,19 @@ static func make(world: Node3D, kind: String, pos: Vector3) -> RigidBody3D:
 			rb.radius = 0.5
 			rb.mass = 2.0
 			rb.grab_text = "Hop !"
+		"orbe_1", "orbe_2", "orbe_3", "orbe_4":
+			var sh := SphereShape3D.new()
+			sh.radius = 0.1
+			shape = sh
+			rb.radius = 0.12
+			rb.mass = 0.3
+		"roue_a", "roue_b", "roue_c", "roue_mardi", "axe":
+			var sh := CylinderShape3D.new()
+			sh.radius = 0.09 if kind != "roue_mardi" else 0.17
+			sh.height = 0.04
+			shape = sh
+			rb.radius = 0.13 if kind != "roue_mardi" else 0.18
+			rb.mass = 0.2
 		"carnet":
 			var sh := BoxShape3D.new()
 			sh.size = Vector3(0.12, 0.17, 0.03)
@@ -294,6 +429,20 @@ static func make(world: Node3D, kind: String, pos: Vector3) -> RigidBody3D:
 			rb.radius = 0.08
 			rb.mass = 0.05
 	b.build(rb, Toon.vertex_color(0.008), "Mesh")
+	if kind.begins_with("orbe_"):
+		var gm := MeshInstance3D.new()
+		var sm := SphereMesh.new()
+		sm.radius = 0.095
+		sm.height = 0.19
+		gm.mesh = sm
+		var glass := StandardMaterial3D.new()
+		glass.albedo_color = Color(0.75, 0.9, 1.0, 0.28)
+		glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		glass.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+		gm.material_override = glass
+		gm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		rb.add_child(gm)
 	if kind == "photo":
 		# Au dos de la photo, une phrase écrite à la main
 		var back := Label3D.new()

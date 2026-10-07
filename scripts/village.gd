@@ -25,6 +25,9 @@ const TalkMenu := preload("res://scripts/talk_menu.gd")
 const ChoiceButton := preload("res://scripts/choice_button.gd")
 const Brain := preload("res://scripts/village_brain.gd")
 const VB := preload("res://scripts/village_build.gd")
+const VX := preload("res://scripts/village_x.gd")
+const Clock := preload("res://scripts/clock.gd")
+const Maquette := preload("res://scripts/maquette.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -47,6 +50,9 @@ var nina
 var calendar_btn
 var calendar_node: Node3D
 var zone := ""
+var x
+var clock
+var maquette
 var _nina_wp := 0
 var _nina_wait := 0.0
 var _nina_speed := 1.0
@@ -64,6 +70,16 @@ func build(p_world: Node3D, p_player) -> void:
 	_houses()
 	var lh := VB.lighthouse(world, LIGHTHOUSE)
 	nodes["phare"] = lh
+	x = VX.new()
+	x.v = self
+	x.build()
+	clock = Clock.new()
+	clock.setup(self, nodes["mairie"])
+	maquette = Maquette.new()
+	maquette.name = "Maquette"
+	add_child(maquette)
+	maquette.setup(self, player)
+	clock.maquette = maquette
 	_make_speakers()
 	refresh_calendar()
 
@@ -89,7 +105,7 @@ func _outdoors() -> void:
 	for px in [-7.5, 8.0]:
 		_pier(b, px, qz)
 	# Bateaux amarrés
-	VB.boat(b, Vector3(-11.5, -0.05, -72.5), 0.1, Color(0.35, 0.6, 0.85), Color(1, 0.95, 0.85))
+	VB.boat(b, Vector3(-11.3, -0.05, -72.3), 0.1, Color(0.35, 0.6, 0.85), Color(1, 0.95, 0.85))
 	VB.boat(b, Vector3(-3.0, -0.05, -73.5), -0.08, Color(0.95, 0.5, 0.35), Color(0.95, 0.85, 0.4))
 	VB.boat(b, Vector3(13.5, -0.05, -73.0), 0.05, Color(0.45, 0.75, 0.5), Color(1.0, 0.9, 0.9))
 	# Caisses et barils sur le quai
@@ -147,17 +163,7 @@ func _entrance_sign() -> void:
 # --- Maisons de la rue des Traverses (pas visitables) --------------------------------
 
 func _houses() -> void:
-	nodes["boulangerie"] = VB.house(self, "Boulangerie", Vector2(-9.0, -44.0), 0.0, 5.0, 5.0, 3.2, Color(1.0, 0.82, 0.58), Color(0.78, 0.4, 0.25), "BOULANGERIE")
 	nodes["maison_bleue"] = VB.house(self, "MaisonBleue", Vector2(9.0, -44.0), 0.0, 5.0, 5.0, 3.2, Color(0.55, 0.75, 1.0), Color(0.25, 0.3, 0.6), "")
-	nodes["petronille"] = VB.house(self, "ChezPetronille", Vector2(-18.5, -58.5), PI * 0.5, 5.0, 4.6, 3.0, Color(1.0, 0.72, 0.8), Color(0.4, 0.65, 0.45), "CHEZ PÉTRONILLE")
-	nodes["abandonnee"] = VB.house(self, "MaisonAbandonnee", Vector2(18.5, -58.5), -PI * 0.5, 5.0, 4.6, 3.0, Color(0.66, 0.63, 0.62), Color(0.3, 0.27, 0.3), "")
-	nodes["atelier"] = VB.house(self, "AtelierDuPort", Vector2(10.5, -60.0), 0.0, 5.0, 4.0, 3.0, Color(0.78, 0.65, 0.48), Color(0.4, 0.5, 0.6), "ATELIER DU PORT")
-	# Planches clouées sur la maison abandonnée
-	var ab: Node3D = nodes["abandonnee"]
-	var b := Builder.new()
-	for k in 3:
-		b.box(Vector3(1.6, 0.18, 0.06), Vector3(-0.4 + k * 0.3, 1.0 + k * 0.5, 2.38), Color(0.5, 0.36, 0.25), false, Basis(Vector3.FORWARD, 0.25 - k * 0.3))
-	b.build(ab, Toon.vertex_color(0.008), "Boards")
 
 
 # --- L'auberge du Dernier Verre ---------------------------------------------------------
@@ -503,7 +509,7 @@ func _once(key: String, text: String) -> void:
 
 
 func _zone_of(p: Vector3) -> String:
-	for z in [["inn", "auberge", INN], ["hall", "mairie", HALL], ["shop", "barnabe", SHOP]]:
+	for z in [["inn", "auberge", INN], ["hall", "mairie", HALL], ["shop", "barnabe", SHOP], ["bakery", "boulangerie", VX.BAKERY], ["workshop", "atelier", VX.WORKSHOP], ["petro", "petronille", VX.PETRO], ["ruin", "abandonnee", VX.RUIN]]:
 		var n: Node3D = nodes[z[1]]
 		var lp: Vector3 = n.to_local(p)
 		var info: Dictionary = z[2]
@@ -522,6 +528,8 @@ func _physics_process(delta: float) -> void:
 	var pp: Vector3 = player.global_position
 	_update_zone(pp)
 	_update_nina(delta)
+	x.update()
+	clock.update()
 	var cam: Vector3 = player.camera.global_position
 	for sp in speakers:
 		var node = sp["node"]
@@ -565,6 +573,14 @@ func _update_zone(pp: Vector3) -> void:
 			_once("inn", "Ça sent la soupe, le bois ciré et un secret. Surtout le secret.")
 		"hall":
 			_once("hall", "Trois guichets pour un si petit village. Je vais attendre ici, très calme.")
+		"bakery":
+			_once("bakery", "Ça sent le pain. Et le registre des fournées, mais surtout le pain.")
+		"workshop":
+			_once("workshop", "Un atelier fermé pour inventaire. Je n'ai jamais vu autant d'engrenages en vacances.")
+		"petro":
+			_once("petro", "Ça sent le thé et le temps qui passe. Beaucoup de temps.")
+		"ruin":
+			_once("ruin", "Une maison abandonnée habitée. C'est le genre de phrase que je ne devrais pas dire à voix haute.")
 		"shop":
 			_once("shop", "Ce monsieur vend des objets que même les objets ne comprennent pas.")
 
@@ -603,6 +619,16 @@ func _title_of(id: String) -> String:
 			return "BARNABÉ"
 		"nina":
 			return "NINA"
+		"basile":
+			return "BASILE"
+		"gerard":
+			return "GÉRARD"
+		"marguerite":
+			return "MARGUERITE"
+		"petronille":
+			return "MADAME PÉTRONILLE"
+		"eleonore":
+			return "ÉLÉONORE CHARDON"
 	return "THÉODORE PATATRAS"
 
 
@@ -669,6 +695,16 @@ func _apply(sp: Dictionary, r: Dictionary) -> void:
 			Fx.text(world, node.global_position + Vector3(0, 2.7, 0), "NOUVELLE QUÊTE : LE MARDI QUI AVAIT DISPARU", Color(0.7, 0.9, 1.0), 1.2, 4.0)
 			Fx.puff(world, player.global_position + Vector3(0, 1.2, 0), Color(0.8, 0.9, 1.0))
 			_pico("Un jour qui disparaît. C'est un vol ou une négligence ? Dans les deux cas, on enquête.")
+		"eleonore_known":
+			x.open_barricade()
+			Fx.text(world, node.global_position + Vector3(0, 2.5, 0), "INDICE : ÉLÉONORE CHARDON", Color(1.0, 0.92, 0.4), 1.0, 3.0)
+			_pico("La maison abandonnée, côté est. Les planches à la porte ont l'air d'avoir changé d'avis.")
+		"got_piece":
+			Fx.puff(world, node.global_position + Vector3(0, 1.0, 0), Color(0.6, 1.0, 0.7))
+			_pico("Un morceau de roue verte. Si on en trouve deux autres, on pourra les assembler à la mairie.")
+		"got_axe":
+			Fx.puff(world, node.global_position + Vector3(0, 1.0, 0), Color(1.0, 0.9, 0.4))
+			_pico("L'axe de l'horloge ! Direction la mairie, avec la roue.")
 		"nina_leave":
 			_nina_away = true
 			_nina_wait = 0.0

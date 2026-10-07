@@ -151,6 +151,14 @@ func _zone_line() -> String:
 			return _pick(["Trois guichets, personne derrière. C'est de l'efficacité, ça.", "L'horloge a une roue en moins. Ce n'est pas juste une horloge, je le sens.", "Si on me demande un formulaire, je ne suis pas là."])
 		"shop":
 			return _pick(["Je suis sûr qu'ils vendent aussi des choses utiles. Au fond. Tout au fond.", "Cette clé sans serrure me regarde. Je la regarde aussi."])
+		"bakery":
+			return _pick(["Vingt-sept pains. Je les ai comptés trois fois. Ils étaient vingt-sept à chaque fois.", "Un pain, ça ne ment pas. Mais ça peut cacher des choses."])
+		"workshop":
+			return _pick(["Tous ces engrenages... on dirait un puzzle pour géants.", "Fermé pour inventaire. Tu veux que je te dise ? Ils ont perdu l'inventaire."])
+		"petro":
+			return _pick(["Cette dame sait quelque chose. Elle le sait trop calmement.", "Un thé qui ne refroidit pas. Je n'aime pas ça. J'adore ça."])
+		"ruin":
+			return _pick(["Quelqu'un vit ici. Il y a trop de cartes pour une maison abandonnée.", "Chuchote. Je ne sais pas pourquoi, mais chuchote."])
 		"square", "village":
 			if Save.story.get("tuesday", false):
 				return _pick(["Tout le monde dit « mercredi ». Personne ne dit « mardi ». Voilà ce qui est étrange.", "Les étals sont rangés. Un marché qui a eu lieu sans qu'on s'en souvienne, c'est un beau tour.", "On commence par qui ? Le boulanger ? Le pêcheur ? Malo ?"])

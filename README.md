@@ -92,6 +92,22 @@ Malo remet alors la clé de la chambre 4. Tous parlent avec leur mini IA
 hors ligne (humeur, mémoire, phrases qui ne se répètent pas).
 Sur PC : approche, puis touches 1 à 6 ou clic sur le menu.
 
+## L'enquête du mardi disparu (v7)
+
+Une fois le carnet reçu du maire, six indices sont à trouver (boutons qui
+apparaissent près des lieux, à viser comme un menu) :
+boulangerie (registre des fournées), ponton (planche neuve de Gérard),
+maison bleue (pinceau de Marguerite, traînée de peinture), auberge (livre de
+comptes puis Malo : « E. Chardon »), Pétronille (roue verte), phare (papier
+bleu glissé sous la porte).
+Trois morceaux de roue (boulangerie, atelier, Pétronille) s'assemblent sur
+l'établi de la mairie ; Éléonore Chardon (maison abandonnée de l'est, planches
+levées quand on connaît son nom) donne la pièce centrale. Roue et pièce posées
+sur l'horloge, « Remonter l'horloge » mène aux Mains du Dehors : quatre orbes
+(aube, midi, crépuscule, nuit) à poser dans l'ordre du temps de gauche à
+droite, le soleil et la lune servent d'indice. Réussir rend le mardi au village.
+Le carnet d'enquête (sac > « Ouvrir le carnet ») se remplit tout seul.
+
 ## Compilation
 
 Tout se fait sur GitHub Actions (`.github/workflows/build.yml`) : Godot,

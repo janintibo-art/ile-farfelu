@@ -13,6 +13,7 @@ const Sword := preload("res://scripts/sword.gd")
 const Props := preload("res://scripts/props.gd")
 const Items := preload("res://scripts/shop_items.gd")
 const Fx := preload("res://scripts/fx.gd")
+const Journal := preload("res://scripts/journal.gd")
 
 const PER_PAGE := 5
 
@@ -20,6 +21,8 @@ var player
 var menu
 var is_open := false
 var page := 0
+var view := "bag"
+var tab := "clues"
 
 
 func setup(p_player) -> void:
@@ -41,6 +44,7 @@ func open() -> void:
 	is_open = true
 	visible = true
 	page = 0
+	view = "bag"
 	var cam: Vector3 = player.camera.global_position
 	var f: Vector3 = -player.camera.global_basis.z
 	f.y = 0.0
@@ -74,8 +78,12 @@ func entries() -> Array:
 		out.append([t + ("  [équipée]" if Save.equipped == "rod" else ""), "equip", "rod"])
 	if Save.sword > 0:
 		out.append([Sword.NAMES[Save.sword] + ("  [équipée]" if Save.equipped != "rod" else ""), "equip", "sword"])
+	if Save.count("carnet") > 0:
+		out.append(["Ouvrir le carnet d'enquête", "journal", ""])
 	for id in Inv.ORDER:
 		var n := Save.count(id)
+		if id == "carnet":
+			continue
 		if n > 0:
 			out.append(["%s  x%d" % [Inv.item_name(id), n], "use", id])
 	return out
@@ -83,6 +91,9 @@ func entries() -> Array:
 
 func refresh() -> void:
 	if not is_open:
+		return
+	if view == "journal":
+		_refresh_journal()
 		return
 	var all := entries()
 	var pages := maxi(1, int(ceil(all.size() / float(PER_PAGE))))
@@ -106,6 +117,42 @@ func refresh() -> void:
 	menu.set_header("SAC   ·   Coquillages : %d" % Save.shells)
 
 
+func _refresh_journal() -> void:
+	var all: Array = Journal.lines(tab)
+	var per := 4
+	var pages := maxi(1, int(ceil(all.size() / float(per))))
+	page = clampi(page, 0, pages - 1)
+	var opts: Array = []
+	for i in range(page * per, mini((page + 1) * per, all.size())):
+		opts.append([all[i], func(): pass, Color(1.0, 0.97, 0.85)])
+	if pages > 1:
+		opts.append(["Page suivante (%d/%d) >" % [page + 1, pages], _jnext, Color(1.0, 0.9, 0.95)])
+	var nxt: String = Journal.TABS[(Journal.TABS.find(tab) + 1) % Journal.TABS.size()]
+	opts.append(["Onglet : " + Journal.TAB_NAMES[nxt] + " >", _jtab.bind(nxt), Color(0.85, 0.95, 1.0)])
+	opts.append(["Fermer le carnet", _jclose, Color(0.9, 0.9, 0.9)])
+	menu.show_options(opts)
+	menu.set_header("CARNET D'ENQUÊTE  ·  " + Journal.TAB_NAMES[tab])
+
+
+func _jnext() -> void:
+	page += 1
+	if page >= maxi(1, int(ceil(Journal.lines(tab).size() / 4.0))):
+		page = 0
+	refresh()
+
+
+func _jtab(t: String) -> void:
+	tab = t
+	page = 0
+	refresh()
+
+
+func _jclose() -> void:
+	view = "bag"
+	page = 0
+	refresh()
+
+
 func _next() -> void:
 	page += 1
 	var pages := maxi(1, int(ceil(entries().size() / float(PER_PAGE))))
@@ -116,6 +163,12 @@ func _next() -> void:
 
 func _do(action: String, id: String) -> void:
 	match action:
+		"journal":
+			view = "journal"
+			tab = "clues"
+			page = 0
+			refresh()
+			return
 		"store":
 			var rb = player.held_item()
 			if rb and Inv.id_for_kind(str(rb.get("kind"))) == id:

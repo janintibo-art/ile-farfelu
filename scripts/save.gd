@@ -44,7 +44,11 @@ static func default_story() -> Dictionary:
 		"planks": 0, "bridge": false, "kept_plank": false, "castle_seen": false,
 		"village_seen": false, "inn_met": false, "mayor_met": false, "registered": false, "room_key": false,
 		"desk_ok": false, "calendar_seen": false, "tuesday": false, "nina_met": false, "barnabe_met": false,
-		"sign_read": false}
+		"sign_read": false,
+		"c_baker": false, "c_fisher": false, "c_house": false, "c_inn": false, "c_light": false, "c_petro": false,
+		"ledger_seen": false, "who7": false, "eleonore_known": false, "eleonore_met": false, "eleonore_story": false,
+		"got_axe": false, "wheel_built": false, "wheel_placed": false, "axe_placed": false, "mardi": false,
+		"gerard_met": false, "marguerite_met": false, "basile_met": false, "petro_met": false, "fails": 0}
 
 
 static func default_village() -> Dictionary:
