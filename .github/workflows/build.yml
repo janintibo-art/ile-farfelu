@@ -78,6 +78,7 @@ jobs:
           mkdir -p build/windows
           "$GODOT" --headless --export-release "Windows" build/windows/IleFarfelue.exe
           test -f build/windows/IleFarfelue.exe
+          printf '@echo off\r\nstart "" "%%~dp0IleFarfelue.exe" --xr-mode on\r\n' > build/windows/Lancer_en_VR.bat
           cd build && zip -qr IleFarfelue_PC.zip windows
 
       - name: Export Quest 2 (.apk)

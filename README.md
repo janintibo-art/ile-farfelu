@@ -157,3 +157,6 @@ sur le casque sans la désinstaller.
 
 ## v16
 - Export PC : ajoute IleFarfelue.console.exe (fenêtre noire qui affiche les erreurs) à côté du .exe.
+
+## v17
+- PC : OpenXR désactivé par défaut sous Windows (le jeu plantait quand le runtime Oculus était actif sans casque branché). Lancer_en_VR.bat démarre le jeu en PC VR.
