@@ -15,6 +15,7 @@ static var equipped := ""  # outil sorti avec le grip : "sword", "rod" ou ""
 static var quest := {}     # quête du slip de Pierre + pêche
 static var shore := {}     # mémoire de Pierre et Luc-Ael
 static var story := {}     # l'histoire principale (prologue, chapitres...)
+static var village := {}   # mémoire des habitants de Port-Biscornu
 
 
 static func default_vendor() -> Dictionary:
@@ -40,7 +41,14 @@ static func default_shore() -> Dictionary:
 
 static func default_story() -> Dictionary:
 	return {"woke": false, "plank_off": false, "suitcase": false, "photo_seen": false, "pico": false,
-		"planks": 0, "bridge": false, "kept_plank": false, "castle_seen": false}
+		"planks": 0, "bridge": false, "kept_plank": false, "castle_seen": false,
+		"village_seen": false, "inn_met": false, "mayor_met": false, "registered": false, "room_key": false,
+		"desk_ok": false, "calendar_seen": false, "tuesday": false, "nina_met": false, "barnabe_met": false,
+		"sign_read": false}
+
+
+static func default_village() -> Dictionary:
+	return {"mood": {"malo": 0.1, "barnabe": 0.3, "nina": 0.5, "mayor": 0.2}, "talks": {}, "met": {}, "bought": {}}
 
 
 static func add_item(id: String, n := 1) -> void:
@@ -67,6 +75,7 @@ static func load_game() -> void:
 	quest = default_quest()
 	shore = default_shore()
 	story = default_story()
+	village = default_village()
 	inventory = {}
 	var cf := ConfigFile.new()
 	if cf.load(PATH) != OK:
@@ -80,6 +89,7 @@ static func load_game() -> void:
 	quest = _merge(default_quest(), cf.get_value("quete", "slip", {}))
 	shore = _merge(default_shore(), cf.get_value("plage", "memoire", {}))
 	story = _merge(default_story(), cf.get_value("histoire", "etat", {}))
+	village = _merge(default_village(), cf.get_value("ville", "memoire", {}))
 	inventory = cf.get_value("jeu", "inventaire", {})
 	equipped = str(cf.get_value("jeu", "equipe", ""))
 
@@ -95,6 +105,7 @@ static func save_game() -> void:
 	cf.set_value("quete", "slip", quest)
 	cf.set_value("plage", "memoire", shore)
 	cf.set_value("histoire", "etat", story)
+	cf.set_value("ville", "memoire", village)
 	cf.set_value("jeu", "inventaire", inventory)
 	cf.set_value("jeu", "equipe", equipped)
 	cf.save(PATH)

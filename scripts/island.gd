@@ -18,11 +18,15 @@ const GATE_H := 3.0
 const PIER_ANGLE := 0.55                   # direction du ponton de pêche (radians)
 const BEACH := Vector2(0.0, 44.0)          # Plage des Bagages Perdus (prologue)
 const BRIDGE_X := 0.0                      # le pont cassé sur le ruisseau
+const VILLAGE := Vector2(0.0, -52.0)       # Port-Biscornu : centre de la place
+const VILLAGE_H := 2.3                     # hauteur du terrain aplani sous le village
+const VILLAGE_RX := 27.0                   # demi-largeur (x) de la plate-forme du village
+const VILLAGE_RZ := 15.0                   # demi-profondeur (z)
 
 static var _pier_base := Vector2.INF
 
-const SIZE := 160.0
-const RES := 240
+const SIZE := 200.0
+const RES := 300
 
 static var _noise: FastNoiseLite
 
@@ -44,6 +48,9 @@ static func height(x: float, z: float) -> float:
 	# La plage du sud est plus large (Plage des Bagages Perdus)
 	var da := wrapf(ang - PI * 0.5, -PI, PI)
 	edge += 10.0 * exp(-da * da / 0.25)
+	# Le nord s'allonge : une presqu'île pour Port-Biscornu
+	var dn := wrapf(ang + PI * 0.5, -PI, PI)
+	edge += 26.0 * exp(-dn * dn / 0.30)
 	var t := r / edge
 	var h := 3.0 * (1.0 - smoothstep(0.45, 1.0, t)) - 1.4 * smoothstep(0.85, 1.3, t) - 4.0 * smoothstep(1.2, 1.8, t) - 0.3
 	var inland := 1.0 - smoothstep(0.5, 0.8, t)
@@ -55,11 +62,23 @@ static func height(x: float, z: float) -> float:
 	h = lerpf(h, SHOP_H, ws)
 	var wg := 1.0 - smoothstep(5.5, 10.0, p.distance_to(GATE_POS))
 	h = lerpf(h, GATE_H, wg)
+	var wv := 1.0 - smoothstep(0.7, 1.15, village_d(x, z))
+	h = lerpf(h, VILLAGE_H, wv)
 	# Le ruisseau qui coupe la route de la plage
 	var dc := absf(z - creek_z(x))
 	if dc < 4.2:
 		h = minf(h, lerpf(-0.9, h, smoothstep(1.0, 4.0, dc)))
 	return h
+
+
+## Distance "elliptique" au centre du village (1.0 = bord de la plate-forme).
+static func village_d(x: float, z: float) -> float:
+	return sqrt(pow((x - VILLAGE.x) / VILLAGE_RX, 2.0) + pow((z - VILLAGE.y) / VILLAGE_RZ, 2.0))
+
+
+## Vrai si le point est dans le village (rien d'autre n'y pousse).
+static func in_village(x: float, z: float, margin := 0.0) -> bool:
+	return village_d(x, z) < 1.2 + margin / 20.0
 
 
 ## Le ruisseau (en z) à la position x.
@@ -74,6 +93,13 @@ static func is_path(x: float, z: float) -> bool:
 	if _seg_dist(Vector2(x, z), PATH_FORK, shop_front()) < 1.3:
 		return true
 	if _seg_dist(Vector2(x, z), SPAWN + Vector2(-1.5, 0.0), gate_front()) < 1.3:
+		return true
+	# La route du village : de la maison jusqu'à l'entrée de Port-Biscornu
+	var road := [Vector2(3.0, -4.0), Vector2(8.5, -12.0), Vector2(7.0, -26.0), Vector2(1.0, -36.0), Vector2(0.0, -40.0)]
+	for k in road.size() - 1:
+		if _seg_dist(Vector2(x, z), road[k], road[k + 1]) < 1.5:
+			return true
+	if village_d(x, z) < 0.95:
 		return true
 	return false
 
@@ -121,6 +147,19 @@ static func pier_base() -> Vector2:
 	return _pier_base
 
 
+## Carte du relief (pour la mer : écume et couleur selon la profondeur).
+static func shore_texture() -> ImageTexture:
+	var n := 192
+	var img := Image.create(n, n, false, Image.FORMAT_R8)
+	for j in n:
+		for k in n:
+			var x := (float(k) / float(n - 1) - 0.5) * SIZE
+			var z := (float(j) / float(n - 1) - 0.5) * SIZE
+			var v := clampf(height(x, z) / 6.0 + 0.5, 0.0, 1.0)
+			img.set_pixel(k, j, Color(v, v, v))
+	return ImageTexture.create_from_image(img)
+
+
 static func ground(x: float, z: float) -> Vector3:
 	return Vector3(x, height(x, z), z)
 
@@ -139,6 +178,11 @@ static func _color(h: float, x: float, z: float) -> Color:
 	c = c.lerp(rock, smoothstep(6.0, 8.0, h))
 	if is_path(x, z) and h > 0.0:
 		c = path
+	# Pavés du village (damier discret) avec bord d'herbe
+	var vd := village_d(x, z)
+	if vd < 1.0 and h > 0.5:
+		var pave := Color(0.86, 0.82, 0.8) if (int(floor(x * 0.8)) + int(floor(z * 0.8))) % 2 == 0 else Color(0.8, 0.76, 0.75)
+		c = c.lerp(pave, 1.0 - smoothstep(0.78, 1.0, vd))
 	# Petites variations dans le sable (rides laissées par le vent)
 	if h < 1.0:
 		c = c.darkened(0.04 * (sin(x * 1.3 + z * 0.4) * 0.5 + 0.5))
@@ -200,7 +244,8 @@ func build() -> void:
 	sea.mesh = pm
 	var wm := ShaderMaterial.new()
 	wm.shader = WATER_SHADER
-	wm.set_shader_parameter("shore_radius", R)
+	wm.set_shader_parameter("shore_map", shore_texture())
+	wm.set_shader_parameter("map_size", SIZE)
 	sea.material_override = wm
 	sea.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(sea)

@@ -5,7 +5,7 @@ extends RefCounted
 const Island := preload("res://scripts/island.gd")
 const GRASS_SHADER := preload("res://shaders/grass.gdshader")
 
-const COUNT := 9000
+const COUNT := 11000
 
 
 static func _tuft() -> ArrayMesh:
@@ -32,7 +32,7 @@ static func build(world: Node3D, avoid: Array) -> void:
 	while xforms.size() < COUNT and tries < COUNT * 6:
 		tries += 1
 		var x := rng.randf_range(-55.0, 55.0)
-		var z := rng.randf_range(-55.0, 55.0)
+		var z := rng.randf_range(-78.0, 55.0)
 		var h := Island.height(x, z)
 		if h < 1.25 or h > 6.5:
 			continue
@@ -42,7 +42,7 @@ static func build(world: Node3D, avoid: Array) -> void:
 			if p.distance_to(a[0]) < a[1]:
 				skip = true
 				break
-		if skip or Island.is_path(x, z):
+		if skip or Island.is_path(x, z) or Island.in_village(x, z, 4.0):
 			continue
 		var s := rng.randf_range(0.7, 1.4)
 		xforms.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * rng.randf_range(0.8, 1.3), s)), Vector3(x, h - 0.03, z)))

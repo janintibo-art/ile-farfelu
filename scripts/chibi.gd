@@ -27,6 +27,7 @@ var ring: MeshInstance3D
 var bubble: Label3D
 var hat_node: Node3D
 var big_head := false
+var body_scale := 1.0     # Nina est plus petite que les autres
 var arm_r_offset := 0.0   # pour faire des gestes (guitare, check...)
 
 var _phase := 0.0
@@ -94,6 +95,8 @@ func _build() -> void:
 	body_root = Node3D.new()
 	body_root.name = "Body"
 	add_child(body_root)
+	body_scale = float(def.get("scale", 1.0))
+	body_root.scale = Vector3.ONE * body_scale
 
 	# Jambes
 	leg_l = _leg(-0.09, mat)
@@ -109,6 +112,26 @@ func _build() -> void:
 			tb.capsule(0.035, 0.28, Vector3(0, 0.46, 0.2), def["hair"], Basis(Vector3.RIGHT, 0.9))
 			tb.capsule(0.035, 0.22, Vector3(0, 0.62, 0.3), def["hair"], Basis(Vector3.RIGHT, -0.3))
 			tb.sphere(0.045, Vector3(0, 0.74, 0.3), def["accent"])
+		"wet":
+			if def.get("towel", false):
+				tb.cylinder(0.2, 0.26, 0.26, Vector3(0, 0.44, 0), Color.WHITE)
+				for k in 3:
+					tb.cylinder(0.205 + k * 0.015, 0.215 + k * 0.015, 0.035, Vector3(0, 0.36 + k * 0.08, 0), def["accent"])
+				tb.sphere(0.06, Vector3(0.12, 0.54, -0.15), Color.WHITE)
+			else:
+				tb.cylinder(0.185, 0.19, 0.12, Vector3(0, 0.4, 0), Color(0.95, 0.25, 0.3))
+				tb.cylinder(0.19, 0.19, 0.03, Vector3(0, 0.47, 0), Color.WHITE)
+				for k in 4:
+					var a := k * TAU / 4.0 + 0.4
+					tb.sphere(0.022, Vector3(cos(a) * 0.19, 0.4, sin(a) * 0.19), Color(1.0, 0.85, 0.9), Vector3(1, 1, 0.5))
+			tb.sphere(0.025, Vector3(-0.07, 0.65, -0.16), def["skin"].darkened(0.3), Vector3(1, 0.6, 0.4))
+			tb.sphere(0.025, Vector3(0.07, 0.65, -0.16), def["skin"].darkened(0.3), Vector3(1, 0.6, 0.4))
+		"fisher":
+			# Gilet de pêche plein de poches
+			tb.capsule(0.175, 0.3, Vector3(0, 0.6, 0), def["accent"], Basis(), Vector3(1.03, 1.0, 0.9))
+			for sx in [-1.0, 1.0]:
+				tb.box(Vector3(0.08, 0.07, 0.03), Vector3(sx * 0.08, 0.55, -0.155), def["accent"].darkened(0.2), false)
+			tb.box(Vector3(0.1, 0.34, 0.02), Vector3(0, 0.58, -0.15), def["shirt"], false)
 		"mohawk":
 			for sx in [-1.0, 1.0]:
 				for k in 3:
@@ -122,6 +145,33 @@ func _build() -> void:
 			tb.box(Vector3(0.22, 0.3, 0.02), Vector3(0, 0.5, -0.158), Color.WHITE, false)
 			tb.box(Vector3(0.1, 0.06, 0.012), Vector3(0, 0.46, -0.17), def["accent"], false)
 			tb.box(Vector3(0.3, 0.025, 0.2), Vector3(0, 0.66, -0.06), Color.WHITE, false)
+		"innkeeper":
+			# Tablier d'aubergiste
+			tb.box(Vector3(0.26, 0.34, 0.02), Vector3(0, 0.5, -0.155), Color.WHITE, false)
+			tb.box(Vector3(0.05, 0.3, 0.02), Vector3(-0.07, 0.72, -0.14), Color.WHITE, false)
+			tb.box(Vector3(0.05, 0.3, 0.02), Vector3(0.07, 0.72, -0.14), Color.WHITE, false)
+			tb.box(Vector3(0.2, 0.05, 0.02), Vector3(0, 0.42, -0.165), def["accent"], false)
+			tb.cylinder(0.175, 0.175, 0.05, Vector3(0, 0.38, 0), def["accent"].darkened(0.3))
+		"merchant":
+			# Gros sac à dos plein de trucs + écharpe
+			tb.box(Vector3(0.3, 0.34, 0.16), Vector3(0, 0.56, 0.2), def["accent"], false)
+			tb.sphere(0.08, Vector3(0.12, 0.76, 0.22), Color(0.9, 0.5, 0.3))
+			tb.box(Vector3(0.08, 0.2, 0.08), Vector3(-0.1, 0.8, 0.2), Color(0.5, 0.7, 0.9), false, Basis(Vector3.FORWARD, 0.3))
+			tb.cylinder(0.16, 0.18, 0.09, Vector3(0, 0.72, 0), Color(0.95, 0.4, 0.25))
+			tb.box(Vector3(0.07, 0.25, 0.025), Vector3(0.1, 0.58, -0.16), Color(0.95, 0.4, 0.25), false)
+			tb.cylinder(0.175, 0.175, 0.05, Vector3(0, 0.42, 0), Color(0.3, 0.22, 0.2))
+		"kid":
+			# Petite robe à bretelles
+			tb.cylinder(0.16, 0.3, 0.26, Vector3(0, 0.42, 0), def["accent"])
+			tb.cylinder(0.3, 0.3, 0.025, Vector3(0, 0.3, 0), def["accent"].lightened(0.3))
+			tb.box(Vector3(0.1, 0.12, 0.02), Vector3(0, 0.52, -0.16), Color.WHITE, false)
+		"mayor":
+			# Gilet et grande écharpe tricolore de maire
+			tb.box(Vector3(0.1, 0.4, 0.02), Vector3(0, 0.55, -0.155), def["accent"].darkened(0.1), false)
+			tb.box(Vector3(0.07, 0.5, 0.03), Vector3(0.05, 0.6, -0.16), Color(0.3, 0.45, 0.95), false, Basis(Vector3.FORWARD, -0.7))
+			tb.box(Vector3(0.07, 0.5, 0.03), Vector3(0.0, 0.6, -0.162), Color.WHITE, false, Basis(Vector3.FORWARD, -0.7))
+			tb.box(Vector3(0.07, 0.5, 0.03), Vector3(-0.05, 0.6, -0.164), Color(0.95, 0.3, 0.3), false, Basis(Vector3.FORWARD, -0.7))
+			tb.cylinder(0.175, 0.19, 0.06, Vector3(0, 0.4, 0), Color(0.22, 0.2, 0.28))
 		"messy":
 			tb.box(Vector3(0.2, 0.09, 0.03), Vector3(0, 0.5, -0.155), def["shirt"].darkened(0.15), false)
 			tb.sphere(0.13, Vector3(0, 0.73, 0.12), def["shirt"].darkened(0.1), Vector3(1.2, 0.7, 0.8))
@@ -234,7 +284,7 @@ func _face(b: Builder) -> void:
 	# Sourcils
 	for sx in [-1.0, 1.0]:
 		b.box(Vector3(0.09, 0.018, 0.02), c + Vector3(sx * 0.105, 0.13, -0.262), def["hair"].darkened(0.35), false, Basis(Vector3.FORWARD, -sx * 0.18) * Basis(Vector3.UP, -sx * 0.33))
-	if def["hair_style"] == "messy":
+	if def["hair_style"] == "messy" or def["hair_style"] == "mayor":
 		# Grosses lunettes rondes
 		for sx in [-1.0, 1.0]:
 			b.torus(0.07, 0.086, c + Vector3(sx * 0.105, -0.02, -0.318), ink, Basis(Vector3.UP, -sx * 0.33) * Basis(Vector3.RIGHT, PI / 2.0))
@@ -251,6 +301,68 @@ func _face(b: Builder) -> void:
 func _hair(b: Builder) -> void:
 	var c := HEAD_C
 	var col: Color = def["hair"]
+	if def["hair_style"] == "wet":
+		# Cheveux mouillés plaqués + gouttes, et une mèche qui pendouille
+		b.sphere(0.312, c + Vector3(0, 0.07, 0.04), col, Vector3(1.05, 0.95, 1.0), Basis(), 16)
+		for x in [-0.14, -0.04, 0.06, 0.15]:
+			b.capsule(0.035, 0.2, c + Vector3(x, 0.14, -0.25), col, Basis(Vector3.RIGHT, 0.35) * Basis(Vector3.FORWARD, x))
+		for k in 3:
+			b.sphere(0.028, c + Vector3(-0.2 + k * 0.2, 0.36 - absf(k - 1) * 0.06, -0.05), Color(0.6, 0.85, 1.0), Vector3(1, 1.4, 1))
+		return
+	if def["hair_style"] == "fisher":
+		# Bob de pêcheur, cheveux blancs sur les côtés, grosse moustache
+		var hat := Color(0.9, 0.85, 0.6)
+		b.cylinder(0.25, 0.3, 0.2, c + Vector3(0, 0.24, 0.02), hat, Basis(), 16)
+		b.cylinder(0.43, 0.45, 0.03, c + Vector3(0, 0.15, 0.02), hat.darkened(0.08), Basis(Vector3.RIGHT, 0.08), 18)
+		b.cylinder(0.255, 0.3, 0.05, c + Vector3(0, 0.17, 0.02), Color(0.3, 0.5, 0.35), Basis(), 16)
+		# Petit hameçon planté dans le bob
+		b.torus(0.012, 0.02, c + Vector3(0.18, 0.28, -0.18), Color(0.8, 0.8, 0.85), Basis(Vector3.UP, 0.8))
+		b.sphere(0.03, c + Vector3(0.18, 0.31, -0.2), Color(1.0, 0.4, 0.3))
+		for sx in [-1.0, 1.0]:
+			b.sphere(0.1, c + Vector3(sx * 0.26, 0.02, 0.06), col, Vector3(0.7, 1.0, 1.0))
+			b.sphere(0.06, c + Vector3(sx * 0.055, -0.1, -0.29), col, Vector3(1.4, 0.7, 0.8))
+		b.sphere(0.045, c + Vector3(0, -0.06, -0.31), def["skin"].darkened(0.1))
+		return
+	if def["hair_style"] == "innkeeper":
+		# Crâne dégarni, touffes grises sur les côtés, énorme moustache
+		b.sphere(0.305, c + Vector3(0, 0.03, 0.04), def["skin"], Vector3(1.05, 1.0, 1.0), Basis(), 16)
+		for sx in [-1.0, 1.0]:
+			b.sphere(0.12, c + Vector3(sx * 0.25, 0.0, 0.08), col, Vector3(0.7, 1.1, 1.0))
+			b.sphere(0.07, c + Vector3(sx * 0.1, -0.1, -0.29), col, Vector3(1.6, 0.6, 0.8))
+			b.spike(0.04, 0.12, c + Vector3(sx * 0.22, -0.13, -0.24), Vector3(sx, -0.4, -0.3), col)
+		b.sphere(0.04, c + Vector3(0, 0.3, 0.0), col, Vector3(1.0, 0.6, 1.0))
+		return
+	if def["hair_style"] == "merchant":
+		# Chapeau haut de forme bancal, plume, mèches folles
+		var hat := Color(0.35, 0.28, 0.45)
+		b.sphere(0.31, c + Vector3(0, 0.06, 0.06), col, Vector3(1.06, 0.95, 1.0), Basis(), 14)
+		b.cylinder(0.4, 0.42, 0.03, c + Vector3(0.02, 0.27, 0.0), hat, Basis(Vector3.FORWARD, 0.12), 18)
+		b.cylinder(0.22, 0.25, 0.3, c + Vector3(0.04, 0.42, 0.0), hat, Basis(Vector3.FORWARD, 0.12), 16)
+		b.cylinder(0.225, 0.255, 0.05, c + Vector3(0.035, 0.31, 0.0), Color(0.95, 0.75, 0.2), Basis(Vector3.FORWARD, 0.12), 16)
+		b.spike(0.03, 0.3, c + Vector3(0.2, 0.52, -0.05), Vector3(0.5, 1.0, 0.1), Color(0.3, 0.85, 0.7))
+		for x in [-0.12, 0.0, 0.12]:
+			b.sphere(1.0, c + Vector3(x, 0.14, -0.235), col, Vector3(0.07, 0.09, 0.04), Basis(Vector3.FORWARD, x * 2.0) * Basis(Vector3.RIGHT, -0.5), 8)
+		b.box(Vector3(0.1, 0.02, 0.02), c + Vector3(0, -0.08, -0.31), col, false)
+		return
+	if def["hair_style"] == "kid":
+		# Deux couettes en hauteur avec rubans
+		b.sphere(0.315, c + Vector3(0, 0.06, 0.05), col, Vector3(1.06, 1.0, 1.0), Basis(), 16)
+		for x in [-0.17, -0.06, 0.05, 0.15]:
+			b.sphere(1.0, c + Vector3(x, 0.19, -0.228), col, Vector3(0.075, 0.1, 0.045), Basis(Vector3.FORWARD, x * 1.5) * Basis(Vector3.RIGHT, -0.5), 8)
+		for sx in [-1.0, 1.0]:
+			b.sphere(0.07, c + Vector3(sx * 0.22, 0.25, 0.08), def["accent"], Vector3(1.0, 0.7, 1.0), Basis(), 8)
+			b.capsule(0.07, 0.36, c + Vector3(sx * 0.3, 0.0, 0.1), col, Basis(Vector3.FORWARD, sx * 0.25))
+			b.sphere(0.06, c + Vector3(sx * 0.37, -0.2, 0.1), col)
+		return
+	if def["hair_style"] == "mayor":
+		# Cheveux gris bien peignés, moustache fine, petit chapeau officiel
+		b.sphere(0.312, c + Vector3(0, 0.05, 0.05), col, Vector3(1.05, 0.95, 1.0), Basis(), 16)
+		b.box(Vector3(0.3, 0.025, 0.04), c + Vector3(0, 0.2, -0.24), col.darkened(0.1), false, Basis(Vector3.FORWARD, 0.18))
+		b.box(Vector3(0.14, 0.025, 0.025), c + Vector3(0, -0.075, -0.305), col.darkened(0.3), false)
+		b.cylinder(0.18, 0.2, 0.12, c + Vector3(0, 0.33, 0.04), Color(0.22, 0.2, 0.3), Basis(), 14)
+		b.cylinder(0.26, 0.26, 0.02, c + Vector3(0, 0.27, 0.04), Color(0.22, 0.2, 0.3), Basis(), 14)
+		b.cylinder(0.185, 0.205, 0.03, c + Vector3(0, 0.29, 0.04), Color(0.95, 0.75, 0.2), Basis(), 14)
+		return
 	if def["hair_style"] == "mohawk":
 		# Côtés rasés, grande crête au milieu
 		b.sphere(0.305, c + Vector3(0, 0.03, 0.03), def["skin"].darkened(0.12), Vector3(1.04, 1.0, 1.0), Basis(), 16)
@@ -326,7 +438,7 @@ func _process(delta: float) -> void:
 	arm_l.rotation.x = -s * 0.9 * walk
 	arm_r.rotation.x = s * 0.9 * walk + arm_r_offset
 	body_root.position.y = absf(s) * 0.06 * walk
-	body_root.scale.y = 1.0 + sin(_t * 2.3) * 0.018 * (1.0 - walk)
+	body_root.scale = Vector3(body_scale, body_scale * (1.0 + sin(_t * 2.3) * 0.018 * (1.0 - walk)), body_scale)
 	head.rotation.z = sin(_t * 1.3) * 0.07 * (1.0 - walk)
 	head.rotation.x = sin(_t * 0.9) * 0.04
 	var hs := 1.9 if big_head else 1.0

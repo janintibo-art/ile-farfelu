@@ -37,6 +37,7 @@ var gate
 var dungeon
 var main
 var shore
+var village
 var pico
 var fishing
 var inventory
@@ -403,6 +404,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					gate.choose(event.physical_keycode - KEY_1)
 				elif shore and shore.is_open():
 					shore.choose(event.physical_keycode - KEY_1)
+				elif village and village.is_open():
+					village.choose(event.physical_keycode - KEY_1)
 			KEY_G:
 				_toggle_desk_sword()
 

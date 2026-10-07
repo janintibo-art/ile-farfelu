@@ -11,7 +11,9 @@ uniform vec4 shallow_color : source_color = vec4(0.25, 0.85, 0.88, 1.0);
 uniform vec4 lagoon_color : source_color = vec4(0.55, 0.95, 0.88, 1.0);
 uniform vec4 sky_color : source_color = vec4(0.72, 0.88, 1.0, 1.0);
 uniform vec4 foam_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
-uniform float shore_radius = 52.0;
+uniform sampler2D shore_map : filter_linear, repeat_disable;
+uniform float map_size = 200.0;   // largeur (m) couverte par la carte du relief
+uniform float map_range = 6.0;    // la carte stocke la hauteur du sol entre -range/2 et +range/2
 
 varying vec3 wpos;
 
@@ -46,19 +48,21 @@ void vertex() {
 }
 
 void fragment() {
-	float d = length(wpos.xz);
-	float near = 1.0 - smoothstep(shore_radius - 8.0, shore_radius + 16.0, d);
-	float lagoon = 1.0 - smoothstep(shore_radius - 10.0, shore_radius + 2.0, d);
+	// Relief du sol sous l'eau (carte pré-calculée) : fonctionne pour toute forme d'île
+	vec2 uv = wpos.xz / map_size + 0.5;
+	float hg = texture(shore_map, uv).r * map_range - map_range * 0.5;
+	float near = smoothstep(-2.0, -0.3, hg);
+	float lagoon = smoothstep(-1.0, -0.1, hg);
 	vec3 c = mix(deep_color.rgb, shallow_color.rgb, near);
 	c = mix(c, lagoon_color.rgb, lagoon * 0.6);
 	// Reflets qui dansent, surtout dans l'eau peu profonde
 	float cl = cells(wpos.xz * 0.35);
 	c += vec3(0.25, 0.3, 0.25) * smoothstep(0.08, 0.0, abs(cl - 0.55)) * (0.25 + near * 0.6);
-	// Écume qui avance vers la plage
-	float wobble = sin(atan(wpos.z, wpos.x) * 9.0 + TIME * 0.7) * 1.5;
-	float ring = fract((d + wobble) * 0.18 + TIME * 0.3);
-	float band = smoothstep(shore_radius - 14.0, shore_radius - 4.0, d) * (1.0 - smoothstep(shore_radius + 4.0, shore_radius + 14.0, d));
-	float foam = step(0.9, ring) * band;
+	// Écume : des lignes qui suivent le rivage et avancent vers la plage
+	float wobble = sin(wpos.x * 0.35 + TIME * 0.7) * 0.15 + cos(wpos.z * 0.3 + TIME * 0.5) * 0.15;
+	float ring = fract((hg + wobble) * 0.55 - TIME * 0.12);
+	float band = smoothstep(-0.95, -0.45, hg) * (1.0 - smoothstep(-0.25, 0.15, hg));
+	float foam = step(0.88, ring) * band;
 	c = mix(c, foam_color.rgb, foam * 0.85);
 	// Reflet du ciel sur les bords (Fresnel)
 	float fres = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), 4.0);

@@ -22,6 +22,7 @@ const Pico := preload("res://scripts/pico.gd")
 const Castle := preload("res://scripts/castle.gd")
 const Grass := preload("res://scripts/grass.gd")
 const Ambience := preload("res://scripts/ambience.gd")
+const Village := preload("res://scripts/village.gd")
 const SKY_SHADER := preload("res://shaders/sky.gdshader")
 
 var vr := false
@@ -122,6 +123,11 @@ func _ready() -> void:
 	if not Save.story.get("bridge", false):
 		player.global_position = Prologue.start_position()
 		player._place_origin(true, 0.0)
+	var village := Village.new()
+	village.name = "Village"
+	add_child(village)
+	village.build(self, player)
+	player.village = village
 	Grass.build(self, [
 		[Island.HOUSE_POS, 8.0], [Island.SHOP_POS, 7.0], [Island.GATE_POS, 6.0],
 		[Island.SPAWN, 3.5], [Island.pier_base(), 6.0],

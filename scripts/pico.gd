@@ -26,6 +26,7 @@ var _hop := 0.0
 var _recent: Array = []
 var _was_in_dungeon := false
 var _was_wet := false
+var zone := ""            # où on est : inn, hall, shop, square, village, ou vide
 
 
 func build(p_player) -> void:
@@ -120,6 +121,9 @@ func _idle_line() -> String:
 	if player.in_dungeon:
 		return _pick(["Je surveille nos arrières. De très loin.", "Si un slime approche, je fais semblant d'être une serviette.", "Je suis courageux. Simplement, pas maintenant."])
 	var p: Vector3 = player.global_position
+	var zl := _zone_line()
+	if zl != "":
+		return zl
 	if p.y < -0.1:
 		return _pick(["Je ne sais pas nager. Enfin, je crois. Je n'ai jamais essayé.", "Le papier et l'eau, ce n'est pas une grande histoire d'amour."])
 	if not Save.story.get("bridge", false):
@@ -136,6 +140,22 @@ func _idle_line() -> String:
 	if player.char_id != 0:
 		lines.append("Tu as une drôle de tête aujourd'hui. Je préfère ne pas commenter.")
 	return _pick(lines)
+
+
+## Remarques propres aux lieux de Port-Biscornu.
+func _zone_line() -> String:
+	match zone:
+		"inn":
+			return _pick(["Cette auberge a des oreilles. Surtout le comptoir.", "J'aime bien les auberges. On y dit des choses qu'on n'a pas dites.", "La porte 7 est plus sombre que les autres. Je la regarde sans la regarder.", "Il y a une photo au mur. Elle ressemble à celle de ta valise. Je dis ça en passant."])
+		"hall":
+			return _pick(["Trois guichets, personne derrière. C'est de l'efficacité, ça.", "L'horloge a une roue en moins. Ce n'est pas juste une horloge, je le sens.", "Si on me demande un formulaire, je ne suis pas là."])
+		"shop":
+			return _pick(["Je suis sûr qu'ils vendent aussi des choses utiles. Au fond. Tout au fond.", "Cette clé sans serrure me regarde. Je la regarde aussi."])
+		"square", "village":
+			if Save.story.get("tuesday", false):
+				return _pick(["Tout le monde dit « mercredi ». Personne ne dit « mardi ». Voilà ce qui est étrange.", "Les étals sont rangés. Un marché qui a eu lieu sans qu'on s'en souvienne, c'est un beau tour.", "On commence par qui ? Le boulanger ? Le pêcheur ? Malo ?"])
+			return _pick(["Ce village a une drôle d'ambiance. Comme un jour de trop. Ou de moins.", "Regarde le phare. Il est énorme. Et fermé. Et énorme.", "J'ai l'impression que tout le monde sourit un peu trop tard."])
+	return ""
 
 
 func on_swap() -> void:

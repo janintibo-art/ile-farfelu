@@ -10,6 +10,13 @@ const ITEMS := {
 	"cuillere": {"name": "Cuillère", "type": "story", "kind": "cuillere", "sell": 0},
 	"chaussette": {"name": "Chaussette rouge", "type": "story", "kind": "chaussette", "sell": 0},
 	"planche": {"name": "Planche (très importante selon Pico)", "type": "story", "kind": "planche", "sell": 0},
+	"carnet": {"name": "Carnet d'enquête", "type": "story", "kind": "carnet", "sell": 0},
+	"cle_chambre": {"name": "Clé de la chambre 4", "type": "story", "kind": "cle_chambre", "sell": 0},
+	"poignee": {"name": "Poignée de porte (sans porte)", "type": "story", "kind": "poignee", "sell": 0},
+	"bouton": {"name": "Un bouton (de quoi ?)", "type": "story", "kind": "bouton", "sell": 0},
+	"corde": {"name": "Morceau de corde", "type": "story", "kind": "corde", "sell": 0},
+	"miroir": {"name": "Miroir fêlé", "type": "story", "kind": "miroir", "sell": 0},
+	"cle_vide": {"name": "Clé sans serrure", "type": "story", "kind": "cle_vide", "sell": 0},
 	"slip": {"name": "Slip de Pierre", "type": "quest", "kind": "slip", "sell": 0},
 	"sardine": {"name": "Sardine", "type": "fish", "kind": "sardine", "sell": 2},
 	"arcenciel": {"name": "Poisson arc-en-ciel", "type": "fish", "kind": "arcenciel", "sell": 6},
@@ -27,7 +34,7 @@ const ITEMS := {
 }
 
 ## Ordre d'affichage dans l'inventaire
-const ORDER := ["photo", "cle", "cuillere", "chaussette", "planche", "slip", "dore", "arcenciel", "sardine", "botte", "algue", "glace", "ramen", "bonbon", "onigiri", "coconut", "chicken", "canard", "ball"]
+const ORDER := ["photo", "cle", "cuillere", "chaussette", "planche", "carnet", "cle_chambre", "poignee", "bouton", "corde", "miroir", "cle_vide", "slip", "dore", "arcenciel", "sardine", "botte", "algue", "glace", "ramen", "bonbon", "onigiri", "coconut", "chicken", "canard", "ball"]
 
 
 ## L'id d'inventaire d'un objet physique (même nom que son "kind").

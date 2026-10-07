@@ -75,6 +75,23 @@ Rendu cel-shading 3 niveaux avec contours, eau animée, ciel manga, herbe qui
 bouge au vent, ombres temps réel, MSAA 4x, 90 Hz, rendu fovéal. Le jeu ne
 cible plus que la Quest 3 (la Quest 2 n'est plus déclarée).
 
+## Port-Biscornu (v6)
+
+Au nord de l'île, après le pont : un village avec une place (fontaine,
+étals de marché déjà rangés), un port et deux pontons, un phare fermé,
+l'**auberge du Dernier Verre** (Malo), la **mairie** (guichets 1, 2 et 3,
+horloge de la semaine, bureau du maire Théodore Patatras), la boutique de
+**Barnabé** (poignée de porte, bouton, corde, miroir fêlé, clé sans serrure)
+et la petite **Nina** qui se promène sur la place.
+
+Début de l'histoire : Malo demande de s'enregistrer à la mairie ; le maire
+a perdu son registre et inscrit le joueur au dos d'un menu ; avec sa
+permission on regarde le calendrier (LUNDI puis MERCREDI), il donne le
+carnet d'enquête et la quête « Le mardi qui avait disparu » démarre.
+Malo remet alors la clé de la chambre 4. Tous parlent avec leur mini IA
+hors ligne (humeur, mémoire, phrases qui ne se répètent pas).
+Sur PC : approche, puis touches 1 à 6 ou clic sur le menu.
+
 ## Compilation
 
 Tout se fait sur GitHub Actions (`.github/workflows/build.yml`) : Godot,

@@ -146,6 +146,39 @@ static func paint(b: Builder, kind: String, xf := Transform3D()) -> void:
 				var c := Color(0.35, 0.25, 0.18) if k != 2 else Color(0.9, 0.35, 0.15)
 				b.box(Vector3(0.012, 0.03, 0.001), o + bs * Vector3(x, -0.028, 0.0042), c, false, bs)
 				b.sphere(0.008, o + bs * Vector3(x, -0.006, 0.0042), c, Vector3(1, 1, 0.2), bs, 6)
+		"carnet":
+			b.box(Vector3(0.12, 0.17, 0.025), o, Color(0.2, 0.42, 0.55), false, bs)
+			b.box(Vector3(0.10, 0.15, 0.027), o + bs * Vector3(0.006, 0, 0), Color(0.96, 0.93, 0.82), false, bs)
+			b.box(Vector3(0.012, 0.17, 0.028), o + bs * Vector3(-0.056, 0, 0), Color(0.15, 0.3, 0.42), false, bs)
+			b.sphere(0.02, o + bs * Vector3(0.0, 0.0, -0.015), Color(1.0, 0.8, 0.3), Vector3(1, 1, 0.3), bs, 8)
+		"cle_chambre":
+			var gold := Color(0.95, 0.78, 0.25)
+			b.torus(0.012, 0.024, o + bs * Vector3(0, 0, -0.045), gold, bs * Basis(Vector3.RIGHT, PI / 2.0))
+			b.box(Vector3(0.009, 0.009, 0.08), o + bs * Vector3(0, 0, 0.02), gold, false, bs)
+			b.box(Vector3(0.009, 0.022, 0.012), o + bs * Vector3(0, -0.012, 0.055), gold, false, bs)
+			b.box(Vector3(0.05, 0.035, 0.008), o + bs * Vector3(0, 0, -0.095), Color(0.85, 0.3, 0.3), false, bs)
+		"poignee":
+			var brass := Color(0.9, 0.7, 0.3)
+			b.sphere(0.05, o, brass, Vector3.ONE, bs, 12)
+			b.cylinder(0.014, 0.014, 0.08, o + bs * Vector3(0, 0, 0.06), brass.darkened(0.15), bs * Basis(Vector3.RIGHT, PI / 2.0), 8)
+			b.cylinder(0.04, 0.04, 0.008, o + bs * Vector3(0, 0, 0.1), brass.darkened(0.1), bs * Basis(Vector3.RIGHT, PI / 2.0), 12)
+		"bouton":
+			b.cylinder(0.05, 0.05, 0.015, o, Color(0.3, 0.55, 0.9), bs, 14)
+			b.sphere(0.008, o + bs * Vector3(-0.015, 0.009, -0.012), Color(0.1, 0.15, 0.3), Vector3.ONE, bs, 5)
+			b.sphere(0.008, o + bs * Vector3(0.015, 0.009, 0.012), Color(0.1, 0.15, 0.3), Vector3.ONE, bs, 5)
+		"corde":
+			b.torus(0.018, 0.075, o, Color(0.85, 0.7, 0.45), bs)
+			b.torus(0.018, 0.06, o + bs * Vector3(0, 0.025, 0), Color(0.8, 0.65, 0.4), bs)
+		"miroir":
+			b.box(Vector3(0.16, 0.2, 0.012), o, Color(0.85, 0.6, 0.3), false, bs)
+			b.box(Vector3(0.13, 0.17, 0.014), o, Color(0.75, 0.92, 1.0), false, bs)
+			b.box(Vector3(0.006, 0.12, 0.016), o + bs * Vector3(0.01, 0.01, 0), Color(0.3, 0.35, 0.45), false, bs * Basis(Vector3.BACK, 0.45))
+		"cle_vide":
+			var iron := Color(0.55, 0.58, 0.65)
+			b.torus(0.014, 0.03, o + bs * Vector3(0, 0, -0.05), iron, bs * Basis(Vector3.RIGHT, PI / 2.0))
+			b.box(Vector3(0.012, 0.012, 0.09), o + bs * Vector3(0, 0, 0.025), iron, false, bs)
+			b.box(Vector3(0.012, 0.03, 0.014), o + bs * Vector3(0, -0.02, 0.06), iron, false, bs)
+			b.box(Vector3(0.012, 0.02, 0.014), o + bs * Vector3(0, -0.014, 0.04), iron, false, bs)
 		"bonbon":
 			b.sphere(0.07, o, Color(1.0, 0.5, 0.8), Vector3.ONE, bs, 12)
 			b.torus(0.05, 0.072, o, Color.WHITE, bs * Basis(Vector3.FORWARD, 0.5))
@@ -229,6 +262,18 @@ static func make(world: Node3D, kind: String, pos: Vector3) -> RigidBody3D:
 			rb.radius = 0.5
 			rb.mass = 2.0
 			rb.grab_text = "Hop !"
+		"carnet":
+			var sh := BoxShape3D.new()
+			sh.size = Vector3(0.12, 0.17, 0.03)
+			shape = sh
+			rb.radius = 0.1
+			rb.mass = 0.1
+		"miroir":
+			var sh := BoxShape3D.new()
+			sh.size = Vector3(0.16, 0.2, 0.02)
+			shape = sh
+			rb.radius = 0.12
+			rb.mass = 0.2
 		"photo":
 			var sh := BoxShape3D.new()
 			sh.size = Vector3(0.18, 0.13, 0.01)

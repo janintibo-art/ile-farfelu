@@ -83,6 +83,89 @@ const PUNK := {
 	"lines": [],
 }
 
+## Pierre a perdu son slip en se baignant (il porte une serviette)
+const PIERRE := {
+	"name": "Pierre",
+	"skin": Color(1.0, 0.8, 0.68),
+	"hair": Color(0.45, 0.28, 0.15),
+	"hair_style": "wet",
+	"eye": Color(0.35, 0.55, 0.3),
+	"shirt": Color(1.0, 0.8, 0.68),
+	"pants": Color(1.0, 0.8, 0.68),
+	"shoes": Color(0.3, 0.75, 0.95),
+	"accent": Color(0.3, 0.6, 1.0),
+	"towel": true,
+	"lines": [],
+}
+
+## Luc-Ael, le pêcheur tranquille
+const LUCAEL := {
+	"name": "Luc-Ael",
+	"skin": Color(0.85, 0.64, 0.48),
+	"hair": Color(0.92, 0.92, 0.95),
+	"hair_style": "fisher",
+	"eye": Color(0.3, 0.45, 0.8),
+	"shirt": Color(0.95, 0.75, 0.25),
+	"pants": Color(0.3, 0.4, 0.6),
+	"shoes": Color(0.25, 0.5, 0.3),
+	"accent": Color(0.3, 0.55, 0.35),
+	"lines": [],
+}
+
+## Habitants de Port-Biscornu
+const MALO := {
+	"name": "Malo",
+	"skin": Color(1.0, 0.78, 0.66),
+	"hair": Color(0.8, 0.78, 0.8),
+	"hair_style": "innkeeper",
+	"eye": Color(0.45, 0.3, 0.18),
+	"shirt": Color(0.9, 0.55, 0.35),
+	"pants": Color(0.35, 0.28, 0.3),
+	"shoes": Color(0.3, 0.2, 0.15),
+	"accent": Color(0.35, 0.5, 0.85),
+	"lines": [],
+}
+
+const BARNABE := {
+	"name": "Barnabé",
+	"skin": Color(0.9, 0.7, 0.55),
+	"hair": Color(0.95, 0.5, 0.2),
+	"hair_style": "merchant",
+	"eye": Color(0.2, 0.55, 0.45),
+	"shirt": Color(0.4, 0.75, 0.55),
+	"pants": Color(0.55, 0.4, 0.6),
+	"shoes": Color(0.95, 0.75, 0.2),
+	"accent": Color(0.85, 0.65, 0.3),
+	"lines": [],
+}
+
+const NINA := {
+	"name": "Nina",
+	"skin": Color(1.0, 0.86, 0.74),
+	"hair": Color(0.25, 0.15, 0.12),
+	"hair_style": "kid",
+	"eye": Color(0.25, 0.7, 0.55),
+	"shirt": Color(1.0, 0.95, 0.85),
+	"pants": Color(0.95, 0.95, 0.95),
+	"shoes": Color(0.95, 0.35, 0.4),
+	"accent": Color(0.95, 0.45, 0.55),
+	"scale": 0.78,
+	"lines": [],
+}
+
+const THEODORE := {
+	"name": "Théodore",
+	"skin": Color(1.0, 0.82, 0.7),
+	"hair": Color(0.7, 0.7, 0.75),
+	"hair_style": "mayor",
+	"eye": Color(0.3, 0.4, 0.7),
+	"shirt": Color(0.25, 0.3, 0.55),
+	"pants": Color(0.22, 0.2, 0.28),
+	"shoes": Color(0.15, 0.12, 0.15),
+	"accent": Color(0.9, 0.8, 0.5),
+	"lines": [],
+}
+
 const SWAP_REACTIONS := [
 	"Hé ! Rends-moi mon corps !",
 	"Pourquoi j'ai envie de ronronner ?!",
