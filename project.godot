@@ -6,7 +6,7 @@ config_version=5
 
 config/name="Île Farfelue"
 config/description="Petit monde ouvert VR façon manga : une île, une maison et trois persos farfelus."
-run/main_scene="res://main.tscn"
+run/main_scene="res://boot.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 

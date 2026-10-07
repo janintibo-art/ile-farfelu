@@ -148,3 +148,6 @@ sur le casque sans la désinstaller.
 
 ## v13
 - Réglages graphiques revenus à ceux de la v1 (qui démarrait sur Quest 3) : MSAA 2x, foveation 3, pas d'ombres temps réel sur Android.
+
+## v14
+- Écran de diagnostic au démarrage (boot.tscn) : affiche l'état de la VR et la liste des scripts qui ne se chargent pas, avant de lancer le jeu.
