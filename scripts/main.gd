@@ -37,12 +37,16 @@ func _ready() -> void:
 	Save.load_game()
 	vr = _start_xr()
 	_environment()
+	get_tree().paused = true
+	_load_screen()
+	await _stage("Chargement : l'île…")
 
 	var island := Island.new()
 	island.name = "Island"
 	add_child(island)
 	island.build()
 
+	await _stage("Chargement : la maison…")
 	var house := House.new()
 	house.name = "House"
 	add_child(house)
@@ -54,10 +58,13 @@ func _ready() -> void:
 	player.global_position = Island.ground(Island.SPAWN.x, Island.SPAWN.y) + Vector3(0, 0.1, 0)
 	player.setup(self, vr)
 	house.player = player
+	_load_follow_player()
+	await _stage("Chargement : le décor…")
 
 	var palms: Array = Decor.build(self, player)
 	Props.spawn_all(self, house, palms)
 
+	await _stage("Chargement : les habitants…")
 	var spots := [Vector2(-3.5, 6.0), Vector2(4.0, 4.0)]
 	for i in 2:
 		var npc := Npc.new()
@@ -78,6 +85,7 @@ func _ready() -> void:
 	add_child(shells)
 	shells.build(player)
 
+	await _stage("Chargement : le donjon…")
 	var gate := Gate.new()
 	gate.name = "DungeonGate"
 	add_child(gate)
@@ -107,6 +115,7 @@ func _ready() -> void:
 	player.inventory = bag
 
 	# --- L'histoire : le Château au loin, Pico, la Plage des Bagages Perdus ---
+	await _stage("Chargement : le château…")
 	var castle := Castle.new()
 	castle.name = "Castle"
 	add_child(castle)
@@ -123,11 +132,13 @@ func _ready() -> void:
 	if not Save.story.get("bridge", false):
 		player.global_position = Prologue.start_position()
 		player._place_origin(true, 0.0)
+	await _stage("Chargement : Port-Biscornu…")
 	var village := Village.new()
 	village.name = "Village"
 	add_child(village)
 	village.build(self, player)
 	player.village = village
+	await _stage("Chargement : l'herbe…")
 	Grass.build(self, [
 		[Island.HOUSE_POS, 8.0], [Island.SHOP_POS, 7.0], [Island.GATE_POS, 6.0],
 		[Island.SPAWN, 3.5], [Island.pier_base(), 6.0],
@@ -137,6 +148,8 @@ func _ready() -> void:
 	add_child(amb)
 	amb.setup(player)
 	player.refresh_sword()
+	await _stage("C'est prêt !")
+	_load_done()
 	if not Save.story.get("woke", false):
 		prologue.wake_up()
 		return
@@ -144,6 +157,66 @@ func _ready() -> void:
 	# Petit message de bienvenue devant soi
 	await get_tree().create_timer(1.0).timeout
 	Fx.text(self, player.global_position + Vector3(0, 1.8, -2.5), "Bienvenue sur l'Île Farfelue !", Color(1.0, 0.85, 0.25), 0.8, 4.0)
+
+
+var _load_rig: Node3D
+var _load_label: Label3D
+
+
+## Écran de chargement visible dans le casque (sinon le Quest reste noir pendant la construction).
+func _load_screen() -> void:
+	if vr:
+		_load_rig = XROrigin3D.new()
+		var cam := XRCamera3D.new()
+		_load_rig.add_child(cam)
+		add_child(_load_rig)
+		_load_label = Label3D.new()
+		cam.add_child(_load_label)
+	else:
+		_load_label = Label3D.new()
+		var cam3 := Camera3D.new()
+		add_child(cam3)
+		cam3.current = true
+		_load_rig = cam3
+		cam3.add_child(_load_label)
+	_load_label.position = Vector3(0, 0, -1.5)
+	_load_label.font_size = 64
+	_load_label.pixel_size = 0.0015
+	_load_label.shaded = false
+	_load_label.no_depth_test = true
+	_load_label.render_priority = 120
+	_load_label.modulate = Color(1, 0.9, 0.5)
+	_load_label.outline_size = 16
+	_load_label.text = "Île Farfelue"
+
+
+func _load_follow_player() -> void:
+	if _load_label == null or player == null:
+		return
+	_load_label.get_parent().remove_child(_load_label)
+	player.camera.add_child(_load_label)
+	_load_label.position = Vector3(0, 0, -1.5)
+	if _load_rig:
+		_load_rig.queue_free()
+		_load_rig = null
+
+
+func _stage(txt: String) -> void:
+	if _load_label:
+		_load_label.text = txt
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+
+func _load_done() -> void:
+	if _load_label:
+		_load_label.queue_free()
+		_load_label = null
+	if _load_rig:
+		_load_rig.queue_free()
+		_load_rig = null
+	get_tree().paused = false
+	print("Île Farfelue : chargé")
 
 
 func _start_xr() -> bool:

@@ -134,3 +134,7 @@ Les fichiers sortent dans la release `derniere-version`.
 `cles/debug.keystore` est une clé de débogage (mot de passe `android`) :
 elle reste la même d'un build à l'autre pour pouvoir mettre à jour l'appli
 sur le casque sans la désinstaller.
+
+## v10
+- Écran de chargement par étapes visible dans le casque (le Quest restait noir pendant la construction du monde).
+- Prologue : noir initial raccourci.

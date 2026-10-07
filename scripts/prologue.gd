@@ -434,8 +434,8 @@ func wake_up() -> void:
 	_fade.material_override = mat
 	player.camera.add_child(_fade)
 	var tw := create_tween()
-	tw.tween_interval(3.0)
-	tw.tween_method(func(a: float): mat.albedo_color = Color(0, 0, 0, a), 1.0, 0.0, 4.0)
+	tw.tween_interval(1.0)
+	tw.tween_method(func(a: float): mat.albedo_color = Color(0, 0, 0, a), 1.0, 0.0, 3.0)
 	tw.tween_callback(_fade.queue_free)
 	tw.tween_callback(func():
 		Save.story["woke"] = true
