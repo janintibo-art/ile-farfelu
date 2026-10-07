@@ -154,3 +154,6 @@ sur le casque sans la désinstaller.
 
 ## v15
 - Le diagnostic affiche aussi les messages d erreur du moteur (journal de la session) dans le casque.
+
+## v16
+- Export PC : ajoute IleFarfelue.console.exe (fenêtre noire qui affiche les erreurs) à côté du .exe.

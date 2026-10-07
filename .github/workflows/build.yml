@@ -41,7 +41,7 @@ jobs:
           wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
           T="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
           mkdir -p "$T"
-          unzip -q "Godot_v${GODOT_VERSION}-stable_export_templates.tpz" 'templates/windows_*_x86_64.exe' 'templates/android_source.zip' 'templates/version.txt' -d tpl
+          unzip -q "Godot_v${GODOT_VERSION}-stable_export_templates.tpz" 'templates/windows_*_x86_64*.exe' 'templates/android_source.zip' 'templates/version.txt' -d tpl
           mv tpl/templates/* "$T/"
           rm -f "Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
 
