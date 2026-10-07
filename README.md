@@ -163,3 +163,7 @@ sur le casque sans la désinstaller.
 
 ## v18
 - Archive complète du projet (il manquait des fichiers dans le dépôt, ex. rod.gd).
+
+## v19
+- Rotation VR douce par défaut (clic du stick droit pour revenir aux à-coups de 45°).
+- Le tablier du pont est solide dès le début : plus de chute dans le ruisseau.

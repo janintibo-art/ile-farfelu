@@ -344,7 +344,7 @@ func _bridge() -> void:
 	ds.size = Vector3(1.4, 0.12, N_PLANKS * PLANK_W + 0.6)
 	deck_shape.shape = ds
 	deck_shape.position = Vector3(x, deck_y - 0.06, cz)
-	deck_shape.disabled = not Save.story.get("bridge", false)
+	deck_shape.disabled = false   # le tablier est toujours solide : on ne tombe plus à l'eau
 	body.add_child(deck_shape)
 	if not Save.story.get("bridge", false):
 		var xx := -80.0

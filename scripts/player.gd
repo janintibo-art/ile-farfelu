@@ -247,7 +247,7 @@ func _physics_process(delta: float) -> void:
 		_vy = 0.0
 
 	_place_origin(false, delta)
-	_turning()
+	_turning(delta)
 	_buttons()
 	if _held_desktop:
 		var f := -camera.global_basis.z
@@ -292,15 +292,23 @@ func _rotate_origin(angle: float) -> void:
 	origin.global_transform = t
 
 
-func _turning() -> void:
+func _turning(delta: float) -> void:
 	if not vr:
 		return
+	# Clic du stick droit : bascule entre rotation douce et rotation par à-coups
+	if _edge("turnmode", right.is_button_pressed("primary_click")):
+		Save.story["snap_turn"] = not Save.story.get("snap_turn", false)
+		Save.save_game()
+		Fx.text(world, _front(1.6), "Rotation par à-coups" if Save.story["snap_turn"] else "Rotation douce", Color(0.8, 0.95, 1.0), 0.45, 1.2)
 	var x: float = right.get_vector2("primary").x
-	if _snap_ready and absf(x) > 0.7:
-		_snap_ready = false
-		_rotate_origin(-signf(x) * deg_to_rad(45.0))
-	elif absf(x) < 0.3:
-		_snap_ready = true
+	if Save.story.get("snap_turn", false):
+		if _snap_ready and absf(x) > 0.7:
+			_snap_ready = false
+			_rotate_origin(-signf(x) * deg_to_rad(45.0))
+		elif absf(x) < 0.3:
+			_snap_ready = true
+	elif absf(x) > 0.2:
+		_rotate_origin(-x * deg_to_rad(110.0) * delta)
 
 
 # --- Entrées ----------------------------------------------------------------
