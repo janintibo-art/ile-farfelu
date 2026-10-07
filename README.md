@@ -160,3 +160,6 @@ sur le casque sans la désinstaller.
 
 ## v17
 - PC : OpenXR désactivé par défaut sous Windows (le jeu plantait quand le runtime Oculus était actif sans casque branché). Lancer_en_VR.bat démarre le jeu en PC VR.
+
+## v18
+- Archive complète du projet (il manquait des fichiers dans le dépôt, ex. rod.gd).

@@ -313,6 +313,8 @@ func _sell(ctx: Dictionary) -> Dictionary:
 	var kind: String = ctx.get("holding", "")
 	if kind == "":
 		return {"text": _say(["Tu ne tiens rien, là. Tu veux me vendre du vent ?"])}
+	if int(Items.SELL_PRICES.get(kind, 1)) == 0:
+		return {"text": _say(["Une algue gluante ? Beurk. Garde-la, merci.", "Je vends des trucs kawaii, pas des trucs gluants."])}
 	var price := buy_price(kind)
 	if price <= 0:
 		return {"text": _say(["Vu comment tu me traites, je ne t'achète rien du tout."])}

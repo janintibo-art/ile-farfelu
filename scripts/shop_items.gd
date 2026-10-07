@@ -29,11 +29,13 @@ const ITEMS := [
 ]
 
 ## Prix de rachat quand on revend un objet à Yuki.
-const SELL_PRICES := {"coconut": 1, "onigiri": 2, "chicken": 1, "ball": 2, "canard": 1, "glace": 1, "ramen": 2, "bonbon": 1}
+const SELL_PRICES := {"coconut": 1, "onigiri": 2, "chicken": 1, "ball": 2, "canard": 1, "glace": 1, "ramen": 2, "bonbon": 1,
+	"sardine": 2, "arcenciel": 5, "dore": 20, "botte": 1, "algue": 0}
 
 const KIND_NAMES := {
 	"coconut": "une noix de coco", "onigiri": "un onigiri", "chicken": "un poulet en caoutchouc",
 	"ball": "un ballon", "canard": "un mini canard", "glace": "une glace", "ramen": "un ramen", "bonbon": "un bonbon",
+	"sardine": "une sardine", "arcenciel": "un poisson arc-en-ciel", "dore": "un poisson doré", "botte": "une vieille botte", "algue": "une algue gluante",
 }
 
 
