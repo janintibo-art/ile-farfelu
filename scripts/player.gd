@@ -13,6 +13,9 @@ const Items := preload("res://scripts/shop_items.gd")
 const Sword := preload("res://scripts/sword.gd")
 const Builder := preload("res://scripts/builder.gd")
 const Toon := preload("res://scripts/toon.gd")
+const Rod := preload("res://scripts/rod.gd")
+const Fishing := preload("res://scripts/fishing.gd")
+const InventoryPanel := preload("res://scripts/inventory_panel.gd")
 
 const SPEED := 3.0
 const JUMP := 4.2
@@ -33,6 +36,10 @@ var shop
 var gate
 var dungeon
 var main
+var shore
+var pico
+var fishing
+var inventory
 
 # Donjon et combat
 const MAX_HEARTS := 5
@@ -143,6 +150,8 @@ func swap_with(npc, teleport: bool) -> void:
 	npc.chibi.say(Characters.SWAP_REACTIONS[randi() % Characters.SWAP_REACTIONS.size()], 3.0)
 	npc.chibi.pop()
 	avatar.pop()
+	if pico:
+		pico.on_swap()
 	var name_txt: String = Characters.LIST[their_id]["name"]
 	Fx.text(world, _front(1.8) + Vector3(0, 0.3, 0), "Tu es " + name_txt + " !", Color(1, 1, 1), 0.6, 1.4)
 
@@ -244,6 +253,8 @@ func _physics_process(delta: float) -> void:
 		_held_desktop.global_position = camera.global_position + f * 0.9 - camera.global_basis.y * 0.25
 	if not vr:
 		_desktop_hover()
+		if fishing and _desk_sword and _desk_sword_out and tool_kind() == "rod":
+			fishing.tip = _desk_sword.to_global(Rod.TIP)
 	_counter_t -= delta
 	if _counter_t <= 0.0:
 		_counter_t = 0.3
@@ -336,6 +347,9 @@ func _buttons() -> void:
 		cycle_character()
 	if _edge("emote", left.is_button_pressed("by_button")):
 		emote()
+	if _edge("bag", left.is_button_pressed("menu_button") or left.is_button_pressed("primary_click")):
+		if inventory:
+			inventory.toggle()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -348,6 +362,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if _desk_target and is_instance_valid(_desk_target):
 				_desk_target.press()
+			elif _desk_sword_out and tool_kind() == "rod":
+				fishing.action(_desk_sword.to_global(Rod.TIP), -camera.global_basis.z)
 			elif _desk_sword_out:
 				_desk_swing()
 			else:
@@ -375,11 +391,18 @@ func _unhandled_input(event: InputEvent) -> void:
 					var rb := _held_desktop
 					_held_desktop = null
 					eat(rb)
-			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6:
-				if shop and shop.state != "closed":
+			KEY_I:
+				if inventory:
+					inventory.toggle()
+			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7:
+				if inventory and inventory.is_open:
+					inventory.choose(event.physical_keycode - KEY_1)
+				elif shop and shop.state != "closed":
 					shop.choose(event.physical_keycode - KEY_1)
 				elif gate and gate.state != "closed":
 					gate.choose(event.physical_keycode - KEY_1)
+				elif shore and shore.is_open():
+					shore.choose(event.physical_keycode - KEY_1)
 			KEY_G:
 				_toggle_desk_sword()
 
@@ -390,6 +413,8 @@ func _desktop_grab() -> void:
 		_held_desktop = null
 		rb.freeze = false
 		rb.linear_velocity = -camera.global_basis.z * 9.0 + Vector3.UP * 2.0
+		if rb.has_method("on_release"):
+			rb.on_release()
 		return
 	var best: RigidBody3D = null
 	var best_d := 2.8
@@ -425,7 +450,7 @@ func _make_hud() -> void:
 	var layer := CanvasLayer.new()
 	world.add_child(layer)
 	_hud = Label.new()
-	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · R : manger ce qu'on tient · 1 à 6 : choisir dans un menu\nG : sortir / ranger l'épée (clic pour frapper) · H : cacher l'aide · Échap : libérer la souris"
+	_hud.text = "Pas de casque détecté : mode PC\nZQSD / WASD : bouger · Souris : regarder (clic pour la capturer)\nEspace : sauter · V : vue 1re/3e · C : changer de perso\nE : échange de corps avec le perso visé · Clic : attraper / lancer\nF : réplique · R : manger ce qu'on tient · 1 à 6 : choisir dans un menu\nG : sortir l'épée ou la canne (clic pour frapper / lancer) · I : sac · H : cacher l'aide · Échap : libérer la souris"
 	_hud.position = Vector2(16, 12)
 	_hud.add_theme_color_override("font_color", Color(1, 1, 1))
 	_hud.add_theme_color_override("font_outline_color", Color(0.13, 0.08, 0.17))
@@ -550,25 +575,66 @@ func refresh_sword() -> void:
 	if _desk_sword:
 		_desk_sword.queue_free()
 		_desk_sword = null
-	if not vr and has_sword():
+	if not vr and tool_kind() != "":
 		_desk_sword = Node3D.new()
 		camera.add_child(_desk_sword)
 		var b := Builder.new()
-		Sword.add(b, Save.sword)
-		b.build(_desk_sword, Toon.vertex_color(0.006), "Sword")
+		if tool_kind() == "rod":
+			Rod.add(b)
+		else:
+			Sword.add(b, Save.sword)
+		b.build(_desk_sword, Toon.vertex_color(0.006), "Tool")
 		_desk_sword.position = Vector3(0.32, -0.32, -0.55)
 		_desk_sword.rotation = Vector3(-0.5, 0.0, -0.35)
 		_desk_sword.visible = _desk_sword_out
+	if fishing and tool_kind() != "rod":
+		fishing.cancel()
+
+
+## Ce que le grip (ou G) fait sortir : "sword", "rod" ou "".
+func tool_kind() -> String:
+	var has_rod: bool = Save.quest.get("rod", "none") != "none"
+	if Save.equipped == "rod" and has_rod:
+		return "rod"
+	if Save.sword > 0:
+		return "sword"
+	if has_rod:
+		return "rod"
+	return ""
+
+
+## Met un objet (sorti du sac) directement dans la main.
+func hold_new(rb: RigidBody3D) -> void:
+	if vr:
+		right.drop()
+		right.held = rb
+		rb.freeze = true
+		rb.set_meta("held_by", right)
+		rb.global_position = right.global_position
+		right.hold_offset = right.global_transform.affine_inverse() * rb.global_transform
+	else:
+		_held_desktop = rb
+		rb.freeze = true
+
+
+## Ça mord ! Les manettes vibrent.
+func fishing_bite() -> void:
+	if vr:
+		for h in [left, right]:
+			if h.sword_out and h.tool_kind == "rod":
+				h.trigger_haptic_pulse("haptic", 0.0, 1.0, 0.4, 0.0)
 
 
 func _toggle_desk_sword() -> void:
-	if not has_sword():
-		Fx.text(world, _front(1.4), "Pas d'épée ! Va voir Riku.", Color(1, 0.7, 0.7), 0.5, 1.2)
+	if tool_kind() == "":
+		Fx.text(world, _front(1.4), "Rien à sortir ! Va voir Riku ou Luc-Ael.", Color(1, 0.7, 0.7), 0.5, 1.2)
 		return
 	_desk_sword_out = not _desk_sword_out
 	if _desk_sword == null:
 		refresh_sword()
 	_desk_sword.visible = _desk_sword_out
+	if not _desk_sword_out and fishing:
+		fishing.cancel()
 
 
 func _desk_swing() -> void:
@@ -616,6 +682,10 @@ func enter_dungeon() -> void:
 		return
 	in_dungeon = true
 	hearts = MAX_HEARTS
+	if fishing:
+		fishing.cancel()
+	if inventory and inventory.is_open:
+		inventory.close()
 	Fx.puff(world, global_position + Vector3(0, 1.0, 0), Color(0.6, 1.0, 0.7))
 	global_position = dungeon.start_position()
 	_vy = 0.0

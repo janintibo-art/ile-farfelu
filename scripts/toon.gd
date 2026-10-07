@@ -20,6 +20,7 @@ static func vertex_color(outline: float = 0.0) -> ShaderMaterial:
 	if outline > 0.0:
 		m.next_pass = _outline(outline)
 		m.set_shader_parameter("rim_amount", 0.22)
+		m.set_shader_parameter("gloss", 0.7)
 	_cache[key] = m
 	return m
 

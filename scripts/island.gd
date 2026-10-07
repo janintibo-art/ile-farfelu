@@ -15,9 +15,14 @@ const SHOP_H := 2.5
 const PATH_FORK := Vector2(0.0, 6.0)       # le chemin de la boutique part d'ici
 const GATE_POS := Vector2(-17.0, 19.0)     # l'entrée du Donjon des Boulettes
 const GATE_H := 3.0
+const PIER_ANGLE := 0.55                   # direction du ponton de pêche (radians)
+const BEACH := Vector2(0.0, 44.0)          # Plage des Bagages Perdus (prologue)
+const BRIDGE_X := 0.0                      # le pont cassé sur le ruisseau
+
+static var _pier_base := Vector2.INF
 
 const SIZE := 160.0
-const RES := 160
+const RES := 240
 
 static var _noise: FastNoiseLite
 
@@ -36,6 +41,9 @@ static func height(x: float, z: float) -> float:
 	var r := p.length()
 	var ang := atan2(z, x)
 	var edge := R + n.get_noise_2d(cos(ang) * 60.0, sin(ang) * 60.0) * 12.0
+	# La plage du sud est plus large (Plage des Bagages Perdus)
+	var da := wrapf(ang - PI * 0.5, -PI, PI)
+	edge += 10.0 * exp(-da * da / 0.25)
 	var t := r / edge
 	var h := 3.0 * (1.0 - smoothstep(0.45, 1.0, t)) - 1.4 * smoothstep(0.85, 1.3, t) - 4.0 * smoothstep(1.2, 1.8, t) - 0.3
 	var inland := 1.0 - smoothstep(0.5, 0.8, t)
@@ -46,7 +54,28 @@ static func height(x: float, z: float) -> float:
 	var ws := 1.0 - smoothstep(6.5, 11.0, p.distance_to(SHOP_POS))
 	h = lerpf(h, SHOP_H, ws)
 	var wg := 1.0 - smoothstep(5.5, 10.0, p.distance_to(GATE_POS))
-	return lerpf(h, GATE_H, wg)
+	h = lerpf(h, GATE_H, wg)
+	# Le ruisseau qui coupe la route de la plage
+	var dc := absf(z - creek_z(x))
+	if dc < 4.2:
+		h = minf(h, lerpf(-0.9, h, smoothstep(1.0, 4.0, dc)))
+	return h
+
+
+## Le ruisseau (en z) à la position x.
+static func creek_z(x: float) -> float:
+	return 30.0 + sin(x * 0.07) * 2.5
+
+
+## Les chemins de terre (couleur + pas d'herbe dessus).
+static func is_path(x: float, z: float) -> bool:
+	if absf(x) < 1.6 and z > HOUSE_POS.y + 3.5 and z < BEACH.y - 2.0:
+		return true
+	if _seg_dist(Vector2(x, z), PATH_FORK, shop_front()) < 1.3:
+		return true
+	if _seg_dist(Vector2(x, z), SPAWN + Vector2(-1.5, 0.0), gate_front()) < 1.3:
+		return true
+	return false
 
 
 ## Direction vers laquelle l'entrée du donjon regarde (vers le départ).
@@ -73,6 +102,25 @@ static func _seg_dist(p: Vector2, a: Vector2, b: Vector2) -> float:
 	return p.distance_to(a + ab * t)
 
 
+## Direction du ponton (vers le large).
+static func pier_dir() -> Vector2:
+	return Vector2(cos(PIER_ANGLE), sin(PIER_ANGLE))
+
+
+## Point de la plage où commence le ponton (là où le sable touche l'eau).
+static func pier_base() -> Vector2:
+	if _pier_base != Vector2.INF:
+		return _pier_base
+	var d := pier_dir()
+	_pier_base = d * 50.0
+	for r in range(25, 80):
+		var p := d * float(r)
+		if height(p.x, p.y) < 0.45:
+			_pier_base = p
+			break
+	return _pier_base
+
+
 static func ground(x: float, z: float) -> Vector3:
 	return Vector3(x, height(x, z), z)
 
@@ -89,13 +137,15 @@ static func _color(h: float, x: float, z: float) -> Color:
 	var g := grass_a.lerp(grass_b, (noise().get_noise_2d(x * 5.0, z * 5.0) + 1.0) * 0.5)
 	var c := sand.lerp(g, smoothstep(0.7, 1.2, h))
 	c = c.lerp(rock, smoothstep(6.0, 8.0, h))
-	# Chemin de terre entre le départ et la porte
-	if absf(x) < 1.6 and z > HOUSE_POS.y + 3.5 and z < SPAWN.y + 1.0:
+	if is_path(x, z) and h > 0.0:
 		c = path
-	elif _seg_dist(Vector2(x, z), PATH_FORK, shop_front()) < 1.3:
-		c = path
-	elif _seg_dist(Vector2(x, z), SPAWN + Vector2(-1.5, 0.0), gate_front()) < 1.3:
-		c = path
+	# Petites variations dans le sable (rides laissées par le vent)
+	if h < 1.0:
+		c = c.darkened(0.04 * (sin(x * 1.3 + z * 0.4) * 0.5 + 0.5))
+	# Berges du ruisseau plus sombres et humides
+	var dc := absf(z - creek_z(x))
+	if dc < 3.0:
+		c = c.lerp(Color(0.55, 0.5, 0.35), (1.0 - dc / 3.0) * 0.5)
 	return c
 
 

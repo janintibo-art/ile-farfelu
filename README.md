@@ -19,6 +19,7 @@ persos chibi (Kenji, Mochi, Taro) entre lesquels on échange de corps.
 | B | vue 1re / 3e personne |
 | A | sauter |
 | Y | réplique du perso |
+| Menu (manette gauche) ou clic du joystick gauche | ouvrir le sac |
 
 ## Boutique Kawaii
 
@@ -43,6 +44,36 @@ geste (plus c'est rapide, plus ça fait mal). Sur PC : G puis clic.
 Monstres : slimes, champignons grognons, chauves-souris et le Roi Gloubi
 (il se divise). 5 coffres + un coffre doré qui s'ouvre après le boss et
 donne l'Épée de feu. 5 cœurs : à 0, K.O. et retour devant Riku.
+
+## Le slip de Pierre (plage, ponton de Luc-Ael)
+
+Pierre a perdu son slip dans la mer. Luc-Ael prête sa canne à pêche :
+grip pour la sortir, gâchette pour lancer vers l'eau, puis gâchette (ou un
+coup sec vers le haut) quand le bouchon plonge et que la manette vibre.
+Si on repêche le slip, la canne est à nous ; en le rendant à Pierre,
+15 coquillages. On pêche aussi sardines, poissons arc-en-ciel, poissons
+dorés, bottes et algues. Luc-Ael rachète les poissons.
+Sur PC : G pour sortir la canne, clic pour lancer et ferrer.
+
+## Sac (inventaire)
+
+Bouton menu de la manette gauche (touche I sur PC). On y équipe la canne ou
+l'épée, on mange la nourriture, on sort un objet dans la main, ou on range
+ce qu'on tient.
+
+## Prologue : la Plage des Bagages Perdus
+
+On se réveille sur la plage, entouré de valises, avec une photo dans une
+valise (grip pour la prendre, retournez-la), Pico enfermé dans une
+bouteille (débouchez-la) et un pont cassé : trois planches manquent.
+Les planches se trouvent sur la plage. Le château visible au loin est pour
+plus tard. Sur PC, la photo tenue dans la main tourne toute seule.
+
+## Graphismes Quest 3
+
+Rendu cel-shading 3 niveaux avec contours, eau animée, ciel manga, herbe qui
+bouge au vent, ombres temps réel, MSAA 4x, 90 Hz, rendu fovéal. Le jeu ne
+cible plus que la Quest 3 (la Quest 2 n'est plus déclarée).
 
 ## Compilation
 

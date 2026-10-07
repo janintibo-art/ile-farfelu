@@ -14,6 +14,15 @@ const Shop := preload("res://scripts/shop.gd")
 const Shells := preload("res://scripts/shells.gd")
 const Gate := preload("res://scripts/gate.gd")
 const Dungeon := preload("res://scripts/dungeon.gd")
+const Shore := preload("res://scripts/shore.gd")
+const Fishing := preload("res://scripts/fishing.gd")
+const InventoryPanel := preload("res://scripts/inventory_panel.gd")
+const Prologue := preload("res://scripts/prologue.gd")
+const Pico := preload("res://scripts/pico.gd")
+const Castle := preload("res://scripts/castle.gd")
+const Grass := preload("res://scripts/grass.gd")
+const Ambience := preload("res://scripts/ambience.gd")
+const SKY_SHADER := preload("res://shaders/sky.gdshader")
 
 var vr := false
 var xr_interface: XRInterface
@@ -79,7 +88,52 @@ func _ready() -> void:
 	player.gate = gate
 	player.dungeon = dungeon
 	player.main = self
+
+	var shore := Shore.new()
+	shore.name = "Shore"
+	add_child(shore)
+	shore.build(self, player)
+	player.shore = shore
+	var fishing := Fishing.new()
+	fishing.name = "Fishing"
+	add_child(fishing)
+	fishing.setup(player, shore)
+	player.fishing = fishing
+	var bag := InventoryPanel.new()
+	bag.name = "Inventory"
+	add_child(bag)
+	bag.setup(player)
+	player.inventory = bag
+
+	# --- L'histoire : le Château au loin, Pico, la Plage des Bagages Perdus ---
+	var castle := Castle.new()
+	castle.name = "Castle"
+	add_child(castle)
+	castle.build()
+	var pico := Pico.new()
+	pico.name = "Pico"
+	add_child(pico)
+	pico.build(player)
+	player.pico = pico
+	var prologue := Prologue.new()
+	prologue.name = "Prologue"
+	add_child(prologue)
+	prologue.build(self, player, pico)
+	if not Save.story.get("bridge", false):
+		player.global_position = Prologue.start_position()
+		player._place_origin(true, 0.0)
+	Grass.build(self, [
+		[Island.HOUSE_POS, 8.0], [Island.SHOP_POS, 7.0], [Island.GATE_POS, 6.0],
+		[Island.SPAWN, 3.5], [Island.pier_base(), 6.0],
+	])
+	var amb := Ambience.new()
+	amb.name = "Ambience"
+	add_child(amb)
+	amb.setup(player)
 	player.refresh_sword()
+	if not Save.story.get("woke", false):
+		prologue.wake_up()
+		return
 
 	# Petit message de bienvenue devant soi
 	await get_tree().create_timer(1.0).timeout
@@ -100,6 +154,11 @@ func _start_xr() -> bool:
 
 
 func _on_session_begun() -> void:
+	# Quest 3 : on demande l'affichage en 90 Hz (plus fluide)
+	if xr_interface.has_method("get_available_display_refresh_rates"):
+		var rates: Array = xr_interface.call("get_available_display_refresh_rates")
+		if 90.0 in rates:
+			xr_interface.set("display_refresh_rate", 90.0)
 	var rate := 0.0
 	if xr_interface.has_method("get_display_refresh_rate"):
 		rate = xr_interface.call("get_display_refresh_rate")
@@ -112,14 +171,10 @@ func _environment() -> void:
 	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
-	var sm := ProceduralSkyMaterial.new()
-	sm.sky_top_color = Color(0.22, 0.52, 1.0)
-	sm.sky_horizon_color = Color(0.72, 0.9, 1.0)
-	sm.ground_horizon_color = Color(0.72, 0.9, 1.0)
-	sm.ground_bottom_color = Color(0.2, 0.45, 0.8)
-	sm.sky_curve = 0.12
-	sm.sun_angle_max = 12.0
+	var sm := ShaderMaterial.new()
+	sm.shader = SKY_SHADER
 	sky.sky_material = sm
+	sky.radiance_size = Sky.RADIANCE_SIZE_32
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.82, 0.84, 1.0)
@@ -127,8 +182,9 @@ func _environment() -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_LINEAR
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.75, 0.88, 1.0)
-	env.fog_density = 0.0035
+	env.fog_density = 0.0028
 	env.fog_sky_affect = 0.0
+	env.fog_aerial_perspective = 0.4
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
@@ -138,8 +194,14 @@ func _environment() -> void:
 	sun.rotation_degrees = Vector3(-50.0, -35.0, 0.0)
 	sun.light_color = Color(1.0, 0.96, 0.88)
 	sun.light_energy = 0.55
-	sun.shadow_enabled = not OS.has_feature("android")
-	sun.directional_shadow_max_distance = 40.0
+	# Quest 3 : ombres temps réel, nettes et douces
+	sun.shadow_enabled = true
+	sun.shadow_opacity = 0.85
+	sun.shadow_blur = 1.5
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	sun.directional_shadow_max_distance = 30.0
+	sun.shadow_bias = 0.04
+	sun.shadow_normal_bias = 1.5
 	add_child(sun)
 
 

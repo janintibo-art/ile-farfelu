@@ -5,6 +5,7 @@ extends XRController3D
 const Toon := preload("res://scripts/toon.gd")
 const Builder := preload("res://scripts/builder.gd")
 const Sword := preload("res://scripts/sword.gd")
+const Rod := preload("res://scripts/rod.gd")
 const Save := preload("res://scripts/save.gd")
 
 var player
@@ -17,6 +18,7 @@ var target
 var counter: Label3D
 var sword_node: Node3D
 var sword_out := false
+var tool_kind := ""        # "sword" ou "rod" : ce que le grip fait sortir
 var _tip_last := Vector3.ZERO
 var _hit_cd := {}
 
@@ -92,14 +94,16 @@ func _process(delta: float) -> void:
 	if not _grip and g > 0.7:
 		_grip = true
 		_grab()
-		if held == null and player.has_sword():
+		if held == null and player.tool_kind() != "":
 			_draw_sword(true)
 	elif _grip and g < 0.35:
 		_grip = false
 		_release()
 		_draw_sword(false)
-	if sword_out:
+	if sword_out and tool_kind == "sword":
 		_sword_hits(delta)
+	elif sword_out and tool_kind == "rod":
+		_rod_update(delta)
 	if held:
 		held.global_transform = global_transform * hold_offset
 		# Manger : on porte la nourriture à la bouche
@@ -160,6 +164,8 @@ func _release() -> void:
 	rb.freeze = false
 	rb.linear_velocity = v * 1.4
 	rb.angular_velocity = Vector3(randf_range(-4, 4), randf_range(-4, 4), randf_range(-4, 4))
+	if rb.has_method("on_release"):
+		rb.on_release()
 
 
 func _set_hover(o, on: bool) -> void:
@@ -200,6 +206,9 @@ func _update_aim() -> void:
 		beam.transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0) * Basis.from_scale(Vector3(1, dist, 1)), Vector3(0, 0, -dist * 0.5))
 
 	var t := get_float("trigger") > 0.7
+	if t and not _trig and obj == null and sword_out and tool_kind == "rod":
+		player.fishing.action(sword_node.to_global(Rod.TIP), -global_basis.z)
+		trigger_haptic_pulse("haptic", 0.0, 0.3, 0.05, 0.0)
 	if t and not _trig and obj:
 		if obj.has_method("press"):
 			obj.press()
@@ -216,14 +225,19 @@ func refresh_sword() -> void:
 	if sword_node:
 		sword_node.queue_free()
 		sword_node = null
-	if Save.sword <= 0:
+	tool_kind = player.tool_kind()
+	if tool_kind == "":
+		sword_out = false
 		return
 	sword_node = Node3D.new()
-	sword_node.name = "Sword"
+	sword_node.name = "Tool"
 	add_child(sword_node)
 	var b := Builder.new()
-	Sword.add(b, Save.sword)
-	b.build(sword_node, Toon.vertex_color(0.006), "SwordMesh")
+	if tool_kind == "rod":
+		Rod.add(b)
+	else:
+		Sword.add(b, Save.sword)
+	b.build(sword_node, Toon.vertex_color(0.006), "ToolMesh")
 	# Lame vers l'avant, un peu relevée (pose "aim" : -Z = devant)
 	sword_node.transform = Transform3D(Basis(Vector3.RIGHT, deg_to_rad(-60.0)), Vector3(0, -0.02, 0.05))
 	sword_node.visible = sword_out
@@ -235,6 +249,8 @@ func _draw_sword(on: bool) -> void:
 	sword_out = on and sword_node != null
 	if sword_node:
 		sword_node.visible = sword_out
+	if not sword_out and tool_kind == "rod" and player.fishing and player.fishing.busy():
+		player.fishing.cancel()
 	if sword_out:
 		_tip_last = sword_node.to_global(Vector3(0, 0.9, 0))
 		trigger_haptic_pulse("haptic", 0.0, 0.3, 0.05, 0.0)
@@ -263,3 +279,15 @@ func _sword_hits(delta: float) -> void:
 			var dmg: int = Sword.DAMAGE[Save.sword] + (1 if speed > 5.0 else 0)
 			m.hit(dmg, player.global_position)
 			trigger_haptic_pulse("haptic", 0.0, 1.0, 0.12, 0.0)
+
+
+## Canne en main : le fil suit le bout de la canne, et un coup sec vers le
+## haut ferre le poisson.
+func _rod_update(delta: float) -> void:
+	var tip := sword_node.to_global(Rod.TIP)
+	var vy := (tip.y - _tip_last.y) / maxf(delta, 0.001)
+	_tip_last = tip
+	if player.fishing:
+		player.fishing.tip = tip
+		if vy > 2.2:
+			player.fishing.jerk()

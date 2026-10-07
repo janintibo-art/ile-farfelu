@@ -3,12 +3,16 @@ extends RigidBody3D
 ## Flotte dans l'eau, et fait "BONK !" sur la tête des persos.
 
 const Fx := preload("res://scripts/fx.gd")
+const Save := preload("res://scripts/save.gd")
+const Inv := preload("res://scripts/inventory_items.gd")
 
 var kind := ""
 var home := Vector3.ZERO
 var radius := 0.12
 var grab_text := ""          # onomatopée quand on l'attrape (le poulet fait COUIC)
 var is_food := false
+var story_id := ""           # objet de l'histoire : rangé dans le sac quand on le lâche
+var no_reset := false
 var _reset := false
 var _cooldown := 0.0
 
@@ -28,6 +32,17 @@ func _ready() -> void:
 func send_home() -> void:
 	freeze = false
 	_reset = true
+
+
+## Appelé quand la main lâche l'objet.
+func on_release() -> void:
+	if story_id == "":
+		return
+	Save.add_item(story_id)
+	Save.save_game()
+	Fx.puff(get_parent(), global_position, Color(1.0, 0.95, 0.85))
+	Fx.text(get_parent(), global_position + Vector3(0, 0.3, 0), "→ Sac : " + Inv.item_name(story_id), Color(1.0, 0.95, 0.7), 0.4, 1.0)
+	queue_free()
 
 
 func on_grab() -> void:
@@ -59,6 +74,8 @@ func _physics_process(delta: float) -> void:
 		linear_damp = 1.5
 	else:
 		linear_damp = 0.05
+	if no_reset:
+		return
 	if global_position.y < -8.0 or Vector2(global_position.x, global_position.z).length() > 110.0:
 		_reset = true
 
