@@ -142,3 +142,6 @@ sur le casque sans la désinstaller.
 ## v11
 - Écran d'accueil : logo animé + 3 parties (nouvelle aventure / continuer / effacer avec confirmation). La partie 1 reprend l'ancienne sauvegarde.
 - Visée à la manette (gâchette) en VR, souris ou touches 1-3 sur PC.
+
+## v12
+- Le manifeste Quest redéclare la compatibilité Quest 2 (désactivée en v5 : l'appli ne démarrait pas en VR sur Quest 2).
