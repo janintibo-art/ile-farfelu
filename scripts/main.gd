@@ -22,6 +22,7 @@ const Pico := preload("res://scripts/pico.gd")
 const Castle := preload("res://scripts/castle.gd")
 const Grass := preload("res://scripts/grass.gd")
 const Ambience := preload("res://scripts/ambience.gd")
+const Title := preload("res://scripts/title.gd")
 const Village := preload("res://scripts/village.gd")
 const SKY_SHADER := preload("res://shaders/sky.gdshader")
 
@@ -34,9 +35,16 @@ var sun: DirectionalLight3D
 
 func _ready() -> void:
 	randomize()
-	Save.load_game()
 	vr = _start_xr()
 	_environment()
+	var title := Title.new()
+	title.name = "Title"
+	add_child(title)
+	title.build(vr)
+	Save.slot = await title.chosen
+	title.queue_free()
+	await get_tree().process_frame
+	Save.load_game()
 	get_tree().paused = true
 	_load_screen()
 	await _stage("Chargement : l'île…")

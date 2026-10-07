@@ -2,7 +2,11 @@ extends RefCounted
 ## Sauvegarde de la partie (coquillages, chapeaux, souvenirs de Yuki et Riku,
 ## épée, exploits au donjon). Fichier dans le stockage privé de l'appli.
 
-const PATH := "user://ile_farfelue.cfg"
+const PATH := "user://ile_farfelue.cfg"   # partie 1 (ancienne sauvegarde conservée)
+const SLOTS := 3
+
+static var slot := 1
+static var active := false   # tant qu'aucune partie n'est choisie, on n'écrit rien
 
 static var shells := 5
 static var hats := {}      # nom du perso -> id du chapeau qu'il porte
@@ -16,6 +20,36 @@ static var quest := {}     # quête du slip de Pierre + pêche
 static var shore := {}     # mémoire de Pierre et Luc-Ael
 static var story := {}     # l'histoire principale (prologue, chapitres...)
 static var village := {}   # mémoire des habitants de Port-Biscornu
+
+
+static func path_of(n: int) -> String:
+	return PATH if n <= 1 else "user://ile_farfelue_%d.cfg" % n
+
+
+## Résumé d'une partie pour le menu ({} si elle n'existe pas).
+static func peek(n: int) -> Dictionary:
+	var cf := ConfigFile.new()
+	if cf.load(path_of(n)) != OK:
+		return {}
+	var st: Dictionary = cf.get_value("histoire", "etat", {})
+	var chap := "Prologue"
+	if st.get("ch1_done", false):
+		chap = "Chapitre 1 terminé"
+	elif st.get("phare_done", false):
+		chap = "Sortie du phare"
+	elif st.get("mardi", false):
+		chap = "Le mardi est revenu"
+	elif st.get("village_seen", false):
+		chap = "Port-Biscornu"
+	elif st.get("woke", false):
+		chap = "La plage"
+	return {"chap": chap, "shells": int(cf.get_value("jeu", "coquillages", 5))}
+
+
+static func delete_slot(n: int) -> void:
+	var p := path_of(n)
+	if FileAccess.file_exists(p):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(p))
 
 
 static func default_vendor() -> Dictionary:
@@ -81,8 +115,13 @@ static func load_game() -> void:
 	story = default_story()
 	village = default_village()
 	inventory = {}
+	shells = 5
+	hats = {}
+	sword = 0
+	equipped = ""
+	active = true
 	var cf := ConfigFile.new()
-	if cf.load(PATH) != OK:
+	if cf.load(path_of(slot)) != OK:
 		return
 	shells = int(cf.get_value("jeu", "coquillages", 5))
 	hats = cf.get_value("jeu", "chapeaux", {})
@@ -99,6 +138,8 @@ static func load_game() -> void:
 
 
 static func save_game() -> void:
+	if not active:
+		return
 	var cf := ConfigFile.new()
 	cf.set_value("jeu", "coquillages", shells)
 	cf.set_value("jeu", "chapeaux", hats)
@@ -112,4 +153,4 @@ static func save_game() -> void:
 	cf.set_value("ville", "memoire", village)
 	cf.set_value("jeu", "inventaire", inventory)
 	cf.set_value("jeu", "equipe", equipped)
-	cf.save(PATH)
+	cf.save(path_of(slot))

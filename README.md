@@ -138,3 +138,7 @@ sur le casque sans la désinstaller.
 ## v10
 - Écran de chargement par étapes visible dans le casque (le Quest restait noir pendant la construction du monde).
 - Prologue : noir initial raccourci.
+
+## v11
+- Écran d'accueil : logo animé + 3 parties (nouvelle aventure / continuer / effacer avec confirmation). La partie 1 reprend l'ancienne sauvegarde.
+- Visée à la manette (gâchette) en VR, souris ou touches 1-3 sur PC.
