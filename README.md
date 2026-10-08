@@ -188,3 +188,6 @@ sur le casque sans la désinstaller.
 - Choix moral : la bulle dorée est la mémoire d'Aristide, le mari qu'Hortense a oublié. La rendre entière, la laisser à Léo, ou la partager (si on a écouté la brume : « Garde-moi une place à table, Hortense »).
 - Trois voix dans la brume (dont un indice sur Basile Plume et Pico). Fin : la trappe de l'Archive s'éveille mais ne s'ouvre qu'à marée basse (v23 : l'Archive Engloutie).
 - Menu des sauvegardes : étiquettes pour les chapitres 2 et 3.
+
+## v23
+- Vue 3e personne en VR : le perso apparaît maintenant en face du regard (avant : placé selon l'orientation de la pièce, donc parfois sur le côté).

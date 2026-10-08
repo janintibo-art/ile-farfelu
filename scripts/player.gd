@@ -31,6 +31,7 @@ var right
 var avatar
 var char_id := 0
 var third_person := false
+var _tp_back := Vector3.ZERO
 var npcs: Array = []
 var shop
 var gate
@@ -264,9 +265,12 @@ func _physics_process(delta: float) -> void:
 
 func _place_origin(instant: bool, delta: float) -> void:
 	if third_person:
-		var back := origin.global_basis.z
-		back.y = 0.0
-		back = back.normalized() if back.length() > 0.01 else Vector3.BACK
+		if instant or _tp_back == Vector3.ZERO:
+			# On se place derrière le perso dans la direction où l'on REGARDE (pas celle de la pièce)
+			var back := camera.global_basis.z
+			back.y = 0.0
+			_tp_back = back.normalized() if back.length() > 0.01 else Vector3.BACK
+		var back := _tp_back
 		var cam_off := camera.global_position - origin.global_position
 		cam_off.y = 0.0
 		var target := global_position + back * 2.8 + Vector3(0, 0.9, 0) - cam_off
@@ -285,6 +289,8 @@ func _place_origin(instant: bool, delta: float) -> void:
 
 func _rotate_origin(angle: float) -> void:
 	var pivot := global_position if third_person else camera.global_position
+	if third_person:
+		_tp_back = _tp_back.rotated(Vector3.UP, angle)
 	var t := origin.global_transform
 	t.origin -= pivot
 	t = Transform3D(Basis(Vector3.UP, angle), Vector3.ZERO) * t
