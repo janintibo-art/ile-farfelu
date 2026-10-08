@@ -300,3 +300,58 @@ const MIRETTE := {
 	"accent": Color(0.95, 0.9, 0.5),
 	"lines": [],
 }
+
+
+## Brumelune (chapitre 3)
+
+const HONORE := {
+	"name": "Honoré Levain",
+	"skin": Color(1.0, 0.84, 0.7),
+	"hair": Color(0.95, 0.9, 0.8),
+	"hair_style": "merchant",
+	"eye": Color(0.4, 0.3, 0.2),
+	"shirt": Color(0.95, 0.92, 0.85),
+	"pants": Color(0.4, 0.35, 0.3),
+	"shoes": Color(0.3, 0.22, 0.18),
+	"accent": Color(1.0, 0.8, 0.5),
+	"lines": [],
+}
+
+const OUESSANT := {
+	"name": "Marin Ouessant",
+	"skin": Color(0.8, 0.6, 0.48),
+	"hair": Color(0.3, 0.3, 0.35),
+	"hair_style": "fisher",
+	"eye": Color(0.25, 0.3, 0.45),
+	"shirt": Color(0.3, 0.5, 0.75),
+	"pants": Color(0.25, 0.28, 0.4),
+	"shoes": Color(0.25, 0.2, 0.2),
+	"accent": Color(0.5, 0.75, 1.0),
+	"lines": [],
+}
+
+const HORTENSE := {
+	"name": "Hortense",
+	"skin": Color(1.0, 0.86, 0.76),
+	"hair": Color(0.92, 0.92, 0.95),
+	"hair_style": "buns",
+	"eye": Color(0.35, 0.35, 0.5),
+	"shirt": Color(0.7, 0.5, 0.75),
+	"pants": Color(0.4, 0.3, 0.45),
+	"shoes": Color(0.35, 0.25, 0.3),
+	"accent": Color(0.85, 0.7, 0.95),
+	"lines": [],
+}
+
+const LEO := {
+	"name": "Léo",
+	"skin": Color(0.95, 0.78, 0.65),
+	"hair": Color(0.25, 0.2, 0.15),
+	"hair_style": "messy",
+	"eye": Color(0.3, 0.4, 0.3),
+	"shirt": Color(0.5, 0.7, 0.5),
+	"pants": Color(0.3, 0.3, 0.4),
+	"shoes": Color(0.25, 0.25, 0.25),
+	"accent": Color(0.7, 0.9, 0.7),
+	"lines": [],
+}

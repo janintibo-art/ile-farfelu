@@ -180,3 +180,11 @@ sur le casque sans la désinstaller.
 - Salle 1 : trois portes qui mentent (une seule inscription dit vrai). Salle 2 : pièces coulissantes à remettre à leur place. Salle 3 : porte minuscule vers une salle géante, clé géante à prendre. Salle 4 : trois fenêtres, regarder ce qui est dessiné et non écrit. Salle 5 : le Mot Juste.
 - Confrontation avec Maître Anselme (le Mot Juste détecte mensonge / vérité), puis dire trois fois « Mon père existe. » : fin du chapitre 2 (+30 coquillages, objet « Le Mot Juste »).
 - Progression sauvegardée (tr_room, tr_key, mot_juste, ch2_done). Sortie possible dans chaque salle.
+
+## v22 — Chapitre 3, partie 1 : Brumelune
+- Après le chapitre 2, Éléonore propose « Partons pour Brumelune » (village sur pilotis, zone y=700). Elle propose aussi « Rentrons à Port-Biscornu » depuis Virevolte et Brumelune.
+- Souvenirs échangés, en bulles colorées : le boulanger Honoré (bulle de marin), Marin Ouessant (bulle de chevreaux), la chèvre Capitaine (bulle de navigation), une bulle de pâtes oubliée dans le four, et une bulle dorée portée par Léo.
+- On prend une bulle à son porteur (dialogue ou bouton), on lit son contenu (bouton « Réécouter ma bulle »), puis on l'offre à son vrai propriétaire.
+- Choix moral : la bulle dorée est la mémoire d'Aristide, le mari qu'Hortense a oublié. La rendre entière, la laisser à Léo, ou la partager (si on a écouté la brume : « Garde-moi une place à table, Hortense »).
+- Trois voix dans la brume (dont un indice sur Basile Plume et Pico). Fin : la trappe de l'Archive s'éveille mais ne s'ouvre qu'à marée basse (v23 : l'Archive Engloutie).
+- Menu des sauvegardes : étiquettes pour les chapitres 2 et 3.

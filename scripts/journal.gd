@@ -65,6 +65,32 @@ static func lines(tab: String) -> Array:
 					out.append("   répéter que le Grand Cartographe n'existe pas.")
 				if _f("ch2_done"):
 					out.append("RÉSOLU : la forêt ne ment plus sur le père d'Éléonore.")
+			if _f("v3_started"):
+				out.append("")
+				out.append("BRUMELUNE : des souvenirs ont changé de propriétaire.")
+				if _f("b_g_mer"):
+					out.append("Bulle bleue (voile, orage) : le boulanger la portait.")
+				if _f("b_g_cap"):
+					out.append("Bulle violette (étoiles, cap) : la chèvre la portait.")
+				if _f("b_g_chev"):
+					out.append("Bulle verte (trois chevreaux) : le marin la portait.")
+				if _f("b_g_four"):
+					out.append("Bulle chaude (levain, pâte) : oubliée dans un four.")
+				if _f("b_g_vie"):
+					out.append("Bulle dorée (Aristide, la tasse de plus) : Léo la portait.")
+				if _f("b_voice_a"):
+					out.append("Voix : « Garde-moi une place à table, Hortense. »")
+				if _f("b_voice_b"):
+					out.append("Voix : « Conserver. Tout conserver. » (Basile)")
+				if _f("b_voice_c"):
+					out.append("Voix : « Pico... ne leur dis rien. » (?)")
+				match str(Save.story.get("b_hortense", "")):
+					"give":
+						out.append("Hortense a récupéré toute sa mémoire d'Aristide.")
+					"keep":
+						out.append("Léo a gardé la mémoire d'Aristide. Hortense, la paix.")
+					"share":
+						out.append("Hortense et Léo se partagent la mémoire d'Aristide.")
 		"people":
 			var any := false
 			var rows := [
@@ -79,6 +105,10 @@ static func lines(tab: String) -> Array:
 				["gaspard_met", "Gaspard Ronceval : le pont est à lui (acte 1204)."],
 				["mirette_met", "Mirette : a un lézard qui fut un dragon."],
 				["anselme_met", "Maître Anselme : notaire des deux familles."],
+				["honore_met", "Honoré Levain (Brumelune) : boulanger, se croit marin."],
+				["ouessant_met", "Marin Ouessant : se croit éleveur de chèvres."],
+				["hortense_met", "Hortense : met toujours deux tasses."],
+				["leo_met", "Léo : pleure pour un monsieur qu'il n'a pas connu."],
 			]
 			for r in rows:
 				if _f(r[0]) or (r[0] == "malo_met" and _f("inn_met")):
@@ -103,6 +133,9 @@ static func lines(tab: String) -> Array:
 				["pont_ok", "Le pont de Virevolte : réconcilié. Maison de Travers ouverte."],
 				["mot_juste", "La Maison de Travers : Mot Juste obtenu."],
 				["ch2_done", "CHAPITRE 2 TERMINÉ."],
+				["v3_started", "Brumelune : rendre les bulles de souvenir à leurs propriétaires."],
+				["b_cycle", "Brumelune : boulanger, marin et chèvre ont retrouvé leurs souvenirs."],
+				["b_done", "Brumelune : Hortense et Léo ont décidé. La trappe de l'Archive s'éveille."],
 			]
 			for q in qs:
 				if _f(q[0]):

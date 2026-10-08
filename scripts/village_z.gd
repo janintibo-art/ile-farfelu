@@ -306,6 +306,8 @@ func event(ev: String, node) -> void:
 	match ev:
 		"z_go":
 			travel()
+		"z_back":
+			_leave()
 		"z_doc_a":
 			_clue_fx(node, "L'ACTE AUBÉPINE", "1203 · écriture penchée · encre violette")
 			v._pico("Un acte de 1203, signé « Les Aubépine ». L'encre est encore humide. Après huit cents ans, c'est soit un exploit, soit un mensonge.")

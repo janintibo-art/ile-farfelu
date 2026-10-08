@@ -419,10 +419,13 @@ func _mayor_respond(intent: String) -> Dictionary:
 # Les autres habitants : Basile, Gérard, Marguerite, Pétronille, Éléonore
 # ---------------------------------------------------------------------------
 
-const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette"]
+const BB := preload("res://scripts/brain_b.gd")
+const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette", "honore", "ouessant", "hortense", "leo"]
 
 
 func _x_greet(who: String, name: String) -> Dictionary:
+	if who in BB.IDS:
+		return BB.greet(who, name, s(), _say)
 	var tue: bool = s().get("tuesday", false)
 	match who:
 		"basile":
@@ -452,6 +455,10 @@ func _x_greet(who: String, name: String) -> Dictionary:
 				return {"text": "Entre, mon petit. Ne marche pas sur hier, il est fragile.", "flag": {"petro_met": true}}
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
+			if s().get("at_b", false):
+				if s().get("b_done", false):
+					return {"text": _say(["La trappe réagit aux souvenirs rendus. Elle ne s'ouvrira qu'à marée basse : il faudra trouver qui tient les vannes.", "Tout le monde a retrouvé ce qu'il voulait garder. C'est rare, et c'est un début."]), "flag": {"eleonore_met": true}}
+				return {"text": _say(["Brumelune. Ici, les souvenirs flottent en bulles. Chaque bulle a un propriétaire, et parfois ce n'est pas celui qui la porte.", "Rends chaque bulle à qui elle appartient. Écoute ce qu'elle dit : le contenu parle, comme une étiquette.", "Les gens peuvent refuser de récupérer certains souvenirs. Ça aussi, c'est une réponse."]), "flag": {"eleonore_met": true}}
 			if s().get("at_v", false):
 				return {"text": _say(["Virevolte. Ici, ne croyez pas ce qu'on vous dit trois fois : c'est comme ça que ça devient vrai.", "Deux familles, un pont, deux actes. Quand deux vérités se contredisent, cherchez le menteur qui y gagne.", "Je n'ai jamais aimé les forêts polies. Elles ont toujours quelque chose à cacher."]), "flag": {"eleonore_met": true}}
 			if s().get("phare_done", false):
@@ -462,6 +469,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 
 
 func _x_options(who: String) -> Array:
+	if who in BB.IDS:
+		return BB.options(who, s())
 	var out: Array = []
 	var tue: bool = s().get("tuesday", false)
 	match who:
@@ -512,15 +521,26 @@ func _x_options(who: String) -> Array:
 					out.append(["wheel", "Vous avez quelque chose qui tourne ?"])
 			out.append(["tea", "Du thé ?"])
 		_:
+			if s().get("at_b", false):
+				out.append(["bplan", "Que fait-on à Brumelune ?"])
+				out.append(["bfog", "La brume garde les voix ?"])
+				if s().get("b_done", false):
+					out.append(["barch", "Et la trappe au bout du ponton ?"])
+				out.append(["bback", "Rentrons à Port-Biscornu."])
+				return out
 			if s().get("at_v", false):
+				if s().get("ch2_done", false):
+					out.append(["vback", "Rentrons à Port-Biscornu."])
 				if s().get("doc_a", false) and s().get("doc_b", false) and not s().get("same_hand", false):
 					out.append(["compare", "Regardez les deux actes."])
 				if s().get("same_hand", false) and not s().get("pont_ok", false):
 					out.append(["next", "Que fait-on maintenant ?"])
 				out.append(["liar", "Cette forêt ment vraiment ?"])
 				return out
-			if s().get("ch1_done", false):
+			if s().get("ch1_done", false) and not s().get("ch2_done", false):
 				out.append(["go", "Partons pour Virevolte."])
+			if s().get("ch2_done", false):
+				out.append(["bgo", "Partons pour Brumelune."])
 			if not s().get("eleonore_story", false):
 				out.append(["story", "Qui êtes-vous, vraiment ?"])
 			else:
@@ -530,6 +550,8 @@ func _x_options(who: String) -> Array:
 
 
 func _x_respond(who: String, intent: String) -> Dictionary:
+	if who in BB.IDS:
+		return BB.respond(who, intent, s(), _say)
 	match who + ":" + intent:
 		"basile:mardi":
 			return {"text": "Mardi ? J'ai pétri. Je me souviens des mains. Les miennes. Enfin, il y en avait d'autres. Mon registre est dans l'arrière-boutique : il dit vingt-sept fournées. Je n'ose plus le relire."}
@@ -585,6 +607,16 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": "La forêt ne ment pas, elle répète. Si on dit une chose avec assez d'élégance, elle la rend vraie. Je suis en faveur de l'élégance."}
 		"eleonore:go":
 			return {"text": "Virevolte, la forêt qui ment poliment. Allons-y. Si un arbre vous dit qu'il est à gauche, il est à droite. Et ne promettez rien trois fois.", "flag": {"v2_started": true}, "event": "z_go"}
+		"eleonore:bgo":
+			return {"text": "Brumelune, dans le marais des Murmures. Un village sur pilotis où la brume garde les voix. J'y ai peut-être perdu des souvenirs, moi aussi. Ne marchez pas sur les conversations.", "flag": {"v3_started": true}, "event": "b_go"}
+		"eleonore:bback", "eleonore:vback":
+			return {"text": "Rentrons. Le monde ne s'arrêtera pas pour nous. Il attendra, mais de travers.", "event": "b_back" if intent == "bback" else "z_back"}
+		"eleonore:bplan":
+			return {"text": "Quatre bulles à rendre : un boulanger, un marin, une chèvre... et un morceau de souvenir, plus lourd. Prenez les bulles à ceux qui les portent, puis offrez-les à leur vrai propriétaire."}
+		"eleonore:bfog":
+			return {"text": "Elle garde les voix, pas les gens. Il y a des endroits, sur les pontons, où on peut les écouter. Certains secrets sont très polis."}
+		"eleonore:barch":
+			return {"text": "L'Archive Engloutie. C'est là que dorment les souvenirs qu'on n'a pas encore le courage de réclamer. Je crois que mon père y a laissé quelque chose. On y descendra. Dès que la marée voudra bien se retirer."}
 		"eleonore:compare":
 			return {"text": "Montrez... Même écriture penchée. Même encre violette. Deux familles qui se détestent, avec le même scribe. Quelqu'un fabrique leurs certitudes.", "flag": {"same_hand": true}, "event": "z_same_hand"}
 		"eleonore:next":
@@ -602,6 +634,8 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 
 
 func _x_idle(who: String) -> String:
+	if who in BB.IDS:
+		return BB.idle(who, s(), _say)
 	match who:
 		"odile":
 			return _say(["Le pont est à nous. Je le dis pour qu'il le sache.", "Si je le répète trois fois, ça devient vrai. Le pont est à nous. Le pont est à nous. Le pont..."])
