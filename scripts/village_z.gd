@@ -231,7 +231,7 @@ func _travers() -> void:
 	b.build(n, Toon.vertex_color(0.01), "Maison")
 	VB.label(n, "MAISON DE TRAVERS", Vector3(0, 4.2, 3.4), 0.006, Color(1, 0.95, 0.8), 56, 0.0, 10)
 	VB.label(n, "(entrée : de travers)", Vector3(0, 3.6, 3.4), 0.003, Color(1, 0.95, 0.8), 44, 0.0, 6)
-	v.x.hotspot(n, Vector3(0, 1.3, 4.2), "Frapper à la porte", _knock, func(): return _s("pont_ok"), 1.6, 5.0)
+	v.x.hotspot(n, Vector3(0, 1.3, 4.2), "Entrer dans la maison", _knock, func(): return _s("pont_ok"), 1.9, 5.0)
 
 
 # --- Les gens -------------------------------------------------------------------------------------
@@ -376,8 +376,8 @@ func _reunite() -> void:
 
 
 func _knock() -> void:
-	Fx.text(v.world, P + Vector3(0, 3.0, -52.0), "TOC TOC (la porte répond : « Entrez... ou sortez. »)", Color(1.0, 0.95, 0.7), 0.7, 5.0)
-	_later(1.5, func(): v._pico("La maison est fermée aujourd'hui. Elle rouvrira au prochain chapitre. Elle a dit « bientôt », mais de travers."))
+	if not _busy:
+		v.tr.enter()
 
 
 # --- Boucle -----------------------------------------------------------------------------------------

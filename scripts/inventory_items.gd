@@ -23,6 +23,7 @@ const ITEMS := {
 	"roue_b": {"name": "Morceau de roue (bleue)", "type": "story", "kind": "roue_b", "sell": 0},
 	"roue_c": {"name": "Morceau de roue (verte)", "type": "story", "kind": "roue_c", "sell": 0},
 	"roue_mardi": {"name": "Roue du mardi", "type": "story", "kind": "roue_mardi", "sell": 0},
+	"mot_juste": {"name": "Le Mot Juste (fragment du Registre)", "type": "story", "kind": "mot_juste", "sell": 0},
 	"slip": {"name": "Slip de Pierre", "type": "quest", "kind": "slip", "sell": 0},
 	"sardine": {"name": "Sardine", "type": "fish", "kind": "sardine", "sell": 2},
 	"arcenciel": {"name": "Poisson arc-en-ciel", "type": "fish", "kind": "arcenciel", "sell": 6},
@@ -40,7 +41,7 @@ const ITEMS := {
 }
 
 ## Ordre d'affichage dans l'inventaire
-const ORDER := ["photo", "cle", "cuillere", "chaussette", "planche", "carnet", "cle_chambre", "poignee", "bouton", "corde", "miroir", "cle_vide", "papier_bleu", "roue_a", "roue_b", "roue_c", "roue_mardi", "axe", "slip", "dore", "arcenciel", "sardine", "botte", "algue", "glace", "ramen", "bonbon", "onigiri", "coconut", "chicken", "canard", "ball"]
+const ORDER := ["photo", "cle", "cuillere", "chaussette", "planche", "carnet", "cle_chambre", "poignee", "bouton", "corde", "miroir", "cle_vide", "papier_bleu", "roue_a", "roue_b", "roue_c", "roue_mardi", "axe", "mot_juste", "slip", "dore", "arcenciel", "sardine", "botte", "algue", "glace", "ramen", "bonbon", "onigiri", "coconut", "chicken", "canard", "ball"]
 
 
 ## L'id d'inventaire d'un objet physique (même nom que son "kind").

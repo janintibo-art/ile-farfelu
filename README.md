@@ -174,3 +174,9 @@ sur le casque sans la désinstaller.
 - Indices : les deux actes (même écriture, même encre violette), la plaque sous le pont, le tiroir du greffe.
 - Le pont change de couleur et de nom selon le côté d'où on le regarde ; les panneaux de la forêt changent d'avis quand on s'approche.
 - Fin : « Réunir les deux familles » → le pont est à tous (+20 coquillages). La Maison de Travers (donjon) est visible au nord, fermée : à suivre.
+
+## v21 — Chapitre 2, partie 2 : la Maison de Travers
+- On entre par la maison penchée au nord de Virevolte (« Entrer dans la maison »). Donjon en 5 salles (zone y=600).
+- Salle 1 : trois portes qui mentent (une seule inscription dit vrai). Salle 2 : pièces coulissantes à remettre à leur place. Salle 3 : porte minuscule vers une salle géante, clé géante à prendre. Salle 4 : trois fenêtres, regarder ce qui est dessiné et non écrit. Salle 5 : le Mot Juste.
+- Confrontation avec Maître Anselme (le Mot Juste détecte mensonge / vérité), puis dire trois fois « Mon père existe. » : fin du chapitre 2 (+30 coquillages, objet « Le Mot Juste »).
+- Progression sauvegardée (tr_room, tr_key, mot_juste, ch2_done). Sortie possible dans chaque salle.

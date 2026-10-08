@@ -31,6 +31,7 @@ const Maquette := preload("res://scripts/maquette.gd")
 const Phare := preload("res://scripts/phare.gd")
 const VY := preload("res://scripts/village_y.gd")
 const VZ := preload("res://scripts/village_z.gd")
+const TR := preload("res://scripts/travers.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -59,6 +60,7 @@ var maquette
 var phare
 var y
 var z
+var tr
 var _nina_wp := 0
 var _nina_wait := 0.0
 var _nina_speed := 1.0
@@ -93,6 +95,10 @@ func build(p_world: Node3D, p_player) -> void:
 	phare.name = "Phare"
 	add_child(phare)
 	phare.setup(self, player)
+	tr = TR.new()
+	tr.name = "Travers"
+	add_child(tr)
+	tr.setup(self, player)
 	_make_speakers()
 	y = VY.new()
 	y.v = self

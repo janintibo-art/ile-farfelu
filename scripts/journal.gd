@@ -57,6 +57,14 @@ static func lines(tab: String) -> Array:
 					out.append("Greffe : actes du pont vierges, déjà tamponnés.")
 				if _f("pont_ok"):
 					out.append("RÉSOLU : le pont est à tout le monde.")
+				if _f("tr_key"):
+					out.append("Maison de Travers : clé géante prise.")
+				if _f("mot_juste"):
+					out.append("Le Mot Juste : fragment du Registre obtenu.")
+					out.append("Anselme : payé par « quelqu'un du Château » pour faire")
+					out.append("   répéter que le Grand Cartographe n'existe pas.")
+				if _f("ch2_done"):
+					out.append("RÉSOLU : la forêt ne ment plus sur le père d'Éléonore.")
 		"people":
 			var any := false
 			var rows := [
@@ -92,7 +100,9 @@ static func lines(tab: String) -> Array:
 				["photo2", "Chambre 7 : photo du héros devant le château."],
 				["ch1_done", "CHAPITRE 1 TERMINÉ."],
 				["v2_started", "Virevolte : démêler l'affaire du pont."],
-				["pont_ok", "Le pont de Virevolte : réconcilié. Maison de Travers à suivre."],
+				["pont_ok", "Le pont de Virevolte : réconcilié. Maison de Travers ouverte."],
+				["mot_juste", "La Maison de Travers : Mot Juste obtenu."],
+				["ch2_done", "CHAPITRE 2 TERMINÉ."],
 			]
 			for q in qs:
 				if _f(q[0]):
@@ -110,6 +120,7 @@ static func lines(tab: String) -> Array:
 				["c_petro", "Morceau de roue verte (Pétronille)."],
 				["wheel_built", "Roue du mardi : assemblée à la mairie."],
 				["got_axe", "Pièce centrale (Éléonore)."],
+				["mot_juste", "Le Mot Juste (fragment du Registre)."],
 				["ledger_seen", "Livre de comptes de l'auberge."],
 			]
 			for o in objs:
