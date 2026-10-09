@@ -87,6 +87,13 @@ jobs:
           test -f build/IleFarfelue.apk
           ls -la build
 
+      - name: Export téléphone (.apk, commandes tactiles)
+        continue-on-error: true
+        run: |
+          rm -rf android
+          "$GODOT" --headless --install-android-build-template --export-debug "Telephone" build/IleFarfelue_Telephone.apk
+          ls -la build
+
       - name: Garder les fichiers (artefact)
         uses: actions/upload-artifact@v4
         with:
@@ -94,10 +101,13 @@ jobs:
           path: |
             build/IleFarfelue.apk
             build/IleFarfelue_PC.zip
+            build/IleFarfelue_Telephone.apk
 
       - name: Publier la dernière version (téléchargeable depuis le téléphone)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete derniere-version --yes --cleanup-tag -R "$GITHUB_REPOSITORY" || true
-          gh release create derniere-version build/IleFarfelue.apk build/IleFarfelue_PC.zip -R "$GITHUB_REPOSITORY" --title "Île Farfelue - build ${{ github.run_number }}" --notes "APK pour Quest 2 (à installer avec Bugjaeger) et version PC VR (SteamVR / Quest Link)." --target "$GITHUB_SHA"
+          FILES="build/IleFarfelue.apk build/IleFarfelue_PC.zip"
+          if [ -f build/IleFarfelue_Telephone.apk ]; then FILES="$FILES build/IleFarfelue_Telephone.apk"; fi
+          gh release create derniere-version $FILES -R "$GITHUB_REPOSITORY" --title "Île Farfelue - build ${{ github.run_number }}" --notes "APK Quest (Bugjaeger), version PC VR (SteamVR / Quest Link) et APK téléphone (commandes tactiles)." --target "$GITHUB_SHA"

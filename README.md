@@ -196,3 +196,9 @@ sur le casque sans la désinstaller.
 - À Brumelune, demander à Marin Ouessant (une fois ses souvenirs de marin rendus) : « La trappe attend la marée basse. » La trappe au nord s'ouvre alors sur l'Archive (zone y=800).
 - Salle 1 : régler le niveau de l'eau dans l'ordre de la plaque (bas, haut, moyen). Salle 2 : assembler les souvenirs qui parlent de la même chose. Salle 3 : la bulle-clé monte avec l'eau, mais pas trop haut. Salle 4 : écouter trois souvenirs du Grand Cartographe. Salle 5 : première rencontre (indirecte) avec Basile Plume, trois questions, ses réponses dépendent du choix fait pour Hortense.
 - Fin du chapitre 3 : +40 coquillages. Teaser : Belloche.
+
+## v25 — APK téléphone
+- Le workflow produit maintenant un 3e fichier : `IleFarfelue_Telephone.apk` (package `com.janintibo.ilefarfelue.phone`, s'installe à côté de la version Quest).
+- Commandes tactiles : joystick à gauche, glisser à droite pour regarder (un tap = action), viseur « + » au centre, gros bouton ACTION (rôle du clic souris), SAUT, VUE, PERSO, SAC, ÉCHANGE, RÉPLIQUE, MANGER, OUTIL.
+- Activé uniquement par la fonction « phone » du preset Telephone (ou `-- --touch` sur PC pour tester). OpenXR désactivé et MSAA coupé sur cette version.
+- Si l'export téléphone échoue, la version Quest et la version PC sont quand même publiées.

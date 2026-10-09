@@ -4,6 +4,7 @@ extends CharacterBody3D
 ## chibi et tu le diriges). Échange de corps avec les autres persos.
 
 const Chibi := preload("res://scripts/chibi.gd")
+const TouchUI := preload("res://scripts/touch_ui.gd")
 const Characters := preload("res://scripts/characters.gd")
 const Hand := preload("res://scripts/hand.gd")
 const Fx := preload("res://scripts/fx.gd")
@@ -31,6 +32,10 @@ var right
 var avatar
 var char_id := 0
 var third_person := false
+var mobile := false
+var touch_move := Vector2.ZERO
+var touch_jump := false
+var _touch_ui
 var _tp_back := Vector3.ZERO
 var npcs: Array = []
 var shop
@@ -71,6 +76,7 @@ var _hud_counter: Label
 func setup(p_world: Node3D, p_vr: bool) -> void:
 	world = p_world
 	vr = p_vr
+	mobile = (not p_vr) and (OS.has_feature("phone") or OS.get_cmdline_user_args().has("--touch") or OS.get_cmdline_args().has("--touch"))
 	_spawn = global_position
 	collision_layer = 8
 	collision_mask = 1 | 4 | 32
@@ -325,6 +331,8 @@ func _move_input() -> Vector2:
 		var s: Vector2 = left.get_vector2("primary")
 		if s.length() > 0.15:
 			v = s
+	elif mobile:
+		v = touch_move
 	else:
 		if _key(KEY_W) or _key(KEY_Z) or _key(KEY_UP):
 			v.y += 1.0
@@ -350,7 +358,7 @@ func _edge(id: String, now: bool) -> bool:
 func _jump_pressed() -> bool:
 	if vr:
 		return _edge("jump", right.is_button_pressed("ax_button"))
-	return _edge("jump", _key(KEY_SPACE))
+	return _edge("jump", _key(KEY_SPACE) or touch_jump)
 
 
 func _buttons() -> void:
@@ -368,21 +376,14 @@ func _buttons() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if vr:
+	if vr or mobile:
 		return
 	if event is InputEventMouseButton and event.pressed:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			return
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			if _desk_target and is_instance_valid(_desk_target):
-				_desk_target.press()
-			elif _desk_sword_out and tool_kind() == "rod":
-				fishing.action(_desk_sword.to_global(Rod.TIP), -camera.global_basis.z)
-			elif _desk_sword_out:
-				_desk_swing()
-			else:
-				_desktop_grab()
+			primary_action()
 	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_rotate_origin(-event.relative.x * 0.003)
 		camera.rotation.x = clampf(camera.rotation.x - event.relative.y * 0.003, -1.3, 1.3)
@@ -422,6 +423,30 @@ func _unhandled_input(event: InputEvent) -> void:
 					village.choose(event.physical_keycode - KEY_1)
 			KEY_G:
 				_toggle_desk_sword()
+
+
+## Équivalent du clic gauche : appuyer sur ce qu'on vise, pêcher, frapper ou attraper.
+func primary_action() -> void:
+	if _desk_target and is_instance_valid(_desk_target):
+		_desk_target.press()
+	elif _desk_sword_out and tool_kind() == "rod":
+		fishing.action(_desk_sword.to_global(Rod.TIP), -camera.global_basis.z)
+	elif _desk_sword_out:
+		_desk_swing()
+	else:
+		_desktop_grab()
+
+
+func touch_look(rel: Vector2) -> void:
+	_rotate_origin(-rel.x * 0.0045)
+	camera.rotation.x = clampf(camera.rotation.x - rel.y * 0.0045, -1.3, 1.3)
+
+
+func touch_eat() -> void:
+	if _held_desktop and _held_desktop.get("is_food"):
+		var rb := _held_desktop
+		_held_desktop = null
+		eat(rb)
 
 
 func _desktop_grab() -> void:
@@ -474,8 +499,15 @@ func _make_hud() -> void:
 	_hud.add_theme_constant_override("outline_size", 6)
 	_hud.add_theme_font_size_override("font_size", 18)
 	layer.add_child(_hud)
+	if mobile:
+		_hud.text = "Joystick : bouger · Glisser à droite : regarder · Viser avec + puis ACTION"
+		_hud.add_theme_font_size_override("font_size", 14)
+		var tu := TouchUI.new()
+		tu.setup(self)
+		layer.add_child(tu)
+		_touch_ui = tu
 	_hud_counter = Label.new()
-	_hud_counter.position = Vector2(16, 175)
+	_hud_counter.position = Vector2(16, 175 if not mobile else 40)
 	_hud_counter.add_theme_color_override("font_color", Color(1.0, 0.8, 0.85))
 	_hud_counter.add_theme_color_override("font_outline_color", Color(0.13, 0.08, 0.17))
 	_hud_counter.add_theme_constant_override("outline_size", 6)
