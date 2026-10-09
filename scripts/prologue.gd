@@ -17,6 +17,8 @@ const Props := preload("res://scripts/props.gd")
 const PLANK_W := 0.45
 const N_PLANKS := 18
 const MISSING := [8, 9, 10]
+const PLANK_SPOTS := [Vector2(-2.6, 4.9), Vector2(2.9, 5.6), Vector2(-4.5, 7.5), Vector2(4.2, 7.0)]
+const RESPAWN_DELAY := 15.0
 const STORY_ITEMS := ["photo", "cle", "cuillere", "chaussette"]
 
 var world: Node3D
@@ -34,6 +36,7 @@ var deck_shape: CollisionShape3D
 var deck_y := 2.0
 var slots: Array = []        # [Transform3D, rempli ?]
 var loose_planks: Array = []
+var _respawn_t := 0.0
 var _t := 0.0
 var _hint_cd := 0.0
 var _fade: MeshInstance3D
@@ -346,15 +349,37 @@ func _bridge() -> void:
 	deck_shape.position = Vector3(x, deck_y - 0.06, cz)
 	deck_shape.disabled = false   # le tablier est toujours solide : on ne tombe plus à l'eau
 	body.add_child(deck_shape)
+	# Rampes invisibles aux deux bouts : le tablier dépasse un peu du sol, on ne doit pas buter dessus
+	for sg in [1.0, -1.0]:
+		var s: float = sg
+		var z_edge: float = cz + s * (N_PLANKS * PLANK_W * 0.5 + 0.3)
+		var ramp_len := 2.2
+		var z_far: float = z_edge + s * ramp_len
+		var dh: float = (deck_y - 0.01) - Island.height(x, z_far) + 0.04
+		if dh > 0.03:
+			var rcs := CollisionShape3D.new()
+			var rbs := BoxShape3D.new()
+			rbs.size = Vector3(1.8, 0.12, sqrt(ramp_len * ramp_len + dh * dh))
+			rcs.shape = rbs
+			rcs.position = Vector3(x, (deck_y - 0.01) - dh * 0.5 - 0.06, (z_edge + z_far) * 0.5)
+			rcs.basis = Basis(Vector3.RIGHT, s * atan(dh / ramp_len))
+			body.add_child(rcs)
 	if not Save.story.get("bridge", false):
+		# Murs invisibles le long du ruisseau, sauf juste à l'entrée du pont (largeur du tablier + rambardes)
+		var gap_lo := x - 1.0
+		var gap_hi := x + 1.0
 		var xx := -80.0
 		while xx < 80.0:
 			var w := 4.0
-			var cx := xx + w * 0.5
-			if absf(cx - x) < 2.0:
-				xx += w
-				continue
-			_wall(body, cx, w)
+			var lo := xx
+			var hi := xx + w
+			if hi <= gap_lo or lo >= gap_hi:
+				_wall(body, lo + w * 0.5, w)
+			else:
+				if lo < gap_lo - 0.05:
+					_wall(body, (lo + gap_lo) * 0.5, gap_lo - lo)
+				if hi > gap_hi + 0.05:
+					_wall(body, (gap_hi + hi) * 0.5, hi - gap_hi)
 			xx += w
 		bridge_wall = CollisionShape3D.new()
 		var bs := BoxShape3D.new()
@@ -363,9 +388,8 @@ func _bridge() -> void:
 		bridge_wall.position = Vector3(x, 2.0, cz)
 		body.add_child(bridge_wall)
 		# Les planches à replacer, sur la rive de la plage
-		var spots := [Vector2(-2.6, 4.9), Vector2(2.9, 5.6), Vector2(-4.5, 7.5), Vector2(4.2, 7.0)]
 		for k in 4 - placed:
-			var sp: Vector2 = spots[k]
+			var sp: Vector2 = PLANK_SPOTS[k]
 			var p := Island.ground(x + sp.x, cz + sp.y) + Vector3(0, 0.12, 0)
 			var rb := Props.make(world, "planche", p)
 			rb.rotation.y = 0.4 + k * 0.9
@@ -463,6 +487,7 @@ func _physics_process(delta: float) -> void:
 			Fx.text(world, suitcase.global_position + Vector3(0, 0.9, 0), "La valise est libre !", Color(1.0, 0.92, 0.6), 0.6, 1.5)
 	_check_photo(delta)
 	_check_planks()
+	_plank_watch(delta)
 	_check_zone()
 
 
@@ -518,6 +543,49 @@ func _check_planks() -> void:
 				if Save.story["planks"] >= 3:
 					_bridge_done()
 				break
+
+
+## Si toutes les planches utiles sont perdues (jetées de l'autre côté, tombées à l'eau),
+## de nouvelles s'échouent sur la plage au bout d'un moment.
+func _plank_watch(delta: float) -> void:
+	if Save.story.get("bridge", false) or deck_y == 0.0:
+		return
+	var cz := Island.creek_z(Island.BRIDGE_X)
+	var usable := 0
+	for rb in loose_planks.duplicate():
+		if not is_instance_valid(rb):
+			loose_planks.erase(rb)
+			continue
+		var lost: bool = rb.global_position.y < -1.0 or rb.global_position.z < cz - 1.0
+		if lost and not (player.held_item() == rb):
+			Fx.puff(world, rb.global_position, Color(0.8, 0.9, 1.0))
+			player.release_item(rb)
+			loose_planks.erase(rb)
+			rb.queue_free()
+		else:
+			usable += 1
+	if suitcase_plank and is_instance_valid(suitcase_plank) and not Save.story.get("plank_off", false):
+		usable += 1
+	var needed := 3 - int(Save.story.get("planks", 0))
+	if usable >= needed:
+		_respawn_t = 0.0
+		return
+	_respawn_t += delta
+	if _respawn_t < RESPAWN_DELAY:
+		return
+	_respawn_t = 0.0
+	var x := Island.BRIDGE_X
+	for k in needed - usable:
+		var sp: Vector2 = PLANK_SPOTS[(k + loose_planks.size()) % PLANK_SPOTS.size()]
+		var pos := Island.ground(x + sp.x, cz + sp.y) + Vector3(0, 0.6, 0)
+		var rb := Props.make(world, "planche", pos)
+		rb.rotation.y = 0.4 + k * 0.9
+		rb.add_to_group("bridge_plank")
+		loose_planks.append(rb)
+		Fx.puff(world, pos, Color(1.0, 0.95, 0.8))
+	Fx.text(world, player._front(2.0) + Vector3(0, 1.0, 0), "Une planche s'est échouée sur la plage.", Color(1.0, 0.95, 0.75), 0.5, 3.0)
+	if pico.active:
+		pico.say("Une planche de plus ! La mer nous en a laissé une. Elle est polie, la mer.")
 
 
 func _bridge_done() -> void:

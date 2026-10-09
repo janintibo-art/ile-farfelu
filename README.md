@@ -202,3 +202,7 @@ sur le casque sans la désinstaller.
 - Commandes tactiles : joystick à gauche, glisser à droite pour regarder (un tap = action), viseur « + » au centre, gros bouton ACTION (rôle du clic souris), SAUT, VUE, PERSO, SAC, ÉCHANGE, RÉPLIQUE, MANGER, OUTIL.
 - Activé uniquement par la fonction « phone » du preset Telephone (ou `-- --touch` sur PC pour tester). OpenXR désactivé et MSAA coupé sur cette version.
 - Si l'export téléphone échoue, la version Quest et la version PC sont quand même publiées.
+
+## v26
+- Pont de la plage : les murs invisibles du ruisseau bouchaient aussi l'entrée du pont (on restait bloqué après la réparation). L'entrée est maintenant dégagée, et des rampes invisibles évitent de buter sur le bord du tablier. Testé en marchant d'une rive à l'autre.
+- Si toutes les planches utiles sont perdues (jetées de l'autre côté, tombées à l'eau), de nouvelles s'échouent sur la plage après 15 secondes.
