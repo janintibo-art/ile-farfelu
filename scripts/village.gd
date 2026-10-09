@@ -33,6 +33,7 @@ const VY := preload("res://scripts/village_y.gd")
 const VZ := preload("res://scripts/village_z.gd")
 const TR := preload("res://scripts/travers.gd")
 const VBR := preload("res://scripts/village_b.gd")
+const AR := preload("res://scripts/archive.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -63,6 +64,7 @@ var y
 var z
 var tr
 var b
+var ar
 var _nina_wp := 0
 var _nina_wait := 0.0
 var _nina_speed := 1.0
@@ -104,6 +106,10 @@ func build(p_world: Node3D, p_player) -> void:
 	tr.name = "Travers"
 	add_child(tr)
 	tr.setup(self, player)
+	ar = AR.new()
+	ar.name = "Archive"
+	add_child(ar)
+	ar.setup(self, player)
 	_make_speakers()
 	y = VY.new()
 	y.v = self

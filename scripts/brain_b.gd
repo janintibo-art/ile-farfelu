@@ -53,6 +53,8 @@ static func options(who: String, s: Dictionary) -> Array:
 				out.append(["orb", "Cette bulle verte, près de vous ?"])
 			if hold != "":
 				out.append(["give", "Cette bulle est à vous ?"])
+			if s.get("b_done", false) and s.get("b_d_mer", false) and not s.get("b_tide", false):
+				out.append(["tide", "La trappe attend la marée basse."])
 			out.append(["goats", "Vos trois chèvres ?"])
 			out.append(["boat", "Pourquoi ce bateau est-il à sec ?"])
 		"hortense":
@@ -104,6 +106,8 @@ static func respond(who: String, intent: String, s: Dictionary, say: Callable) -
 			if hold == "cap":
 				return {"text": "Le nord-nord-est ! La Grande Ourse ! Oui, c'est à moi, ça. Qui avait ça ? ...La chèvre ? Évidemment : elle regarde toujours les étoiles. Je comprends tout.", "event": "b_ok_cap"}
 			return {"text": "Hmm. Non. Je ne reconnais pas cette bulle. Elle n'a pas le roulis.", "event": "b_wrong"}
+		"ouessant:tide":
+			return {"text": "La marée basse ? Je la sens dans mes genoux. Ce soir, la lune tire l'eau vers le large. Allez ouvrir votre trappe : elle se laissera faire. Et prenez une bougie : l'Archive n'aime pas qu'on lise dans le noir.", "flag": {"b_tide": true}}
 		"ouessant:goats":
 			return {"text": say.call(["Trois chèvres. Ou une. Une qui vaut trois, je dirais. Elle me regarde fixement. Elle sait quelque chose.", "Je ne les ai jamais eues... mais je sais comment elles aiment qu'on leur parle du temps."])}
 		"ouessant:boat":

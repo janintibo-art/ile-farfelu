@@ -355,3 +355,16 @@ const LEO := {
 	"accent": Color(0.7, 0.9, 0.7),
 	"lines": [],
 }
+
+const BASILE_PLUME := {
+	"name": "Basile Plume",
+	"skin": Color(0.95, 0.82, 0.7),
+	"hair": Color(0.8, 0.82, 0.88),
+	"hair_style": "mayor",
+	"eye": Color(0.3, 0.35, 0.5),
+	"shirt": Color(0.25, 0.4, 0.5),
+	"pants": Color(0.2, 0.22, 0.3),
+	"shoes": Color(0.15, 0.15, 0.2),
+	"accent": Color(0.7, 0.85, 1.0),
+	"lines": [],
+}

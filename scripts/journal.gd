@@ -84,6 +84,13 @@ static func lines(tab: String) -> Array:
 					out.append("Voix : « Conserver. Tout conserver. » (Basile)")
 				if _f("b_voice_c"):
 					out.append("Voix : « Pico... ne leur dis rien. » (?)")
+				if _f("b_tide"):
+					out.append("Marée basse : la trappe de l'Archive est ouverte.")
+				if _f("ar_key"):
+					out.append("Archive : bulle-clé prise (ni trop bas, ni trop haut).")
+				if _f("ch3_done"):
+					out.append("Basile Plume : veut arrêter le phénomène « définitivement ».")
+					out.append("   Il était ami avec le Grand Cartographe.")
 				match str(Save.story.get("b_hortense", "")):
 					"give":
 						out.append("Hortense a récupéré toute sa mémoire d'Aristide.")
@@ -135,6 +142,7 @@ static func lines(tab: String) -> Array:
 				["ch2_done", "CHAPITRE 2 TERMINÉ."],
 				["v3_started", "Brumelune : rendre les bulles de souvenir à leurs propriétaires."],
 				["b_cycle", "Brumelune : boulanger, marin et chèvre ont retrouvé leurs souvenirs."],
+				["ch3_done", "CHAPITRE 3 TERMINÉ."],
 				["b_done", "Brumelune : Hortense et Léo ont décidé. La trappe de l'Archive s'éveille."],
 			]
 			for q in qs:

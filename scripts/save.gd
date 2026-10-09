@@ -33,7 +33,9 @@ static func peek(n: int) -> Dictionary:
 		return {}
 	var st: Dictionary = cf.get_value("histoire", "etat", {})
 	var chap := "Prologue"
-	if st.get("b_done", false):
+	if st.get("ch3_done", false):
+		chap = "Chapitre 3 terminé"
+	elif st.get("b_done", false):
 		chap = "Brumelune : l'Archive"
 	elif st.get("v3_started", false):
 		chap = "Chapitre 3 : Brumelune"

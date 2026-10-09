@@ -547,10 +547,13 @@ func _voice(k: String) -> void:
 func _hatch() -> void:
 	Save.story["b_hatch"] = true
 	Save.save_game()
+	if _s("b_tide"):
+		v.ar.enter()
+		return
 	var p: Vector3 = P + Vector3(0, 1.8, -23.6)
 	Fx.text(v.world, p, "L'ARCHIVE ENGLOUTIE", Color(0.85, 0.95, 1.0), 1.0, 5.0)
-	_later(1.2, func(): Fx.text(v.world, p - Vector3(0, 0.5, 0), "La trappe ne s'ouvre qu'à marée basse. Revenez plus tard.", Color(1.0, 0.95, 0.8), 0.6, 5.0))
-	v._pico("Marée basse. Dans un marais, ça se négocie. Il faudra trouver qui tient les vannes. À suivre, au prochain tour.")
+	_later(1.2, func(): Fx.text(v.world, p - Vector3(0, 0.5, 0), "La trappe ne s'ouvre qu'à marée basse.", Color(1.0, 0.95, 0.8), 0.6, 5.0))
+	v._pico("Marée basse. Un marin, ça lit les marées. Demandons à Ouessant, maintenant qu'il se souvient de la mer.")
 
 
 # --- Boucle -----------------------------------------------------------------------------------------

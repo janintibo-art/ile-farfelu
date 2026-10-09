@@ -191,3 +191,8 @@ sur le casque sans la désinstaller.
 
 ## v23
 - Vue 3e personne en VR : le perso apparaît maintenant en face du regard (avant : placé selon l'orientation de la pièce, donc parfois sur le côté).
+
+## v24 — Chapitre 3, partie 2 : l'Archive Engloutie
+- À Brumelune, demander à Marin Ouessant (une fois ses souvenirs de marin rendus) : « La trappe attend la marée basse. » La trappe au nord s'ouvre alors sur l'Archive (zone y=800).
+- Salle 1 : régler le niveau de l'eau dans l'ordre de la plaque (bas, haut, moyen). Salle 2 : assembler les souvenirs qui parlent de la même chose. Salle 3 : la bulle-clé monte avec l'eau, mais pas trop haut. Salle 4 : écouter trois souvenirs du Grand Cartographe. Salle 5 : première rencontre (indirecte) avec Basile Plume, trois questions, ses réponses dépendent du choix fait pour Hortense.
+- Fin du chapitre 3 : +40 coquillages. Teaser : Belloche.
