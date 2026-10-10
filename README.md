@@ -209,3 +209,14 @@ sur le casque sans la désinstaller.
 
 ## v27
 - Le workflow n'envoie plus d'artefacts (ils comptaient dans le quota de stockage Actions de 0,5 Go, déjà à 90 %) : les fichiers sont publiés uniquement dans la release « derniere-version », qui ne compte pas dans ce quota. Une étape supprime aussi les anciens artefacts à chaque compilation.
+
+## v28 — Chapitre 4, partie 1 : Belloche, « la ville qui perdit sa musique »
+- Avec Éléonore (après le chapitre 3) : « Partons pour Belloche. » Plateau avec clocher, quatre cadres de cloches décoratives, atelier de flûtes. Rien ne sonne, les habitants ont perdu la voix : ils miment et Pico « traduit ».
+- Trois énigmes sonores (sons fabriqués en direct, spatialisés : on entend d'où ils viennent) :
+  1. Petit Tam : trois tambours (bois, métal, pierre). « Écouter Tam », puis refaire le même rythme.
+  2. Maître Sifflot : un oiseau jaune caché. « Écouter le vent » : le trille vient du bon arbre. « Regarder dans l'arbre ».
+  3. Dame Carillon : cinq cloches de couleur. « Écouter l'air », puis rejouer la mélodie.
+- Chaque énigme rend 5 coquillages. Les trois résolues : « Tirer la corde » de la Grosse Cloche → toutes les cloches sonnent, les habitants parlent, +30 coquillages.
+- Les pots « CONSERVÉ — Château des Versions Officielles » : les sons étaient mis en conserve (même main que le pont et les souvenirs).
+- La porte sous le clocher vibre : la Cathédrale des Échos arrive en v29.
+- Nouveaux fichiers : `village_k.gd`, `brain_k.gd`, `bells.gd`. Menu de sauvegarde, journal et dialogues d'Éléonore mis à jour.

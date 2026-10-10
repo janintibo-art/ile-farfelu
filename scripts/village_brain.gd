@@ -420,12 +420,15 @@ func _mayor_respond(intent: String) -> Dictionary:
 # ---------------------------------------------------------------------------
 
 const BB := preload("res://scripts/brain_b.gd")
-const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette", "honore", "ouessant", "hortense", "leo"]
+const BK := preload("res://scripts/brain_k.gd")
+const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette", "honore", "ouessant", "hortense", "leo", "tam", "sifflot", "carillon"]
 
 
 func _x_greet(who: String, name: String) -> Dictionary:
 	if who in BB.IDS:
 		return BB.greet(who, name, s(), _say)
+	if who in BK.IDS:
+		return BK.greet(who, name, s(), _say)
 	var tue: bool = s().get("tuesday", false)
 	match who:
 		"basile":
@@ -455,6 +458,10 @@ func _x_greet(who: String, name: String) -> Dictionary:
 				return {"text": "Entre, mon petit. Ne marche pas sur hier, il est fragile.", "flag": {"petro_met": true}}
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
+			if s().get("at_k", false):
+				if s().get("k_done", false):
+					return {"text": _say(["Les cloches ont repris leur travail. Et il y a une porte, sous le clocher, qui n'a pas fini de trembler.", "Belloche chante. Quelqu'un a rangé cette musique, Pico en sait peut-être plus qu'il n'en dit."]), "flag": {"eleonore_met": true}}
+				return {"text": _say(["Belloche. Personne n'a de voix, tout le monde a des oreilles. Trois énigmes sonores : un rythme, un oiseau, un air.", "Écoute d'abord, répète ensuite. Et cherche les pots : ils ont une étiquette que je n'aime pas."]), "flag": {"eleonore_met": true}}
 			if s().get("at_b", false):
 				if s().get("b_done", false):
 					return {"text": _say(["La trappe réagit aux souvenirs rendus. Elle ne s'ouvrira qu'à marée basse : il faudra trouver qui tient les vannes.", "Tout le monde a retrouvé ce qu'il voulait garder. C'est rare, et c'est un début."]), "flag": {"eleonore_met": true}}
@@ -471,6 +478,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 func _x_options(who: String) -> Array:
 	if who in BB.IDS:
 		return BB.options(who, s())
+	if who in BK.IDS:
+		return BK.options(who, s())
 	var out: Array = []
 	var tue: bool = s().get("tuesday", false)
 	match who:
@@ -521,6 +530,13 @@ func _x_options(who: String) -> Array:
 					out.append(["wheel", "Vous avez quelque chose qui tourne ?"])
 			out.append(["tea", "Du thé ?"])
 		_:
+			if s().get("at_k", false):
+				out.append(["kplan", "Que fait-on à Belloche ?"])
+				out.append(["kjar", "Ces pots avec une étiquette ?"])
+				if s().get("k_done", false):
+					out.append(["kdoor", "La porte sous le clocher ?"])
+				out.append(["kback", "Rentrons à Port-Biscornu."])
+				return out
 			if s().get("at_b", false):
 				out.append(["bplan", "Que fait-on à Brumelune ?"])
 				out.append(["bfog", "La brume garde les voix ?"])
@@ -541,6 +557,8 @@ func _x_options(who: String) -> Array:
 				out.append(["go", "Partons pour Virevolte."])
 			if s().get("ch2_done", false):
 				out.append(["bgo", "Partons pour Brumelune."])
+			if s().get("ch3_done", false):
+				out.append(["kgo", "Partons pour Belloche."])
 			if not s().get("eleonore_story", false):
 				out.append(["story", "Qui êtes-vous, vraiment ?"])
 			else:
@@ -552,6 +570,8 @@ func _x_options(who: String) -> Array:
 func _x_respond(who: String, intent: String) -> Dictionary:
 	if who in BB.IDS:
 		return BB.respond(who, intent, s(), _say)
+	if who in BK.IDS:
+		return BK.respond(who, intent, s(), _say)
 	match who + ":" + intent:
 		"basile:mardi":
 			return {"text": "Mardi ? J'ai pétri. Je me souviens des mains. Les miennes. Enfin, il y en avait d'autres. Mon registre est dans l'arrière-boutique : il dit vingt-sept fournées. Je n'ose plus le relire."}
@@ -611,6 +631,16 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": "Brumelune, dans le marais des Murmures. Un village sur pilotis où la brume garde les voix. J'y ai peut-être perdu des souvenirs, moi aussi. Ne marchez pas sur les conversations.", "flag": {"v3_started": true}, "event": "b_go"}
 		"eleonore:bback", "eleonore:vback":
 			return {"text": "Rentrons. Le monde ne s'arrêtera pas pour nous. Il attendra, mais de travers.", "event": "b_back" if intent == "bback" else "z_back"}
+		"eleonore:kgo":
+			return {"text": "Belloche, la ville des mille cloches. Elle a perdu sa musique hier, ou depuis toujours. Je prends mon sac, et des bouchons d'oreilles au cas où elles reviennent d'un coup.", "flag": {"v4_started": true}, "event": "k_go"}
+		"eleonore:kback":
+			return {"text": "Rentrons. Les cloches nous attendront. Elles sont patientes, c'est leur métier.", "event": "k_back"}
+		"eleonore:kplan":
+			return {"text": "Trois sons à rendre : le rythme de Tam, l'oiseau de Sifflot, l'air de Dame Carillon. Chacun mime ce qu'il veut, et Pico traduit. Ensuite, la corde de la Grosse Cloche."}
+		"eleonore:kjar":
+			return {"text": "« Conservé. » Ils conservent tout, chez eux : des ponts, des souvenirs, maintenant des sons. Je commence à reconnaître la main."}
+		"eleonore:kdoor":
+			return {"text": "Sous un clocher, on trouve des cordes. Sous celui-ci, une cathédrale entière, dit-on. On y descendra quand les cloches se seront reposées."}
 		"eleonore:bplan":
 			return {"text": "Quatre bulles à rendre : un boulanger, un marin, une chèvre... et un morceau de souvenir, plus lourd. Prenez les bulles à ceux qui les portent, puis offrez-les à leur vrai propriétaire."}
 		"eleonore:bfog":
@@ -636,6 +666,8 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 func _x_idle(who: String) -> String:
 	if who in BB.IDS:
 		return BB.idle(who, s(), _say)
+	if who in BK.IDS:
+		return BK.idle(who, s(), _say)
 	match who:
 		"odile":
 			return _say(["Le pont est à nous. Je le dis pour qu'il le sache.", "Si je le répète trois fois, ça devient vrai. Le pont est à nous. Le pont est à nous. Le pont..."])

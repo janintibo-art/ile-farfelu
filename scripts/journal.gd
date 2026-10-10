@@ -91,6 +91,9 @@ static func lines(tab: String) -> Array:
 				if _f("ch3_done"):
 					out.append("Basile Plume : veut arrêter le phénomène « définitivement ».")
 					out.append("   Il était ami avec le Grand Cartographe.")
+				if _f("k_jar"):
+					out.append("Belloche : sons « conservés » en pots.")
+					out.append("   (Château des Versions Officielles)")
 				match str(Save.story.get("b_hortense", "")):
 					"give":
 						out.append("Hortense a récupéré toute sa mémoire d'Aristide.")
@@ -116,6 +119,9 @@ static func lines(tab: String) -> Array:
 				["ouessant_met", "Marin Ouessant : se croit éleveur de chèvres."],
 				["hortense_met", "Hortense : met toujours deux tasses."],
 				["leo_met", "Léo : pleure pour un monsieur qu'il n'a pas connu."],
+				["tam_met", "Petit Tam (Belloche) : tambourineur sans voix."],
+				["sifflot_met", "Maître Sifflot : luthier de flûtes, a perdu un oiseau."],
+				["carillon_met", "Dame Carillon : gardienne des cloches."],
 			]
 			for r in rows:
 				if _f(r[0]) or (r[0] == "malo_met" and _f("inn_met")):
@@ -144,6 +150,11 @@ static func lines(tab: String) -> Array:
 				["b_cycle", "Brumelune : boulanger, marin et chèvre ont retrouvé leurs souvenirs."],
 				["ch3_done", "CHAPITRE 3 TERMINÉ."],
 				["b_done", "Brumelune : Hortense et Léo ont décidé. La trappe de l'Archive s'éveille."],
+				["v4_started", "Belloche : rendre trois sons au village (rythme, oiseau, air)."],
+				["k_drum", "Belloche : le rythme de Tam est retrouvé."],
+				["k_bird", "Belloche : l'oiseau de Sifflot est retrouvé."],
+				["k_bell", "Belloche : l'air de Dame Carillon est retrouvé."],
+				["k_done", "Belloche : la Grosse Cloche sonne. Une porte vibre sous le clocher."],
 			]
 			for q in qs:
 				if _f(q[0]):

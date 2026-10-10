@@ -368,3 +368,45 @@ const BASILE_PLUME := {
 	"accent": Color(0.7, 0.85, 1.0),
 	"lines": [],
 }
+
+
+## Belloche (chapitre 4)
+
+const SIFFLOT := {
+	"name": "Maître Sifflot",
+	"skin": Color(0.95, 0.78, 0.62),
+	"hair": Color(0.5, 0.35, 0.25),
+	"hair_style": "messy",
+	"eye": Color(0.3, 0.3, 0.2),
+	"shirt": Color(0.45, 0.65, 0.5),
+	"pants": Color(0.4, 0.35, 0.3),
+	"shoes": Color(0.3, 0.22, 0.18),
+	"accent": Color(0.9, 0.85, 0.4),
+	"lines": [],
+}
+
+const CARILLON := {
+	"name": "Dame Carillon",
+	"skin": Color(0.9, 0.7, 0.58),
+	"hair": Color(0.75, 0.75, 0.85),
+	"hair_style": "ponytail",
+	"eye": Color(0.35, 0.4, 0.6),
+	"shirt": Color(0.85, 0.6, 0.3),
+	"pants": Color(0.5, 0.3, 0.3),
+	"shoes": Color(0.4, 0.28, 0.2),
+	"accent": Color(1.0, 0.85, 0.35),
+	"lines": [],
+}
+
+const TAM := {
+	"name": "Petit Tam",
+	"skin": Color(0.85, 0.65, 0.5),
+	"hair": Color(0.15, 0.12, 0.12),
+	"hair_style": "kid",
+	"eye": Color(0.25, 0.2, 0.15),
+	"shirt": Color(0.9, 0.4, 0.35),
+	"pants": Color(0.3, 0.4, 0.55),
+	"shoes": Color(0.5, 0.35, 0.25),
+	"accent": Color(1.0, 0.7, 0.3),
+	"lines": [],
+}

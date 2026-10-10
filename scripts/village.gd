@@ -33,6 +33,7 @@ const VY := preload("res://scripts/village_y.gd")
 const VZ := preload("res://scripts/village_z.gd")
 const TR := preload("res://scripts/travers.gd")
 const VBR := preload("res://scripts/village_b.gd")
+const VK := preload("res://scripts/village_k.gd")
 const AR := preload("res://scripts/archive.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
@@ -64,6 +65,7 @@ var y
 var z
 var tr
 var b
+var bel
 var ar
 var _nina_wp := 0
 var _nina_wait := 0.0
@@ -91,6 +93,9 @@ func build(p_world: Node3D, p_player) -> void:
 	b = VBR.new()
 	b.v = self
 	b.build()
+	bel = VK.new()
+	bel.v = self
+	bel.build()
 	clock = Clock.new()
 	clock.setup(self, nodes["mairie"])
 	maquette = Maquette.new()
@@ -568,6 +573,7 @@ func _physics_process(delta: float) -> void:
 	x.update()
 	z.update()
 	b.update()
+	bel.update()
 	clock.update()
 	var cam: Vector3 = player.camera.global_position
 	for sp in speakers:
@@ -684,6 +690,12 @@ func _title_of(id: String) -> String:
 			return "HORTENSE"
 		"leo":
 			return "LÉO"
+		"tam":
+			return "PETIT TAM"
+		"sifflot":
+			return "MAÎTRE SIFFLOT"
+		"carillon":
+			return "DAME CARILLON"
 	return "THÉODORE PATATRAS"
 
 
@@ -735,6 +747,8 @@ func _apply(sp: Dictionary, r: Dictionary) -> void:
 		z.event(ev, node)
 	if ev.begins_with("b_"):
 		b.event(ev, node)
+	if ev.begins_with("k_"):
+		bel.event(ev, node)
 	match ev:
 		"malo_glass":
 			_drop_glass(node)
