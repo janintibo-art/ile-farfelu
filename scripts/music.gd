@@ -21,7 +21,7 @@ const ORDER := ["calm", "wood", "play", "mystic", "airy"]
 const AREA_SCHEME := {
 	"island": "calm", "maquette": "wood", "dungeon": "mystic", "phare": "wood", "cells": "mystic",
 	"virevolte": "play", "travers": "wood", "brumelune": "airy", "archive": "mystic",
-	"belloche": "calm", "cathedrale": "", "hautes": "airy", "obs": "mystic",
+	"belloche": "calm", "cathedrale": "", "hautes": "airy", "obs": "mystic", "chateau": "wood",
 }
 
 var player

@@ -17,7 +17,7 @@ const MIX := {
 	"phare": [0.5, 0.6, 0.0, 0.0], "cells": [0.0, 0.0, 0.5, 0.0], "virevolte": [0.0, 0.25, 0.0, 0.6],
 	"travers": [0.0, 0.0, 0.5, 0.0], "brumelune": [0.3, 0.15, 0.0, 0.8], "archive": [0.15, 0.0, 0.45, 0.0],
 	"belloche": [0.0, 0.8, 0.0, 0.0], "cathedrale": [0.0, 0.0, 0.7, 0.0], "hautes": [0.0, 0.9, 0.0, 0.0],
-	"obs": [0.0, 0.2, 0.45, 0.0],
+	"obs": [0.0, 0.2, 0.45, 0.0], "chateau": [0.0, 0.0, 0.4, 0.0],
 }
 const NAMES := ["sea", "wind", "room", "crick"]
 
@@ -236,7 +236,7 @@ func _one_shot(area: String, p: Vector3) -> void:
 			lo = 3.0
 			hi = 9.0
 			vol = -13.0
-		"hautes", "travers", "obs":
+		"hautes", "travers", "obs", "chateau":
 			kind = "tick"
 			lo = 5.0
 			hi = 12.0

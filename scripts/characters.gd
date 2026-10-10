@@ -549,3 +549,97 @@ const EDOUARD := {
 	"accent": Color(0.8, 0.8, 0.85),
 	"lines": [],
 }
+
+
+## Le château (chapitre 6)
+
+const JULES := {
+	"name": "Jules Pivoine",
+	"skin": Color(0.96, 0.8, 0.68),
+	"hair": Color(0.85, 0.85, 0.88),
+	"hair_style": "mayor",
+	"eye": Color(0.3, 0.3, 0.4),
+	"shirt": Color(0.15, 0.15, 0.2),
+	"pants": Color(0.12, 0.12, 0.16),
+	"shoes": Color(0.1, 0.1, 0.12),
+	"accent": Color(0.95, 0.95, 0.98),
+	"lines": [],
+}
+
+const JULES_JEUNE := {
+	"name": "Jules (Jeune)",
+	"skin": Color(0.98, 0.82, 0.7),
+	"hair": Color(0.3, 0.22, 0.18),
+	"hair_style": "messy",
+	"eye": Color(0.3, 0.3, 0.4),
+	"shirt": Color(0.15, 0.15, 0.2),
+	"pants": Color(0.12, 0.12, 0.16),
+	"shoes": Color(0.1, 0.1, 0.12),
+	"accent": Color(0.95, 0.95, 0.98),
+	"lines": [],
+}
+
+const COLONEL := {
+	"name": "Colonel Boutonnière",
+	"skin": Color(0.95, 0.72, 0.6),
+	"hair": Color(0.9, 0.9, 0.9),
+	"hair_style": "fisher",
+	"eye": Color(0.3, 0.3, 0.35),
+	"shirt": Color(0.75, 0.2, 0.25),
+	"pants": Color(0.2, 0.2, 0.45),
+	"shoes": Color(0.15, 0.12, 0.1),
+	"accent": Color(1.0, 0.85, 0.3),
+	"lines": [],
+}
+
+const PERLE := {
+	"name": "Mademoiselle Perle",
+	"skin": Color(1.0, 0.86, 0.76),
+	"hair": Color(0.95, 0.85, 0.5),
+	"hair_style": "buns",
+	"eye": Color(0.35, 0.5, 0.7),
+	"shirt": Color(0.95, 0.75, 0.85),
+	"pants": Color(0.95, 0.75, 0.85),
+	"shoes": Color(0.9, 0.7, 0.8),
+	"accent": Color(1.0, 0.95, 0.9),
+	"lines": [],
+}
+
+const ARCHET := {
+	"name": "Monsieur Archet",
+	"skin": Color(0.92, 0.75, 0.62),
+	"hair": Color(0.2, 0.15, 0.15),
+	"hair_style": "spiky",
+	"eye": Color(0.3, 0.3, 0.35),
+	"shirt": Color(0.2, 0.2, 0.3),
+	"pants": Color(0.15, 0.15, 0.2),
+	"shoes": Color(0.1, 0.1, 0.1),
+	"accent": Color(0.9, 0.5, 0.3),
+	"lines": [],
+}
+
+const PETRA := {
+	"name": "Pétra",
+	"skin": Color(1.0, 0.86, 0.76),
+	"hair": Color(0.5, 0.35, 0.3),
+	"hair_style": "buns",
+	"eye": Color(0.3, 0.45, 0.35),
+	"shirt": Color(0.7, 0.5, 0.85),
+	"pants": Color(0.4, 0.3, 0.5),
+	"shoes": Color(0.35, 0.25, 0.3),
+	"accent": Color(0.85, 0.7, 0.95),
+	"lines": [],
+}
+
+const LINA := {
+	"name": "Lina",
+	"skin": Color(1.0, 0.86, 0.76),
+	"hair": Color(0.85, 0.82, 0.88),
+	"hair_style": "kid",
+	"eye": Color(0.3, 0.4, 0.6),
+	"shirt": Color(0.95, 0.85, 0.5),
+	"pants": Color(0.5, 0.65, 0.9),
+	"shoes": Color(0.9, 0.4, 0.4),
+	"accent": Color(1.0, 0.9, 0.6),
+	"lines": [],
+}

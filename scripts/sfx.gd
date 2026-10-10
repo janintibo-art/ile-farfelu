@@ -10,13 +10,13 @@ const Bells := preload("res://scripts/bells.gd")
 
 const SQUARE := Vector2(0.0, -49.5)
 const AREAS := ["island", "maquette", "dungeon", "phare", "cells", "virevolte", "travers",
-	"brumelune", "archive", "belloche", "cathedrale", "hautes", "obs"]
+	"brumelune", "archive", "belloche", "cathedrale", "hautes", "obs", "chateau"]
 ## [mouillé, taille de la salle] de la réverbération selon le lieu
 const REVERB := {
 	"island": [0.0, 0.4], "maquette": [0.08, 0.4], "dungeon": [0.30, 0.8], "phare": [0.15, 0.6],
 	"cells": [0.20, 0.6], "virevolte": [0.04, 0.4], "travers": [0.14, 0.5], "brumelune": [0.08, 0.5],
 	"archive": [0.28, 0.8], "belloche": [0.05, 0.5], "cathedrale": [0.50, 0.95], "hautes": [0.10, 0.6],
-	"obs": [0.30, 0.85],
+	"obs": [0.30, 0.85], "chateau": [0.38, 0.9],
 }
 
 static var inst = null

@@ -95,6 +95,9 @@ static func lines(tab: String) -> Array:
 					out.append("Il y a 27 ans : Basile a voulu figer l'île. Armand Chardon")
 					out.append("   a rattrapé les pages. Pico est la dernière page vivante.")
 					out.append("   Le Registre n'écrit pas l'île : c'est elle qui existe tant qu'on la raconte.")
+				if _f("ch6_done"):
+					out.append("Lina Plume, fille de Basile, a existé : un « bal » l'a rangée")
+					out.append("   dans les versions abandonnées. Basile garde son nom au chaud.")
 				if _f("h_d0"):
 					out.append("Hautes-Miettes : lettre « à Mlle L. Plume, poste restante ».")
 				if _f("h_d1"):
@@ -179,6 +182,11 @@ static func lines(tab: String) -> Array:
 				["h_done", "Le Receveur des Minutes a parlé. Clé des Rouages obtenue."],
 				["ob_room", "Observatoire Brisé : remonter le temps pièce par pièce."],
 				["ch5_done", "CHAPITRE 5 TERMINÉ."],
+				["m_intro", "Château des Versions Officielles : classer invités, portes et dates."],
+				["m_classify_done", "Château : les six invités sont classés (vrais, souvenirs, versions)."],
+				["m_book", "Château : le livre rouge est lu."],
+				["m_time", "Château : la chronologie est remise dans l'ordre."],
+				["ch6_done", "CHAPITRE 6 TERMINÉ."],
 			]
 			for q in qs:
 				if _f(q[0]):

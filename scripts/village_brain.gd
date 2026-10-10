@@ -579,6 +579,8 @@ func _x_options(who: String) -> Array:
 				out.append(["kgo", "Partons pour Belloche."])
 			if s().get("ch4_done", false):
 				out.append(["hgo", "Partons pour les Hautes-Miettes."])
+			if s().get("invite", false):
+				out.append(["mgo", "Allons au château. Basile nous attend."])
 			if not s().get("eleonore_story", false):
 				out.append(["story", "Qui êtes-vous, vraiment ?"])
 			else:
@@ -655,6 +657,8 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": "Rentrons. Le monde ne s'arrêtera pas pour nous. Il attendra, mais de travers.", "event": "b_back" if intent == "bback" else "z_back"}
 		"eleonore:hgo":
 			return {"text": "Les Hautes-Miettes. Un village où personne n'a jamais été en retard, et où le temps a décidé de le faire à leur place. Prends ta montre. Elle mentira, mais poliment.", "flag": {"v5_started": true}, "event": "h_go"}
+		"eleonore:mgo":
+			return {"text": "Le Château des Versions Officielles. Basile a dit « venez comme vous êtes ». Venons comme nous sommes, mais avec des questions.", "flag": {"v6_started": true}, "event": "m_go"}
 		"eleonore:hback":
 			return {"text": "Rentrons. Les minutes volées nous attendront, elles ont l'habitude.", "event": "h_back"}
 		"eleonore:hplan":

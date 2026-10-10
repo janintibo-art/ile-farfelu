@@ -277,3 +277,12 @@ Rien n'est obligatoire pour l'histoire ; tout se trouve sur l'île principale.
 - **Objets** : champignons trampolines, xylophone sur lequel on marche, bouton « NE PAS APPUYER », cloche du berger (tous les animaux sursautent), puits à vœux, boîte aux lettres.
 - Nouveaux sons : bêlement, cot-cot, groin, couinement, boing, miaou, ding.
 - Nouveaux fichiers : friends.gd, animal.gd. Modifiés : village.gd, characters.gd, bells.gd.
+
+## v35 — Chapitre 6 : le bal des Versions Officielles
+Demander à Éléonore « Allons au château. Basile nous attend. » (après le chapitre 5). Nouvelle zone dans le ciel : le Château des Versions Officielles, cinq salles.
+- **Hall et galerie des portraits** : lire les plaques (An 1, An 8, An 14, écriteau An 17) ; consoler un portrait vexé (cadeau caché).
+- **Salle de bal** : six invités à classer en vrais invités (reflet, appétit), souvenirs (ils répètent la même phrase) et versions abandonnées (elles se contredisent). Indices : le miroir, le carnet de bal, les conversations répétées.
+- **Couloir des portes** : écouter derrière les portes (dates An 16 matin et soir), puis le livre rouge qui ouvre la bibliothèque.
+- **Bibliothèque** : six cartes d'événements à remettre dans l'ordre chronologique.
+- **Chambre de Lina** : la scène finale avec Basile et sa fille ; fin du chapitre 6 (+80 coquillages).
+- Nouveaux fichiers : chateau.gd. Modifiés : characters.gd, village.gd, village_brain.gd, sfx.gd, ambience.gd, music.gd, visuals.gd, save.gd, journal.gd.

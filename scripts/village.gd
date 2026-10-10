@@ -37,6 +37,7 @@ const VK := preload("res://scripts/village_k.gd")
 const CA := preload("res://scripts/cathedral.gd")
 const VH := preload("res://scripts/village_h.gd")
 const OB := preload("res://scripts/observatory.gd")
+const CHA := preload("res://scripts/chateau.gd")
 const AR := preload("res://scripts/archive.gd")
 const VF := preload("res://scripts/friends.gd")
 
@@ -73,6 +74,7 @@ var b
 var bel
 var hau
 var obs
+var cha
 var cat
 var ar
 var _nina_wp := 0
@@ -137,6 +139,10 @@ func build(p_world: Node3D, p_player) -> void:
 	obs.name = "Observatoire"
 	add_child(obs)
 	obs.setup(self, player)
+	cha = CHA.new()
+	cha.name = "Chateau"
+	add_child(cha)
+	cha.setup(self, player)
 	_make_speakers()
 	y = VY.new()
 	y.v = self
@@ -781,6 +787,8 @@ func _apply(sp: Dictionary, r: Dictionary) -> void:
 		bel.event(ev, node)
 	if ev.begins_with("h_"):
 		hau.event(ev, node)
+	if ev.begins_with("m_"):
+		cha.event(ev, node)
 	match ev:
 		"malo_glass":
 			_drop_glass(node)
