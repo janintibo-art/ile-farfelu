@@ -269,3 +269,11 @@ sur le casque sans la désinstaller.
 - Particules d'ambiance autour du joueur : pollen, pétales (Virevolte), lucioles (Brumelune), feuilles (Belloche), neige (Hautes-Miettes), poussière lumineuse (donjon, Archives, Cathédrale, Observatoire).
 - Étalonnage des couleurs qui change doucement selon le lieu (plus vif à Virevolte, plus froid aux Hautes-Miettes, plus sombre aux Archives…).
 - Nouveaux fichiers : visuals.gd, shaders/blob.gdshader.
+
+## v34 — L'île vivante : animaux, personnages rigolos et objets à manipuler
+Rien n'est obligatoire pour l'histoire ; tout se trouve sur l'île principale.
+- **Animaux** (se promènent, réagissent, ont leur cri) : crabes (plage), chèvre Bouboule qui donne des coups de tête, coq Gérard et poules philosophes + poussins qui suivent, cochon Truffette qui déterre des coquillages, escargot Turbo, grenouilles au bord du ruisseau, mouette voleuse (rend avec intérêts), chat Sir Miaoulot qui dort.
+- **Personnages** : Brigitte la mamie ninja, Capitaine Moustache (a perdu son bateau), le Marchand de Rien (cadeau au 5e achat), Édouard la statue vivante (ne bouge que quand on ne le regarde pas).
+- **Objets** : champignons trampolines, xylophone sur lequel on marche, bouton « NE PAS APPUYER », cloche du berger (tous les animaux sursautent), puits à vœux, boîte aux lettres.
+- Nouveaux sons : bêlement, cot-cot, groin, couinement, boing, miaou, ding.
+- Nouveaux fichiers : friends.gd, animal.gd. Modifiés : village.gd, characters.gd, bells.gd.

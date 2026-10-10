@@ -72,6 +72,20 @@ static func _dur(kind: String) -> float:
 			return 0.45
 		"croak":
 			return 0.5
+		"baa":
+			return 0.8
+		"cluck":
+			return 0.3
+		"oink":
+			return 0.5
+		"squeak":
+			return 0.22
+		"boing":
+			return 0.6
+		"meow":
+			return 0.8
+		"ding":
+			return 0.9
 	return 1.0
 
 
@@ -319,6 +333,67 @@ static func make(kind: String, freq := 440.0, rate := RATE) -> AudioStreamWAV:
 				ph += TAU * (150.0 + 40.0 * sin(TAU * 6.0 * t)) / rate
 				var am := 0.55 + 0.45 * sin(TAU * 30.0 * t)
 				f[i] = (sin(ph) + 0.5 * sin(ph * 2.0) + 0.25 * sin(ph * 3.0)) * am * sin(PI * t / dur)
+			gain = 0.5
+		"baa":
+			# Bêlement : voix nasale qui tremble
+			for i in n:
+				var t := float(i) / rate
+				var f0 := 300.0 + 40.0 * sin(TAU * 5.0 * t) - 40.0 * t
+				ph += TAU * f0 / rate
+				var s := 0.0
+				for k in range(1, 9):
+					var form := exp(-pow((k * f0 - 1000.0) / 600.0, 2.0))
+					s += sin(ph * k) * form / float(k)
+				f[i] = s * (0.55 + 0.45 * sin(TAU * 26.0 * t)) * minf(t / 0.05, 1.0) * sin(PI * minf(t / dur, 1.0))
+			gain = 0.55
+		"cluck":
+			for i in n:
+				var t := float(i) / rate
+				var u := fmod(t, 0.13)
+				var fr := 900.0 - 3000.0 * u
+				ph += TAU * maxf(fr, 300.0) / rate
+				f[i] = (sin(ph) + 0.5 * sin(ph * 2.0)) * (sin(PI * u / 0.1) if u < 0.1 else 0.0) * (1.0 if t < 0.26 else 0.0)
+			gain = 0.5
+		"oink":
+			for i in n:
+				var t := float(i) / rate
+				var f0 := 140.0 - 40.0 * t + 15.0 * sin(TAU * 25.0 * t)
+				ph += TAU * f0 / rate
+				var w := rng.randf() * 2.0 - 1.0
+				lp += (w - lp) * 0.2
+				var s := 0.0
+				for k in range(1, 8):
+					s += sin(ph * k) * exp(-pow((k * f0 - 500.0) / 400.0, 2.0)) / float(k)
+				f[i] = (s + lp * 0.3) * (0.6 + 0.4 * sin(TAU * 22.0 * t)) * sin(PI * t / dur)
+			gain = 0.55
+		"squeak":
+			for i in n:
+				var t := float(i) / rate
+				var fr := 1900.0 + 700.0 * sin(PI * t / 0.22) + 120.0 * sin(TAU * 30.0 * t)
+				ph += TAU * fr / rate
+				f[i] = (sin(ph) + 0.3 * sin(ph * 2.0)) * sin(PI * t / dur)
+			gain = 0.45
+		"boing":
+			for i in n:
+				var t := float(i) / rate
+				var fr := 220.0 + 260.0 * exp(-t * 6.0) + 60.0 * sin(TAU * 14.0 * t) * exp(-t * 4.0)
+				ph += TAU * fr / rate
+				f[i] = (sin(ph) + 0.4 * sin(ph * 2.0)) * exp(-t * 6.0)
+			gain = 0.55
+		"meow":
+			for i in n:
+				var t := float(i) / rate
+				var f0 := 480.0 + 380.0 * sin(PI * minf(t / 0.6, 1.0)) * 1.0 - 120.0 * t
+				ph += TAU * f0 / rate
+				var s := 0.0
+				for k in range(1, 9):
+					s += sin(ph * k) * exp(-pow((k * f0 - (900.0 + 800.0 * t)) / 500.0, 2.0)) / float(k)
+				f[i] = s * minf(t / 0.06, 1.0) * sin(PI * minf(t / dur, 1.0))
+			gain = 0.5
+		"ding":
+			for i in n:
+				var t := float(i) / rate
+				f[i] = (sin(TAU * 1568.0 * t) + 0.4 * sin(TAU * 3136.0 * t) + 0.2 * sin(TAU * 4700.0 * t)) * exp(-t * 5.0)
 			gain = 0.5
 		_:
 			pass

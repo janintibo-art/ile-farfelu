@@ -494,3 +494,58 @@ const CARTOGRAPHE := {
 	"accent": Color(0.9, 0.8, 0.5),
 	"lines": [],
 }
+
+
+## L'île vivante (v34) : personnages rigolos
+
+const BRIGITTE := {
+	"name": "Brigitte",
+	"skin": Color(1.0, 0.85, 0.72),
+	"hair": Color(0.85, 0.85, 0.9),
+	"hair_style": "buns",
+	"eye": Color(0.3, 0.45, 0.6),
+	"shirt": Color(0.25, 0.25, 0.3),
+	"pants": Color(0.2, 0.2, 0.25),
+	"shoes": Color(0.9, 0.2, 0.25),
+	"accent": Color(0.9, 0.2, 0.25),
+	"lines": [],
+}
+
+const MOUSTACHE := {
+	"name": "Capitaine Moustache",
+	"skin": Color(0.95, 0.75, 0.6),
+	"hair": Color(0.35, 0.25, 0.2),
+	"hair_style": "fisher",
+	"eye": Color(0.25, 0.3, 0.4),
+	"shirt": Color(0.95, 0.95, 1.0),
+	"pants": Color(0.2, 0.3, 0.55),
+	"shoes": Color(0.3, 0.22, 0.18),
+	"accent": Color(0.2, 0.3, 0.55),
+	"lines": [],
+}
+
+const RIEN := {
+	"name": "Le Marchand de Rien",
+	"skin": Color(0.97, 0.8, 0.66),
+	"hair": Color(0.25, 0.2, 0.3),
+	"hair_style": "merchant",
+	"eye": Color(0.3, 0.3, 0.35),
+	"shirt": Color(0.7, 0.55, 0.9),
+	"pants": Color(0.35, 0.3, 0.45),
+	"shoes": Color(0.25, 0.2, 0.2),
+	"accent": Color(1.0, 0.85, 0.3),
+	"lines": [],
+}
+
+const EDOUARD := {
+	"name": "Édouard",
+	"skin": Color(0.82, 0.82, 0.86),
+	"hair": Color(0.7, 0.7, 0.75),
+	"hair_style": "messy",
+	"eye": Color(0.4, 0.4, 0.45),
+	"shirt": Color(0.78, 0.78, 0.82),
+	"pants": Color(0.7, 0.7, 0.75),
+	"shoes": Color(0.6, 0.6, 0.65),
+	"accent": Color(0.8, 0.8, 0.85),
+	"lines": [],
+}

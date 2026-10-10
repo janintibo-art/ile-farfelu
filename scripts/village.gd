@@ -38,6 +38,7 @@ const CA := preload("res://scripts/cathedral.gd")
 const VH := preload("res://scripts/village_h.gd")
 const OB := preload("res://scripts/observatory.gd")
 const AR := preload("res://scripts/archive.gd")
+const VF := preload("res://scripts/friends.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -61,6 +62,7 @@ var calendar_btn
 var calendar_node: Node3D
 var zone := ""
 var x
+var fr
 var clock
 var maquette
 var phare
@@ -105,6 +107,9 @@ func build(p_world: Node3D, p_player) -> void:
 	hau = VH.new()
 	hau.v = self
 	hau.build()
+	fr = VF.new()
+	fr.v = self
+	fr.build()
 	clock = Clock.new()
 	clock.setup(self, nodes["mairie"])
 	maquette = Maquette.new()
@@ -592,6 +597,7 @@ func _physics_process(delta: float) -> void:
 	b.update()
 	bel.update()
 	hau.update()
+	fr.update(delta)
 	clock.update()
 	var cam: Vector3 = player.camera.global_position
 	for sp in speakers:
