@@ -4,6 +4,7 @@ extends StaticBody3D
 
 const Toon := preload("res://scripts/toon.gd")
 const Fx := preload("res://scripts/fx.gd")
+const Sfx := preload("res://scripts/sfx.gd")
 
 const BASE := Color(1.0, 0.96, 0.88)
 const HOVER := Color(1.0, 0.85, 0.3)
@@ -47,11 +48,14 @@ func setup(text: String, cb: Callable, width := 1.25, col := BASE) -> void:
 
 
 func set_hover(on: bool) -> void:
+	if on and scale.x < 1.03:
+		Sfx.ui("hover")
 	mesh.material_override = Toon.flat(HOVER if on else _col)
 	scale = Vector3.ONE * (1.06 if on else 1.0)
 
 
 func press() -> void:
+	Sfx.ui("click")
 	scale = Vector3(1.1, 0.8, 1.0)
 	if callback.is_valid():
 		callback.call()

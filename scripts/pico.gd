@@ -6,6 +6,7 @@ extends Node3D
 const Toon := preload("res://scripts/toon.gd")
 const Builder := preload("res://scripts/builder.gd")
 const Save := preload("res://scripts/save.gd")
+const Sfx := preload("res://scripts/sfx.gd")
 const Island := preload("res://scripts/island.gd")
 
 const PAPER := Color(0.97, 0.95, 0.88)
@@ -95,6 +96,7 @@ func say(text: String, duration := 0.0) -> void:
 	_bubble_left = duration if duration > 0.0 else 2.5 + text.length() * 0.06
 	_hop = 1.0
 	_talk_cd = maxf(_talk_cd, 25.0)
+	Sfx.talk(self, text, 900.0)
 
 
 ## Sort de la bouteille !

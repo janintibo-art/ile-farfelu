@@ -10,6 +10,7 @@ const Hand := preload("res://scripts/hand.gd")
 const Fx := preload("res://scripts/fx.gd")
 const Island := preload("res://scripts/island.gd")
 const Save := preload("res://scripts/save.gd")
+const Sfx := preload("res://scripts/sfx.gd")
 const Items := preload("res://scripts/shop_items.gd")
 const Sword := preload("res://scripts/sword.gd")
 const Builder := preload("res://scripts/builder.gd")
@@ -57,6 +58,9 @@ var _knock := Vector3.ZERO
 var _desk_sword: Node3D
 var _desk_sword_out := false
 var _swinging := false
+var _step_d := 0.0
+var _was_floor := true
+var _fall_v := 0.0
 
 # Effets de nourriture (secondes restantes)
 var effects := {}
@@ -210,6 +214,7 @@ func _physics_process(delta: float) -> void:
 		_vy = maxf(_vy, -0.5)
 		if _jump_pressed():
 			_vy = jump
+			Sfx.jump()
 			if third_person:
 				avatar.pop()
 	else:
@@ -225,8 +230,22 @@ func _physics_process(delta: float) -> void:
 	_invuln = maxf(_invuln - delta, 0.0)
 	velocity = Vector3(move.x + phys.x / delta + _knock.x, _vy, move.z + phys.z / delta + _knock.z)
 	_knock = _knock.lerp(Vector3.ZERO, clampf(delta * 6.0, 0.0, 1.0))
+	var pre_vy := _vy
 	move_and_slide()
 	_vy = velocity.y
+	# Sons : pas et atterrissage
+	var on_floor := is_on_floor()
+	if on_floor and not _was_floor and _fall_v < -4.0:
+		Sfx.land()
+	_fall_v = pre_vy if not on_floor else 0.0
+	_was_floor = on_floor
+	if on_floor:
+		_step_d += Vector2(velocity.x, velocity.z).length() * delta
+		if _step_d > 1.6:
+			_step_d = 0.0
+			Sfx.step(global_position, _in_water)
+	else:
+		_step_d = 1.0
 
 	# Animation du chibi
 	var speed_ratio := Vector2(move.x, move.z).length() / SPEED
@@ -240,6 +259,7 @@ func _physics_process(delta: float) -> void:
 	if wet and not _in_water:
 		Fx.text(world, global_position + Vector3(0, 1.2, 0), "PLOUF !", Color(0.5, 0.85, 1.0), 1.0)
 		Fx.puff(world, global_position + Vector3(0, 0.2, 0), Color(0.75, 0.92, 1.0))
+		Sfx.splash()
 	_in_water = wet
 	avatar.panic = wet or effects.has("speed")
 
@@ -690,6 +710,7 @@ func _desk_swing() -> void:
 	if _swinging or _desk_sword == null:
 		return
 	_swinging = true
+	Sfx.ui("whoosh", -7.0)
 	var tw := create_tween()
 	tw.tween_property(_desk_sword, "rotation", Vector3(-1.4, 0.4, 0.9), 0.12)
 	tw.tween_callback(_desk_hit)

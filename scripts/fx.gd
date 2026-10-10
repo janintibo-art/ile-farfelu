@@ -3,6 +3,7 @@ extends RefCounted
 ## petits nuages de fumée.
 
 const Toon := preload("res://scripts/toon.gd")
+const Sfx := preload("res://scripts/sfx.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 
@@ -35,6 +36,7 @@ static func text(parent: Node, pos: Vector3, txt: String, col := Color(1.0, 0.85
 
 
 static func puff(parent: Node, pos: Vector3, col := Color(1, 1, 1)) -> void:
+	Sfx.puff_at(parent, pos)
 	var p := CPUParticles3D.new()
 	p.one_shot = true
 	p.amount = 18

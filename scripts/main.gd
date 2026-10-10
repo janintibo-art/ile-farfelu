@@ -22,6 +22,8 @@ const Pico := preload("res://scripts/pico.gd")
 const Castle := preload("res://scripts/castle.gd")
 const Grass := preload("res://scripts/grass.gd")
 const Ambience := preload("res://scripts/ambience.gd")
+const Sfx := preload("res://scripts/sfx.gd")
+const Music := preload("res://scripts/music.gd")
 const Title := preload("res://scripts/title.gd")
 const Village := preload("res://scripts/village.gd")
 const SKY_SHADER := preload("res://shaders/sky.gdshader")
@@ -151,10 +153,18 @@ func _ready() -> void:
 		[Island.HOUSE_POS, 8.0], [Island.SHOP_POS, 7.0], [Island.GATE_POS, 6.0],
 		[Island.SPAWN, 3.5], [Island.pier_base(), 6.0],
 	])
+	var sfx := Sfx.new()
+	sfx.name = "Sfx"
+	add_child(sfx)
+	sfx.setup(player)
 	var amb := Ambience.new()
 	amb.name = "Ambience"
 	add_child(amb)
 	amb.setup(player)
+	var mus := Music.new()
+	mus.name = "Music"
+	add_child(mus)
+	mus.setup(player)
 	player.refresh_sword()
 	await _stage("C'est prêt !")
 	_load_done()

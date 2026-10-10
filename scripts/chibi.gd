@@ -7,6 +7,7 @@ const Toon := preload("res://scripts/toon.gd")
 const Builder := preload("res://scripts/builder.gd")
 const Hats := preload("res://scripts/hats.gd")
 const Save := preload("res://scripts/save.gd")
+const Sfx := preload("res://scripts/sfx.gd")
 
 const HEAD_C := Vector3(0.0, 0.29, 0.0)   # centre de la tête, relatif au cou
 const OUTLINE := 0.011
@@ -51,6 +52,7 @@ func say(txt: String, duration := 3.5) -> void:
 	bubble.text = txt
 	bubble.visible = true
 	_bubble_left = duration
+	Sfx.talk(self, txt)
 
 
 func set_bubble_style(pixel: float, width: float, height: float) -> void:

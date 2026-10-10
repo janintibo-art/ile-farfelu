@@ -250,3 +250,13 @@ sur le casque sans la désinstaller.
   5. Grand cadran : choisir « Il y a 27 ans » puis « Regarder ». (« Il y a 300 ans » et « Hier » montrent de courtes scènes.) On assiste à Armand Chardon et au jeune Basile : le Registre ne décrit pas l'île, c'est l'île qui existe tant qu'on la raconte ; Basile, par peur de l'oubli, tente de la figer ; les pages s'envolent ; Armand court les rattraper et envoie Pico se cacher dans une bouteille.
 - Révélation : Pico est la dernière page vivante du Grand Registre. Fin du chapitre 5 : +60 coquillages. Teaser : le bal des Versions Officielles (invitation de Basile).
 - Nouveau fichier : `observatory.gd`. Version 0.31.
+
+## v32 — Refonte du son
+- Nouveaux sons plus riches et plus propres (32 kHz) : vraie cloche à partielles, marimba, flûte avec souffle et vibrato, corde pincée, nappe douce…
+- Quatre « bus » audio : Musique, Ambiance, Effets, Voix, avec un limiteur sur la sortie (fini la saturation).
+- Réverbération qui change selon le lieu (sèche dehors, longue dans la Cathédrale, les Archives, l'Observatoire, le donjon).
+- Ambiances en boucle sans coupure (mer, vent, salle, grillons), fabriquées en arrière-plan : moins de calcul pendant le jeu (important sur Quest). Mélange différent dans chaque lieu, plus des petits bruits au hasard (oiseaux, gouttes, grenouilles, tic-tac).
+- Musique douce générée toute seule, une couleur par lieu. Silence à Belloche avant l'énigme et dans la Cathédrale pour ne pas couvrir les mélodies.
+- Bruits de pas selon le sol (sable, herbe, pierre, bois, neige), saut, atterrissage, plouf, coup d'épée.
+- Petites voix « bip-bip » quand les personnages parlent (une hauteur par personnage), sons de boutons, pièce gagnée, étincelles.
+- Nouveaux fichiers : sfx.gd, music.gd ; réécrits : bells.gd, ambience.gd.
