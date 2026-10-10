@@ -13,7 +13,7 @@ const GRADE := {
 	"phare": [1.02, 1.06, 1.0], "cells": [0.95, 1.1, 1.0], "virevolte": [1.18, 1.05, 1.0],
 	"travers": [1.0, 1.08, 1.0], "brumelune": [0.92, 1.1, 0.97], "archive": [0.92, 1.1, 1.0],
 	"belloche": [1.05, 1.06, 1.0], "cathedrale": [0.95, 1.12, 1.0], "hautes": [0.85, 1.05, 1.04],
-	"obs": [1.0, 1.12, 0.98], "chateau": [1.08, 1.08, 1.0],
+	"obs": [1.0, 1.12, 0.98], "chateau": [1.08, 1.08, 1.0], "registre": [0.95, 1.04, 1.04],
 }
 ## Particules : couleur, gravité, vitesse, nombre, taille, zone
 const PARTS := {
@@ -27,6 +27,7 @@ const PARTS := {
 	"cathedrale": {"col": Color(1.0, 0.92, 0.75), "g": Vector3(0, 0.0, 0), "v": 0.06, "n": 28, "s": 0.8, "box": 8.0},
 	"obs": {"col": Color(0.85, 0.9, 1.0), "g": Vector3(0, 0.0, 0), "v": 0.06, "n": 26, "s": 0.8, "box": 8.0},
 	"chateau": {"col": Color(1.0, 0.85, 0.95), "g": Vector3(0.0, -0.15, 0), "v": 0.08, "n": 34, "s": 1.1, "box": 8.0},
+	"registre": {"col": Color(1.0, 1.0, 0.95), "g": Vector3(0.0, 0.1, 0), "v": 0.05, "n": 40, "s": 1.2, "box": 9.0},
 	"cells": {"col": Color(0.9, 0.85, 1.0), "g": Vector3(0, 0.0, 0), "v": 0.06, "n": 20, "s": 0.8, "box": 7.0},
 }
 

@@ -643,3 +643,29 @@ const LINA := {
 	"accent": Color(1.0, 0.9, 0.6),
 	"lines": [],
 }
+
+const FACTEUR_OUBLIE := {
+	"name": "Le Facteur Sans Lettres",
+	"skin": Color(0.98, 0.84, 0.72),
+	"hair": Color(0.45, 0.3, 0.2),
+	"hair_style": "messy",
+	"eye": Color(0.25, 0.3, 0.45),
+	"shirt": Color(0.25, 0.45, 0.75),
+	"pants": Color(0.2, 0.25, 0.4),
+	"shoes": Color(0.2, 0.15, 0.1),
+	"accent": Color(1.0, 0.9, 0.3),
+	"lines": [],
+}
+
+const FEE := {
+	"name": "La Fée Pas Finie",
+	"skin": Color(1.0, 0.9, 0.84),
+	"hair": Color(0.7, 0.9, 1.0),
+	"hair_style": "buns",
+	"eye": Color(0.5, 0.35, 0.8),
+	"shirt": Color(0.95, 0.8, 0.95),
+	"pants": Color(0.95, 0.8, 0.95),
+	"shoes": Color(0.9, 0.6, 0.85),
+	"accent": Color(1.0, 0.95, 0.5),
+	"lines": [],
+}

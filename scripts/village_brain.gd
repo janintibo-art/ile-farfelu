@@ -581,6 +581,8 @@ func _x_options(who: String) -> Array:
 				out.append(["hgo", "Partons pour les Hautes-Miettes."])
 			if s().get("invite", false):
 				out.append(["mgo", "Allons au château. Basile nous attend."])
+			if s().get("ch6_done", false):
+				out.append(["rgo", "Entrons dans le Grand Registre."])
 			if not s().get("eleonore_story", false):
 				out.append(["story", "Qui êtes-vous, vraiment ?"])
 			else:
@@ -659,6 +661,10 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": "Les Hautes-Miettes. Un village où personne n'a jamais été en retard, et où le temps a décidé de le faire à leur place. Prends ta montre. Elle mentira, mais poliment.", "flag": {"v5_started": true}, "event": "h_go"}
 		"eleonore:mgo":
 			return {"text": "Le Château des Versions Officielles. Basile a dit « venez comme vous êtes ». Venons comme nous sommes, mais avec des questions.", "flag": {"v6_started": true}, "event": "m_go"}
+		"eleonore:rgo":
+			if s().get("ch7_done", false):
+				return {"text": "On y retourne ? Chaque fin est une façon de refermer le livre. Il y en a trois. Je ne dis pas laquelle est la bonne.", "event": "r_go"}
+			return {"text": "Le Grand Registre. Mon père y est entré avec un sac plein de pages. Entrons avec ce que nous avons gardé. Si tu hésites : aide encore quelques habitants avant. Les petites histoires comptent plus qu'on ne croit.", "flag": {"v7_started": true}, "event": "r_go"}
 		"eleonore:hback":
 			return {"text": "Rentrons. Les minutes volées nous attendront, elles ont l'habitude.", "event": "h_back"}
 		"eleonore:hplan":

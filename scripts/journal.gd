@@ -187,6 +187,10 @@ static func lines(tab: String) -> Array:
 				["m_book", "Château : le livre rouge est lu."],
 				["m_time", "Château : la chronologie est remise dans l'ordre."],
 				["ch6_done", "CHAPITRE 6 TERMINÉ."],
+				["r_intro", "Grand Registre : recoudre trois déchirures, choisir sept histoires."],
+				["r_tears", "Grand Registre : les trois déchirures sont recousues."],
+				["r_sealed", "Grand Registre : sept histoires gardées."],
+				["ch7_done", "CHAPITRE 7 TERMINÉ. Fin atteinte (on peut y retourner pour en voir une autre)."],
 			]
 			for q in qs:
 				if _f(q[0]):
