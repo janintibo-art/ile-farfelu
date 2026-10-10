@@ -91,6 +91,9 @@ static func lines(tab: String) -> Array:
 				if _f("ch3_done"):
 					out.append("Basile Plume : veut arrêter le phénomène « définitivement ».")
 					out.append("   Il était ami avec le Grand Cartographe.")
+				if _f("ca_open"):
+					out.append("Porte du Registre : « À ne jamais laisser chanter")
+					out.append("   sans surveillance » (Pico).")
 				if _f("k_jar"):
 					out.append("Belloche : sons « conservés » en pots.")
 					out.append("   (Château des Versions Officielles)")
@@ -155,6 +158,9 @@ static func lines(tab: String) -> Array:
 				["k_bird", "Belloche : l'oiseau de Sifflot est retrouvé."],
 				["k_bell", "Belloche : l'air de Dame Carillon est retrouvé."],
 				["k_done", "Belloche : la Grosse Cloche sonne. Une porte vibre sous le clocher."],
+				["ca_open", "Cathédrale des Échos : la Porte du Registre s'est ouverte sur une fausse note de Pico."],
+				["page2", "Deuxième Page obtenue. Pico est inscrit au Grand Registre (voix de secours)."],
+				["ch4_done", "CHAPITRE 4 TERMINÉ."],
 			]
 			for q in qs:
 				if _f(q[0]):

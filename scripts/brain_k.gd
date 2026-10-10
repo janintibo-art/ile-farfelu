@@ -75,6 +75,8 @@ static func respond(who: String, intent: String, s: Dictionary, say: Callable) -
 				return {"text": "Elle attendait trois sons rendus. Un rythme, un oiseau, un air. C'est tout le village qui s'était mis en pot. Je dois remercier quelqu'un. Vous, peut-être. Ou la Grosse Cloche."}
 			return {"text": "*Elle montre trois choses : une baguette, une plume, une note. Puis le clocher. Pico : « Il faut d'abord rendre ces trois sons au village. Ensuite la corde. »*"}
 		"carillon:door":
+			if s.get("ch4_done", false):
+				return {"text": "Elle s'est ouverte ? Sur une fausse note ? ...Voilà pourquoi nos ancêtres ne l'ont jamais ouverte : ils étaient tous justes. Quelle tristesse. Quelle chance, aussi."}
 			return {"text": "La Cathédrale des Échos. Elle est sous nos pieds depuis des siècles. Chaque salle répète ce qu'on lui chante, et aucune ne s'est jamais laissé ouvrir au bout. Il faudrait une mélodie... qu'on n'a pas encore inventée."}
 	return {"text": "Hm ?"}
 

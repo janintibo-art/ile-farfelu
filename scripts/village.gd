@@ -34,6 +34,7 @@ const VZ := preload("res://scripts/village_z.gd")
 const TR := preload("res://scripts/travers.gd")
 const VBR := preload("res://scripts/village_b.gd")
 const VK := preload("res://scripts/village_k.gd")
+const CA := preload("res://scripts/cathedral.gd")
 const AR := preload("res://scripts/archive.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
@@ -66,6 +67,7 @@ var z
 var tr
 var b
 var bel
+var cat
 var ar
 var _nina_wp := 0
 var _nina_wait := 0.0
@@ -115,6 +117,10 @@ func build(p_world: Node3D, p_player) -> void:
 	ar.name = "Archive"
 	add_child(ar)
 	ar.setup(self, player)
+	cat = CA.new()
+	cat.name = "Cathedrale"
+	add_child(cat)
+	cat.setup(self, player)
 	_make_speakers()
 	y = VY.new()
 	y.v = self

@@ -526,11 +526,9 @@ func _finale() -> void:
 
 
 func _descend() -> void:
-	# La Cathédrale des Échos arrive à la prochaine version.
-	Fx.text(v.world, P + Vector3(0, 3.0, -4.5), "La porte vibre, mais l'écho n'est pas encore prêt.", Color(0.85, 0.95, 1.0), 0.6, 5.0)
-	if not _s("k_door_said"):
-		Save.story["k_door_said"] = true
-		_later(1.2, func(): v._pico("Sous le clocher, il y a quelque chose de très grand et de très creux. On y reviendra avec les oreilles propres."))
+	Save.story["k_door_said"] = true
+	Save.save_game()
+	v.cat.enter()
 
 
 # --- Événements des dialogues ----------------------------------------------------------------------

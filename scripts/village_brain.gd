@@ -459,6 +459,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
 			if s().get("at_k", false):
+				if s().get("ch4_done", false):
+					return {"text": _say(["Pico est dans le Registre. Il n'a rien dit. Je ne lui en veux pas : je n'aurais rien dit non plus.", "On reste ensemble. C'est la seule règle de mon père que je garde."]), "flag": {"eleonore_met": true}}
 				if s().get("k_done", false):
 					return {"text": _say(["Les cloches ont repris leur travail. Et il y a une porte, sous le clocher, qui n'a pas fini de trembler.", "Belloche chante. Quelqu'un a rangé cette musique, Pico en sait peut-être plus qu'il n'en dit."]), "flag": {"eleonore_met": true}}
 				return {"text": _say(["Belloche. Personne n'a de voix, tout le monde a des oreilles. Trois énigmes sonores : un rythme, un oiseau, un air.", "Écoute d'abord, répète ensuite. Et cherche les pots : ils ont une étiquette que je n'aime pas."]), "flag": {"eleonore_met": true}}

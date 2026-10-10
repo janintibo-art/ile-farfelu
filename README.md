@@ -220,3 +220,13 @@ sur le casque sans la désinstaller.
 - Les pots « CONSERVÉ — Château des Versions Officielles » : les sons étaient mis en conserve (même main que le pont et les souvenirs).
 - La porte sous le clocher vibre : la Cathédrale des Échos arrive en v29.
 - Nouveaux fichiers : `village_k.gd`, `brain_k.gd`, `bells.gd`. Menu de sauvegarde, journal et dialogues d'Éléonore mis à jour.
+
+## v29 — Chapitre 4, partie 2 : la Cathédrale des Échos
+- À Belloche, après la Grosse Cloche : « Descendre sous le clocher ». Cinq salles (zone y=1000, aucun ennemi). Chaque salle redit un son déjà entendu et chaque note a son écho :
+  1. Nef des cloches : l'écho rejoue la mélodie de Belloche, il faut la rejouer.
+  2. Voûte aux oiseaux : le trille sort de trois perchoirs, l'un après l'autre (on entend d'où il vient). Rejouer l'ordre.
+  3. Galerie des tambours : deux coups pressés puis un long silence, avec le grand tambour.
+  4. Chœur des échos : trois phrases (cloches, oiseaux, tambours) à remettre dans l'ordre de la plaque (matin, midi, soir) : on obtient la Grande Mélodie.
+  5. Porte du Registre : la Grande Mélodie est trop juste, la porte reste fermée. « Laisser Pico chanter » : sa fausse note l'ouvre. Pico découvre qu'il est inscrit au Grand Registre (« voix de secours »).
+- Fin du chapitre 4 : Deuxième Page, +50 coquillages. Teaser : Hautes-Miettes et Observatoire Brisé.
+- Nouveau fichier : `cathedral.gd`. Menu de sauvegarde, journal et dialogues (Éléonore, Dame Carillon) mis à jour. Version 0.29.
