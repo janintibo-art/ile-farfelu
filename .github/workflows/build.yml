@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 env:
   GODOT_VERSION: "4.3"
@@ -94,14 +95,12 @@ jobs:
           "$GODOT" --headless --install-android-build-template --export-debug "Telephone" build/IleFarfelue_Telephone.apk
           ls -la build
 
-      - name: Garder les fichiers (artefact)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ile-farfelue
-          path: |
-            build/IleFarfelue.apk
-            build/IleFarfelue_PC.zip
-            build/IleFarfelue_Telephone.apk
+      - name: Nettoyer les anciens artefacts (quota de stockage Actions)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" --jq '.artifacts[].id' | while read id; do gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id" || true; done
 
       - name: Publier la dernière version (téléchargeable depuis le téléphone)
         env:

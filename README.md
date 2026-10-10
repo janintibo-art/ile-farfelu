@@ -206,3 +206,6 @@ sur le casque sans la désinstaller.
 ## v26
 - Pont de la plage : les murs invisibles du ruisseau bouchaient aussi l'entrée du pont (on restait bloqué après la réparation). L'entrée est maintenant dégagée, et des rampes invisibles évitent de buter sur le bord du tablier. Testé en marchant d'une rive à l'autre.
 - Si toutes les planches utiles sont perdues (jetées de l'autre côté, tombées à l'eau), de nouvelles s'échouent sur la plage après 15 secondes.
+
+## v27
+- Le workflow n'envoie plus d'artefacts (ils comptaient dans le quota de stockage Actions de 0,5 Go, déjà à 90 %) : les fichiers sont publiés uniquement dans la release « derniere-version », qui ne compte pas dans ce quota. Une étape supprime aussi les anciens artefacts à chaque compilation.
