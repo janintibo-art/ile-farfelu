@@ -421,7 +421,8 @@ func _mayor_respond(intent: String) -> Dictionary:
 
 const BB := preload("res://scripts/brain_b.gd")
 const BK := preload("res://scripts/brain_k.gd")
-const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette", "honore", "ouessant", "hortense", "leo", "tam", "sifflot", "carillon"]
+const BH := preload("res://scripts/brain_h.gd")
+const EXTRA := ["basile", "gerard", "marguerite", "petronille", "eleonore", "odile", "gaspard", "anselme", "mirette", "honore", "ouessant", "hortense", "leo", "tam", "sifflot", "carillon", "minuit", "quart", "zephyr"]
 
 
 func _x_greet(who: String, name: String) -> Dictionary:
@@ -429,6 +430,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 		return BB.greet(who, name, s(), _say)
 	if who in BK.IDS:
 		return BK.greet(who, name, s(), _say)
+	if who in BH.IDS:
+		return BH.greet(who, name, s(), _say)
 	var tue: bool = s().get("tuesday", false)
 	match who:
 		"basile":
@@ -458,6 +461,10 @@ func _x_greet(who: String, name: String) -> Dictionary:
 				return {"text": "Entre, mon petit. Ne marche pas sur hier, il est fragile.", "flag": {"petro_met": true}}
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
+			if s().get("at_h", false):
+				if s().get("h_done", false):
+					return {"text": _say(["Le Receveur parti, la place respire. Là-haut, quelque chose rembobine toute seule. Je veux voir ça de mes yeux.", "Une lettre pour L. Plume. Basile avait une fille, Pico. Je commence à comprendre pour qui sont les minutes."]), "flag": {"eleonore_met": true}}
+				return {"text": _say(["Les Hautes-Miettes. Ici, un retard est un crime, et une boucle un simple désagrément.", "Regarde la place quand la pendule se remet à zéro : chaque tour montre un détail de plus. Et accorde ces cadrans, ça m'énerve."]), "flag": {"eleonore_met": true}}
 			if s().get("at_k", false):
 				if s().get("ch4_done", false):
 					return {"text": _say(["Pico est dans le Registre. Il n'a rien dit. Je ne lui en veux pas : je n'aurais rien dit non plus.", "On reste ensemble. C'est la seule règle de mon père que je garde."]), "flag": {"eleonore_met": true}}
@@ -482,6 +489,8 @@ func _x_options(who: String) -> Array:
 		return BB.options(who, s())
 	if who in BK.IDS:
 		return BK.options(who, s())
+	if who in BH.IDS:
+		return BH.options(who, s())
 	var out: Array = []
 	var tue: bool = s().get("tuesday", false)
 	match who:
@@ -532,6 +541,11 @@ func _x_options(who: String) -> Array:
 					out.append(["wheel", "Vous avez quelque chose qui tourne ?"])
 			out.append(["tea", "Du thé ?"])
 		_:
+			if s().get("at_h", false):
+				out.append(["hplan", "Que fait-on aux Hautes-Miettes ?"])
+				out.append(["hloop", "Cette boucle sur la place ?"])
+				out.append(["hback", "Rentrons à Port-Biscornu."])
+				return out
 			if s().get("at_k", false):
 				out.append(["kplan", "Que fait-on à Belloche ?"])
 				out.append(["kjar", "Ces pots avec une étiquette ?"])
@@ -561,6 +575,8 @@ func _x_options(who: String) -> Array:
 				out.append(["bgo", "Partons pour Brumelune."])
 			if s().get("ch3_done", false):
 				out.append(["kgo", "Partons pour Belloche."])
+			if s().get("ch4_done", false):
+				out.append(["hgo", "Partons pour les Hautes-Miettes."])
 			if not s().get("eleonore_story", false):
 				out.append(["story", "Qui êtes-vous, vraiment ?"])
 			else:
@@ -574,6 +590,8 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 		return BB.respond(who, intent, s(), _say)
 	if who in BK.IDS:
 		return BK.respond(who, intent, s(), _say)
+	if who in BH.IDS:
+		return BH.respond(who, intent, s(), _say)
 	match who + ":" + intent:
 		"basile:mardi":
 			return {"text": "Mardi ? J'ai pétri. Je me souviens des mains. Les miennes. Enfin, il y en avait d'autres. Mon registre est dans l'arrière-boutique : il dit vingt-sept fournées. Je n'ose plus le relire."}
@@ -633,6 +651,14 @@ func _x_respond(who: String, intent: String) -> Dictionary:
 			return {"text": "Brumelune, dans le marais des Murmures. Un village sur pilotis où la brume garde les voix. J'y ai peut-être perdu des souvenirs, moi aussi. Ne marchez pas sur les conversations.", "flag": {"v3_started": true}, "event": "b_go"}
 		"eleonore:bback", "eleonore:vback":
 			return {"text": "Rentrons. Le monde ne s'arrêtera pas pour nous. Il attendra, mais de travers.", "event": "b_back" if intent == "bback" else "z_back"}
+		"eleonore:hgo":
+			return {"text": "Les Hautes-Miettes. Un village où personne n'a jamais été en retard, et où le temps a décidé de le faire à leur place. Prends ta montre. Elle mentira, mais poliment.", "flag": {"v5_started": true}, "event": "h_go"}
+		"eleonore:hback":
+			return {"text": "Rentrons. Les minutes volées nous attendront, elles ont l'habitude.", "event": "h_back"}
+		"eleonore:hplan":
+			return {"text": "Trois choses : observer la boucle de la place (un détail différent à chaque tour), accorder les quatre cadrans sur trois heures, et attraper celui qui prend les minutes quand le temps s'arrêtera."}
+		"eleonore:hloop":
+			return {"text": "Cinq minutes qui rejouent sans cesse, toujours les mêmes acteurs. Un facteur, une lettre, un homme gris avec un pot. Je veux savoir pour qui est cette lettre."}
 		"eleonore:kgo":
 			return {"text": "Belloche, la ville des mille cloches. Elle a perdu sa musique hier, ou depuis toujours. Je prends mon sac, et des bouchons d'oreilles au cas où elles reviennent d'un coup.", "flag": {"v4_started": true}, "event": "k_go"}
 		"eleonore:kback":
@@ -670,6 +696,8 @@ func _x_idle(who: String) -> String:
 		return BB.idle(who, s(), _say)
 	if who in BK.IDS:
 		return BK.idle(who, s(), _say)
+	if who in BH.IDS:
+		return BH.idle(who, s(), _say)
 	match who:
 		"odile":
 			return _say(["Le pont est à nous. Je le dis pour qu'il le sache.", "Si je le répète trois fois, ça devient vrai. Le pont est à nous. Le pont est à nous. Le pont..."])

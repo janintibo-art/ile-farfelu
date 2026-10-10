@@ -230,3 +230,13 @@ sur le casque sans la désinstaller.
   5. Porte du Registre : la Grande Mélodie est trop juste, la porte reste fermée. « Laisser Pico chanter » : sa fausse note l'ouvre. Pico découvre qu'il est inscrit au Grand Registre (« voix de secours »).
 - Fin du chapitre 4 : Deuxième Page, +50 coquillages. Teaser : Hautes-Miettes et Observatoire Brisé.
 - Nouveau fichier : `cathedral.gd`. Menu de sauvegarde, journal et dialogues (Éléonore, Dame Carillon) mis à jour. Version 0.29.
+
+## v30 — Chapitre 5, partie 1 : les Hautes-Miettes, « l'homme qui volait du temps »
+- Avec Éléonore (après le chapitre 4) : « Partons pour les Hautes-Miettes. » Village de montagne autour d'une horloge astronomique géante, zone y=1100.
+- Boucle locale : toutes les 36 secondes, la place rejoue la même scène de cinq minutes (le facteur laisse tomber une lettre, un homme gris attrape une minute dans un pot). La grande pendule revient en arrière. À chaque répétition, un détail différent s'affiche (lettre, pot, badge) : « Noter ce détail » (au milieu de la place). Il faut les trois.
+- Quatre cadrans désaccordés sur la place : « Avancer l'heure d'un cran » jusqu'à trois heures pile (l'heure du conseil, écrite sur la tour ; Madame Quart et le maire l'expliquent).
+- Quand les trois détails sont notés et les cadrans accordés, la boucle suivante s'arrête sur le voleur : Hubert Sablier, Receveur des Minutes du Château. Dialogue avec Éléonore et Pico, clé des Rouages, +30 coquillages.
+- Indices : lettre « à Mlle L. Plume », pot « CONSERVÉ — destination Château » (la fille de Basile, plus tard).
+- Les habitants (Gaspard Minuit, Madame Quart, Petit Zéphyr) changent de réplique selon le nombre de boucles vécues.
+- La porte au pied de la tour est le futur accès à l'Observatoire Brisé (v31).
+- Nouveaux fichiers : `village_h.gd`, `brain_h.gd` (+ son « tick » dans `bells.gd`). Version 0.30.

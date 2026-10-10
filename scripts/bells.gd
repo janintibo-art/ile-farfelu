@@ -28,6 +28,8 @@ static func wav(kind: String, freq := 440.0) -> AudioStreamWAV:
 			dur = 0.8
 		"flute":
 			dur = 0.9
+		"tick":
+			dur = 0.15
 	var n := int(RATE * dur)
 	var data := PackedByteArray()
 	data.resize(n * 2)
@@ -49,6 +51,8 @@ static func wav(kind: String, freq := 440.0) -> AudioStreamWAV:
 				var f := 2400.0 + 900.0 * sin(t * 38.0) + 600.0 * (1.0 if t > 0.4 else 0.0)
 				var gate := 1.0 if fmod(t, 0.4) < 0.22 else 0.0
 				s = sin(TAU * f * t) * 0.35 * gate * exp(-t * 1.2)
+			"tick":
+				s = sin(TAU * 1800.0 * t) * 0.6 * exp(-t * 50.0)
 			"flute":
 				s = (sin(TAU * freq * t) * 0.5 + sin(TAU * freq * 2.0 * t) * 0.12) * minf(t * 20.0, 1.0) * exp(-t * 2.5)
 		var a := int(clampf(s, -1.0, 1.0) * 28000.0)

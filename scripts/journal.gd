@@ -91,6 +91,12 @@ static func lines(tab: String) -> Array:
 				if _f("ch3_done"):
 					out.append("Basile Plume : veut arrêter le phénomène « définitivement ».")
 					out.append("   Il était ami avec le Grand Cartographe.")
+				if _f("h_d0"):
+					out.append("Hautes-Miettes : lettre « à Mlle L. Plume, poste restante ».")
+				if _f("h_d1"):
+					out.append("Pot de minutes : « CONSERVÉ, destination : Château ».")
+				if _f("h_d2"):
+					out.append("Badge : H. Sablier, Receveur des Minutes (Château).")
 				if _f("ca_open"):
 					out.append("Porte du Registre : « À ne jamais laisser chanter")
 					out.append("   sans surveillance » (Pico).")
@@ -125,6 +131,9 @@ static func lines(tab: String) -> Array:
 				["tam_met", "Petit Tam (Belloche) : tambourineur sans voix."],
 				["sifflot_met", "Maître Sifflot : luthier de flûtes, a perdu un oiseau."],
 				["carillon_met", "Dame Carillon : gardienne des cloches."],
+				["minuit_met", "Gaspard Minuit (Hautes-Miettes) : maire, déteste les réunions."],
+				["quart_met", "Madame Quart : horlogère, quatre cadrans désaccordés."],
+				["zephyr_met", "Petit Zéphyr : toujours en retard, donc épargné par la boucle."],
 			]
 			for r in rows:
 				if _f(r[0]) or (r[0] == "malo_met" and _f("inn_met")):
@@ -161,6 +170,9 @@ static func lines(tab: String) -> Array:
 				["ca_open", "Cathédrale des Échos : la Porte du Registre s'est ouverte sur une fausse note de Pico."],
 				["page2", "Deuxième Page obtenue. Pico est inscrit au Grand Registre (voix de secours)."],
 				["ch4_done", "CHAPITRE 4 TERMINÉ."],
+				["v5_started", "Hautes-Miettes : trouver qui vole des minutes (boucle de 14h00)."],
+				["h_sync", "Hautes-Miettes : les quatre cadrans sont accordés sur 3 heures."],
+				["h_done", "Le Receveur des Minutes a parlé. Clé des Rouages obtenue."],
 			]
 			for q in qs:
 				if _f(q[0]):

@@ -410,3 +410,71 @@ const TAM := {
 	"accent": Color(1.0, 0.7, 0.3),
 	"lines": [],
 }
+
+
+## Hautes-Miettes (chapitre 5)
+
+const MINUIT := {
+	"name": "Gaspard Minuit",
+	"skin": Color(0.97, 0.8, 0.68),
+	"hair": Color(0.85, 0.85, 0.9),
+	"hair_style": "mayor",
+	"eye": Color(0.3, 0.3, 0.45),
+	"shirt": Color(0.25, 0.28, 0.5),
+	"pants": Color(0.2, 0.2, 0.3),
+	"shoes": Color(0.15, 0.12, 0.12),
+	"accent": Color(1.0, 0.85, 0.3),
+	"lines": [],
+}
+
+const QUART := {
+	"name": "Madame Quart",
+	"skin": Color(0.95, 0.78, 0.66),
+	"hair": Color(0.45, 0.3, 0.25),
+	"hair_style": "buns",
+	"eye": Color(0.35, 0.25, 0.2),
+	"shirt": Color(0.9, 0.5, 0.45),
+	"pants": Color(0.4, 0.3, 0.35),
+	"shoes": Color(0.3, 0.2, 0.2),
+	"accent": Color(1.0, 0.8, 0.5),
+	"lines": [],
+}
+
+const ZEPHYR := {
+	"name": "Petit Zéphyr",
+	"skin": Color(0.9, 0.72, 0.58),
+	"hair": Color(0.9, 0.7, 0.3),
+	"hair_style": "kid",
+	"eye": Color(0.3, 0.35, 0.2),
+	"shirt": Color(0.5, 0.75, 0.55),
+	"pants": Color(0.5, 0.4, 0.3),
+	"shoes": Color(0.9, 0.5, 0.3),
+	"accent": Color(0.9, 0.9, 0.5),
+	"lines": [],
+}
+
+const FACTEUR := {
+	"name": "Facteur Léon",
+	"skin": Color(0.88, 0.7, 0.55),
+	"hair": Color(0.3, 0.22, 0.18),
+	"hair_style": "merchant",
+	"eye": Color(0.25, 0.2, 0.15),
+	"shirt": Color(0.3, 0.45, 0.75),
+	"pants": Color(0.25, 0.3, 0.45),
+	"shoes": Color(0.2, 0.15, 0.12),
+	"accent": Color(1.0, 0.9, 0.3),
+	"lines": [],
+}
+
+const RECEVEUR := {
+	"name": "Hubert Sablier",
+	"skin": Color(0.92, 0.85, 0.78),
+	"hair": Color(0.25, 0.25, 0.28),
+	"hair_style": "merchant",
+	"eye": Color(0.3, 0.3, 0.35),
+	"shirt": Color(0.5, 0.52, 0.56),
+	"pants": Color(0.35, 0.36, 0.4),
+	"shoes": Color(0.15, 0.15, 0.17),
+	"accent": Color(0.7, 0.7, 0.8),
+	"lines": [],
+}
