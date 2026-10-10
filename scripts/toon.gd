@@ -25,6 +25,18 @@ static func vertex_color(outline: float = 0.0) -> ShaderMaterial:
 	return m
 
 
+## Sol de l'île : couleurs de sommets + taches et grain (v33).
+static func terrain() -> ShaderMaterial:
+	if _cache.has("terrain"):
+		return _cache["terrain"]
+	var m := ShaderMaterial.new()
+	m.shader = TOON_SHADER
+	m.set_shader_parameter("use_vertex_color", true)
+	m.set_shader_parameter("detail", 1.0)
+	_cache["terrain"] = m
+	return m
+
+
 ## Matériau d'une seule couleur.
 static func flat(c: Color, outline: float = 0.0) -> ShaderMaterial:
 	var key := "c_%s_%.4f" % [c.to_html(), outline]

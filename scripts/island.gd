@@ -167,8 +167,8 @@ static func ground(x: float, z: float) -> Vector3:
 static func _color(h: float, x: float, z: float) -> Color:
 	var sand := Color(1.0, 0.92, 0.72)
 	var wet := Color(0.88, 0.74, 0.5)
-	var grass_a := Color(0.5, 0.78, 0.42)
-	var grass_b := Color(0.64, 0.86, 0.46)
+	var grass_a := Color(0.42, 0.7, 0.38)
+	var grass_b := Color(0.56, 0.78, 0.42)
 	var rock := Color(0.62, 0.56, 0.52)
 	var path := Color(0.93, 0.8, 0.6)
 	if h < -0.15:
@@ -224,7 +224,7 @@ func build() -> void:
 	var mi := MeshInstance3D.new()
 	mi.name = "Terrain"
 	mi.mesh = mesh
-	mi.material_override = Toon.vertex_color()
+	mi.material_override = Toon.terrain()
 	add_child(mi)
 
 	var body := StaticBody3D.new()

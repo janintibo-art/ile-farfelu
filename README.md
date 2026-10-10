@@ -260,3 +260,12 @@ sur le casque sans la désinstaller.
 - Bruits de pas selon le sol (sable, herbe, pierre, bois, neige), saut, atterrissage, plouf, coup d'épée.
 - Petites voix « bip-bip » quand les personnages parlent (une hauteur par personnage), sons de boutons, pièce gagnée, étincelles.
 - Nouveaux fichiers : sfx.gd, music.gd ; réécrits : bells.gd, ambience.gd.
+
+## v33 — Amélioration du graphisme
+- Couleurs : exposition réglée pour que les verts ne « brûlent » plus (fini le vert fluo), herbe et touffes plus naturelles.
+- Sol de l'île : grandes taches claires/sombres et léger grain, au lieu d'un aplat uniforme.
+- Nuages avec un dessous bleuté (du volume).
+- Fausses ombres rondes et douces sous les persos et les palmiers (Quest et téléphone, où les vraies ombres sont coupées).
+- Particules d'ambiance autour du joueur : pollen, pétales (Virevolte), lucioles (Brumelune), feuilles (Belloche), neige (Hautes-Miettes), poussière lumineuse (donjon, Archives, Cathédrale, Observatoire).
+- Étalonnage des couleurs qui change doucement selon le lieu (plus vif à Virevolte, plus froid aux Hautes-Miettes, plus sombre aux Archives…).
+- Nouveaux fichiers : visuals.gd, shaders/blob.gdshader.

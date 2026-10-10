@@ -68,3 +68,56 @@ static func puff(parent: Node, pos: Vector3, col := Color(1, 1, 1)) -> void:
 	var tw := p.create_tween()
 	tw.tween_interval(1.2)
 	tw.tween_callback(p.queue_free)
+
+
+# --- Fausses ombres rondes (v33) ---------------------------------------------
+const BLOB_SHADER := preload("res://shaders/blob.gdshader")
+static var _blob_mat: ShaderMaterial = null
+static var _blob_mesh: PlaneMesh = null
+
+
+static func blobs_on() -> bool:
+	return OS.has_feature("android") or OS.get_environment("FARF_BLOB") != ""
+
+
+static func _blob_resources() -> void:
+	if _blob_mat == null:
+		_blob_mat = ShaderMaterial.new()
+		_blob_mat.shader = BLOB_SHADER
+		_blob_mesh = PlaneMesh.new()
+		_blob_mesh.size = Vector2.ONE
+		_blob_mesh.material = _blob_mat
+
+
+## Une ombre ronde posée juste au-dessus du sol, sous le parent (à sa position locale).
+static func blob(parent: Node3D, size: float, y := 0.04) -> MeshInstance3D:
+	if not blobs_on():
+		return null
+	_blob_resources()
+	var mi := MeshInstance3D.new()
+	mi.name = "Blob"
+	mi.mesh = _blob_mesh
+	mi.position = Vector3(0, y, 0)
+	mi.scale = Vector3(size, 1.0, size)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mi)
+	return mi
+
+
+## Plein d'ombres rondes en un seul dessin : pos = positions du monde, sizes = diamètres.
+static func blobs(parent: Node3D, pos: Array, sizes: Array) -> void:
+	if not blobs_on() or pos.is_empty():
+		return
+	_blob_resources()
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = _blob_mesh
+	mm.instance_count = pos.size()
+	for i in pos.size():
+		var b := Basis.from_scale(Vector3(sizes[i], 1.0, sizes[i]))
+		mm.set_instance_transform(i, Transform3D(b, pos[i] + Vector3(0, 0.05, 0)))
+	var mmi := MultiMeshInstance3D.new()
+	mmi.name = "Blobs"
+	mmi.multimesh = mm
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mmi)

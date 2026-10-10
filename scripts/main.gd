@@ -24,6 +24,7 @@ const Grass := preload("res://scripts/grass.gd")
 const Ambience := preload("res://scripts/ambience.gd")
 const Sfx := preload("res://scripts/sfx.gd")
 const Music := preload("res://scripts/music.gd")
+const Visuals := preload("res://scripts/visuals.gd")
 const Title := preload("res://scripts/title.gd")
 const Village := preload("res://scripts/village.gd")
 const SKY_SHADER := preload("res://shaders/sky.gdshader")
@@ -165,6 +166,10 @@ func _ready() -> void:
 	mus.name = "Music"
 	add_child(mus)
 	mus.setup(player)
+	var vis := Visuals.new()
+	vis.name = "Visuals"
+	add_child(vis)
+	vis.setup(env, player)
 	player.refresh_sword()
 	await _stage("C'est prêt !")
 	_load_done()
@@ -276,7 +281,13 @@ func _environment() -> void:
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.82, 0.84, 1.0)
 	env.ambient_light_energy = 0.7
+	# v33 : exposition un peu plus basse (les verts ne « brûlent » plus) + réglages d'image
 	env.tonemap_mode = Environment.TONE_MAPPER_LINEAR
+	env.tonemap_exposure = 0.85
+	env.tonemap_white = 6.0
+	env.adjustment_enabled = true
+	env.adjustment_saturation = 1.02
+	env.adjustment_contrast = 1.06
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.75, 0.88, 1.0)
 	env.fog_density = 0.0028

@@ -4,8 +4,8 @@ render_mode cull_disabled, specular_disabled;
 // Touffes d'herbe qui ondulent dans le vent (pointe plus claire, base plus
 // sombre, comme dans les décors d'animé).
 
-uniform vec4 base_color : source_color = vec4(0.28, 0.6, 0.25, 1.0);
-uniform vec4 tip_color : source_color = vec4(0.72, 0.92, 0.45, 1.0);
+uniform vec4 base_color : source_color = vec4(0.22, 0.5, 0.2, 1.0);
+uniform vec4 tip_color : source_color = vec4(0.55, 0.8, 0.36, 1.0);
 uniform float wind = 0.18;
 
 varying float v_h;

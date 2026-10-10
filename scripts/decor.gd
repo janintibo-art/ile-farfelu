@@ -7,6 +7,7 @@ const Toon := preload("res://scripts/toon.gd")
 const Builder := preload("res://scripts/builder.gd")
 const Island := preload("res://scripts/island.gd")
 const Spinner := preload("res://scripts/spinner.gd")
+const Fx := preload("res://scripts/fx.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 
@@ -43,6 +44,8 @@ static func build(world: Node3D, player: Node3D) -> Array:
 	var b := Builder.new()
 	var pb := Builder.new()
 	var palms: Array = []
+	var blob_pos: Array = []
+	var blob_size: Array = []
 	var palm := palm_mesh()
 	var solid := StaticBody3D.new()
 	solid.name = "DecorCollision"
@@ -81,6 +84,8 @@ static func build(world: Node3D, player: Node3D) -> Array:
 		var base := Vector3(x, h - 0.1, z)
 		pb.add_mesh(palm, Transform3D(basis, base))
 		palms.append(base)
+		blob_pos.append(base + Vector3(0, 0.1, 0))
+		blob_size.append(2.8 * s)
 		var cs := CollisionShape3D.new()
 		var cyl := CylinderShape3D.new()
 		cyl.radius = 0.2 * s
@@ -133,6 +138,7 @@ static func build(world: Node3D, player: Node3D) -> Array:
 	b.build(world, Toon.vertex_color(), "Decor")
 	if not pb.empty:
 		pb.build(world, Toon.vertex_color(0.035), "Palms")
+	Fx.blobs(world, blob_pos, blob_size)
 	_clouds(world, rng)
 	_duck(world, player)
 	return palms
@@ -187,7 +193,9 @@ static func _clouds(world: Node3D, rng: RandomNumberGenerator) -> void:
 		var c := Vector3(cos(a) * d, rng.randf_range(32.0, 48.0), sin(a) * d)
 		for j in 5:
 			var off := Vector3(rng.randf_range(-6, 6), rng.randf_range(-1, 2), rng.randf_range(-3, 3))
-			b.sphere(rng.randf_range(4.0, 7.0), c + off, Color(1, 1, 1), Vector3(1.0, 0.7, 1.0), Basis(), 10)
+			# dessous légèrement bleuté : le nuage prend du volume
+			var cc := Color(0.74, 0.82, 0.97).lerp(Color(1, 1, 1), clampf((off.y + 1.0) / 3.0, 0.0, 1.0))
+			b.sphere(rng.randf_range(4.0, 7.0), c + off, cc, Vector3(1.0, 0.7, 1.0), Basis(), 10)
 	var mi := b.build(holder, Toon.vertex_color(), "CloudMesh")
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 

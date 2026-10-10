@@ -8,6 +8,7 @@ const Builder := preload("res://scripts/builder.gd")
 const Hats := preload("res://scripts/hats.gd")
 const Save := preload("res://scripts/save.gd")
 const Sfx := preload("res://scripts/sfx.gd")
+const Fx := preload("res://scripts/fx.gd")
 
 const HEAD_C := Vector3(0.0, 0.29, 0.0)   # centre de la tête, relatif au cou
 const OUTLINE := 0.011
@@ -99,6 +100,7 @@ func _build() -> void:
 	add_child(body_root)
 	body_scale = float(def.get("scale", 1.0))
 	body_root.scale = Vector3.ONE * body_scale
+	Fx.blob(self, 0.85 * body_scale)
 
 	# Jambes
 	leg_l = _leg(-0.09, mat)
