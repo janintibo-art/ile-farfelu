@@ -41,6 +41,7 @@ const CHA := preload("res://scripts/chateau.gd")
 const REG := preload("res://scripts/registre.gd")
 const AR := preload("res://scripts/archive.gd")
 const VF := preload("res://scripts/friends.gd")
+const VQ := preload("res://scripts/quetes.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
 const H := Island.VILLAGE_H
@@ -65,6 +66,7 @@ var calendar_node: Node3D
 var zone := ""
 var x
 var fr
+var q
 var clock
 var maquette
 var phare
@@ -114,6 +116,9 @@ func build(p_world: Node3D, p_player) -> void:
 	fr = VF.new()
 	fr.v = self
 	fr.build()
+	q = VQ.new()
+	q.v = self
+	q.build()
 	clock = Clock.new()
 	clock.setup(self, nodes["mairie"])
 	maquette = Maquette.new()

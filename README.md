@@ -286,3 +286,10 @@ Demander à Éléonore « Allons au château. Basile nous attend. » (après le 
 - **Bibliothèque** : six cartes d'événements à remettre dans l'ordre chronologique.
 - **Chambre de Lina** : la scène finale avec Basile et sa fille ; fin du chapitre 6 (+80 coquillages).
 - Nouveaux fichiers : chateau.gd. Modifiés : characters.gd, village.gd, village_brain.gd, sfx.gd, ambience.gd, music.gd, visuals.gd, save.gd, journal.gd.
+
+## v37 — Petites histoires et épilogue
+- **La lettre jamais envoyée** : fouiller le fond de la boîte aux lettres, remettre la lettre à Brigitte ; elle retrouve le Capitaine Moustache.
+- **Le jardinier invisible** : examiner la terre du jardin « Ne pas arroser », tourner le dos et compter jusqu'à dix : Édouard la statue est pris sur le fait.
+- Ces deux quêtes comptent comme petites histoires dans le Grand Registre (on garde 7 histoires parmi 15).
+- **Épilogue** : après une fin, Basile (et Lina pour « Continuer l'histoire ») reviennent sur la place du village, avec des répliques différentes selon la fin.
+- Nouveau fichier : quetes.gd. Modifiés : village.gd, registre.gd, journal.gd.

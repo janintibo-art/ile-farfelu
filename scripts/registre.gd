@@ -47,6 +47,8 @@ const STORIES := [
 	["rien_gift", "Le Marchand de Rien", "Cinq achats de rien, un cadeau de tout.", true],
 	["bouton_ok", "Le bouton « NE PAS APPUYER »", "Quelqu'un a fini par appuyer.", true],
 	["plank_given", "La planche de Gérard", "Une planche passée de main en main.", true],
+	["lettre_ok", "La lettre de quarante ans", "Une enveloppe, un bateau perdu, deux sourires en retard.", true],
+	["jardin_ok", "Le jardinier invisible", "Il ne bougeait que quand personne ne regardait.", true],
 ]
 
 var v
@@ -632,6 +634,8 @@ func _exit_now() -> void:
 	_final_on = false
 	_choice_on = false
 	v.y.place_eleonore()
+	if v.q:
+		v.q.epilogue()
 	player.global_position = _ret
 	player._vy = 0.0
 	player._face_yaw(PI)

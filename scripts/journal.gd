@@ -153,6 +153,10 @@ static func lines(tab: String) -> Array:
 			var qs := [
 				["phare_done", "Le Phare de l'Envers : terminé. Page 1 obtenue."],
 				["door_open", "La porte sans maison : ouverte (sur rien)."],
+				["lettre_found", "Une lettre de 40 ans au fond de la boîte : pour Brigitte."],
+				["lettre_ok", "La lettre jamais envoyée : remise. Brigitte et le Capitaine se retrouvent."],
+				["jardin_clue", "Le jardin abandonné : la terre est mouillée, traces carrées."],
+				["jardin_ok", "Le jardinier invisible : c'était Édouard, la statue."],
 				["door_seen", "La porte sans maison : trouver sa maison."],
 				["fish_solved", "Le poisson rancunier : conflit résolu."],
 				["fish_seen", "Le poisson rancunier : parler à Gérard."],
