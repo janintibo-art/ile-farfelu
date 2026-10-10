@@ -91,6 +91,10 @@ static func lines(tab: String) -> Array:
 				if _f("ch3_done"):
 					out.append("Basile Plume : veut arrêter le phénomène « définitivement ».")
 					out.append("   Il était ami avec le Grand Cartographe.")
+				if _f("ch5_done"):
+					out.append("Il y a 27 ans : Basile a voulu figer l'île. Armand Chardon")
+					out.append("   a rattrapé les pages. Pico est la dernière page vivante.")
+					out.append("   Le Registre n'écrit pas l'île : c'est elle qui existe tant qu'on la raconte.")
 				if _f("h_d0"):
 					out.append("Hautes-Miettes : lettre « à Mlle L. Plume, poste restante ».")
 				if _f("h_d1"):
@@ -173,6 +177,8 @@ static func lines(tab: String) -> Array:
 				["v5_started", "Hautes-Miettes : trouver qui vole des minutes (boucle de 14h00)."],
 				["h_sync", "Hautes-Miettes : les quatre cadrans sont accordés sur 3 heures."],
 				["h_done", "Le Receveur des Minutes a parlé. Clé des Rouages obtenue."],
+				["ob_room", "Observatoire Brisé : remonter le temps pièce par pièce."],
+				["ch5_done", "CHAPITRE 5 TERMINÉ."],
 			]
 			for q in qs:
 				if _f(q[0]):

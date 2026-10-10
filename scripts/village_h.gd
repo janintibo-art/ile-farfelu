@@ -456,10 +456,7 @@ func _confront_end() -> void:
 
 
 func _ascend() -> void:
-	Fx.text(v.world, P + Vector3(0, 3.0, -9.5), "Les rouages grincent : l'Observatoire n'est pas encore remonté.", Color(0.85, 0.95, 1.0), 0.6, 5.0)
-	if not _s("h_door_said"):
-		Save.story["h_door_said"] = true
-		_later(1.2, func(): v._pico("Là-haut, quelqu'un a brisé l'horloge d'origine. On y monte à la prochaine séance, avec de la patience et des clés."))
+	v.obs.enter()
 
 
 # --- Événements des dialogues ----------------------------------------------------------------------

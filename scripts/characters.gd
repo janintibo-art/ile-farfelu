@@ -478,3 +478,19 @@ const RECEVEUR := {
 	"accent": Color(0.7, 0.7, 0.8),
 	"lines": [],
 }
+
+
+## L'Observatoire Brisé (chapitre 5)
+
+const CARTOGRAPHE := {
+	"name": "Armand Chardon",
+	"skin": Color(0.95, 0.78, 0.65),
+	"hair": Color(0.45, 0.4, 0.4),
+	"hair_style": "messy",
+	"eye": Color(0.3, 0.35, 0.5),
+	"shirt": Color(0.4, 0.55, 0.65),
+	"pants": Color(0.35, 0.3, 0.3),
+	"shoes": Color(0.3, 0.22, 0.18),
+	"accent": Color(0.9, 0.8, 0.5),
+	"lines": [],
+}

@@ -462,6 +462,8 @@ func _x_greet(who: String, name: String) -> Dictionary:
 			return {"text": _say(["Ah. Tu cherches ce qu'on a rangé, toi. Assieds-toi, ou reste debout, le fauteuil s'en fiche.", "Le thé est prêt depuis mardi. Il n'a pas refroidi."]), "flag": {"petro_met": true}}
 		_:
 			if s().get("at_h", false):
+				if s().get("ch5_done", false):
+					return {"text": _say(["Mon père court encore derrière les pages. Je n'ai jamais été aussi proche de lui, ni aussi loin.", "Il y a une invitation de Basile qui nous attend à l'auberge, j'en suis sûre. Il est très poli. C'est ce qui m'inquiète."]), "flag": {"eleonore_met": true}}
 				if s().get("h_done", false):
 					return {"text": _say(["Le Receveur parti, la place respire. Là-haut, quelque chose rembobine toute seule. Je veux voir ça de mes yeux.", "Une lettre pour L. Plume. Basile avait une fille, Pico. Je commence à comprendre pour qui sont les minutes."]), "flag": {"eleonore_met": true}}
 				return {"text": _say(["Les Hautes-Miettes. Ici, un retard est un crime, et une boucle un simple désagrément.", "Regarde la place quand la pendule se remet à zéro : chaque tour montre un détail de plus. Et accorde ces cadrans, ça m'énerve."]), "flag": {"eleonore_met": true}}

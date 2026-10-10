@@ -36,6 +36,7 @@ const VBR := preload("res://scripts/village_b.gd")
 const VK := preload("res://scripts/village_k.gd")
 const CA := preload("res://scripts/cathedral.gd")
 const VH := preload("res://scripts/village_h.gd")
+const OB := preload("res://scripts/observatory.gd")
 const AR := preload("res://scripts/archive.gd")
 
 const INK := Color(0.13, 0.08, 0.17)
@@ -69,6 +70,7 @@ var tr
 var b
 var bel
 var hau
+var obs
 var cat
 var ar
 var _nina_wp := 0
@@ -126,6 +128,10 @@ func build(p_world: Node3D, p_player) -> void:
 	cat.name = "Cathedrale"
 	add_child(cat)
 	cat.setup(self, player)
+	obs = OB.new()
+	obs.name = "Observatoire"
+	add_child(obs)
+	obs.setup(self, player)
 	_make_speakers()
 	y = VY.new()
 	y.v = self

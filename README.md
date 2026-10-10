@@ -240,3 +240,13 @@ sur le casque sans la désinstaller.
 - Les habitants (Gaspard Minuit, Madame Quart, Petit Zéphyr) changent de réplique selon le nombre de boucles vécues.
 - La porte au pied de la tour est le futur accès à l'Observatoire Brisé (v31).
 - Nouveaux fichiers : `village_h.gd`, `brain_h.gd` (+ son « tick » dans `bells.gd`). Version 0.30.
+
+## v31 — Chapitre 5, partie 2 : l'Observatoire Brisé + la grande révélation
+- Aux Hautes-Miettes, après le Receveur : « Monter à l'Observatoire » (porte au pied de la tour). Cinq salles (zone y=1200, aucun ennemi). Le principe : « Tourner l'aiguille » change l'époque d'un élément du décor.
+  1. Porte brisée : AVANT, la porte intacte porte une inscription (« Au soleil, l'étoile, puis la lune ») ; MAINTENANT, il ne reste que des débris et une serrure à symboles (Soleil, Lune, Étoile).
+  2. Serre : GRAINE / ARBUSTE / ARBRE. Au stade ARBRE, une branche forme un pont au-dessus du vide (une aiguille de chaque côté). Tomber ramène au début de la salle.
+  3. Salle des ombres : deux statues, chacune avec sa propre aiguille (MIDI / SOIR / MATIN). L'ombre du Berger doit couvrir la dalle ouest, celle de la Dame la dalle est.
+  4. Pendule : il tique à chaque passage au milieu. L'arrêter trois fois de suite pile au milieu.
+  5. Grand cadran : choisir « Il y a 27 ans » puis « Regarder ». (« Il y a 300 ans » et « Hier » montrent de courtes scènes.) On assiste à Armand Chardon et au jeune Basile : le Registre ne décrit pas l'île, c'est l'île qui existe tant qu'on la raconte ; Basile, par peur de l'oubli, tente de la figer ; les pages s'envolent ; Armand court les rattraper et envoie Pico se cacher dans une bouteille.
+- Révélation : Pico est la dernière page vivante du Grand Registre. Fin du chapitre 5 : +60 coquillages. Teaser : le bal des Versions Officielles (invitation de Basile).
+- Nouveau fichier : `observatory.gd`. Version 0.31.
